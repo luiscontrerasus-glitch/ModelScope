@@ -1,27 +1,22 @@
-import { leastSquares, linearRegression, predict } from './regression';
+import { predict } from './regression';
+import { baselineParameterCount, fitBaseline, fitHinge } from './models';
 import { criterion, metrics } from './statistics';
 import { residuals, sustainedRuns } from './residuals';
 import type { Candidate, Fit, Measurement, ModelConfig, Transition } from './types';
 export const METHOD = { id: 'continuous-hinge-sustained-residuals', version: '1.1.0' } as const;
 export const POLICY = { minimumN: 14, minimumSide: 6, criterionImprovement: 10, sensitivityDelta: 2, residualMultiplier: 2, minimumRun: 4, numericRatioFloor: 1e-12 } as const;
 function search(rows: Measurement[], config: ModelConfig, baseline: Fit) {
-  const p = config.intercept ? 2 : 1;
+  const p = baselineParameterCount(config);
   const base = criterion(baseline.sse, rows.length, p, config.noiseFloor);
-  const scale = config.intercept ? rows.at(-1)!.x - rows[0].x : Math.max(...rows.map(r => Math.abs(r.x)));
-  const origin = config.intercept ? rows[0].x : 0;
   const knees = rows.slice(POLICY.minimumSide - 1, rows.length - POLICY.minimumSide).map(r => r.x);
   const candidates: Candidate[] = knees.map(knee => {
-    const design = rows.map(r => config.intercept ? [(r.x - origin) / scale, 1, Math.max(0, r.x - knee) / scale] : [r.x / scale, Math.max(0, r.x - knee) / scale]);
-    const coefficients = leastSquares(design, rows.map(r => r.y));
-    const slope = coefficients[0] / scale;
-    const intercept = config.intercept ? coefficients[1] - slope * origin : 0;
-    const slopeChange = coefficients[config.intercept ? 2 : 1] / scale;
+    const { slope, intercept, slopeChange } = fitHinge(rows, config, knee);
     const { sse, rmse } = metrics(rows.map(r => r.y), rows.map(r => slope * r.x + intercept + slopeChange * Math.max(0, r.x - knee)));
     return { knee, slope, intercept, slopeChange, sse, rmse, criterion: criterion(sse, rows.length, p + 2, config.noiseFloor) + 2 * Math.log(knees.length), deltaFromBest: 0 };
   });
   const best = candidates.reduce((a, b) => a.criterion <= b.criterion ? a : b);
   for (const candidate of candidates) candidate.deltaFromBest = candidate.criterion - best.criterion;
-  const early = linearRegression(rows.filter(r => r.x <= best.knee), config.intercept);
+  const early = fitBaseline(rows.filter(r => r.x <= best.knee), config);
   const noiseScale = Math.max(config.noiseFloor, Math.sqrt(early.sse / (early.n - p)));
   const sustainedRowIds = sustainedRuns(residuals(rows, early, noiseScale), best.knee, POLICY.residualMultiplier, POLICY.minimumRun);
   const improvement = base - best.criterion;
@@ -38,7 +33,7 @@ export function detectTransition(rows: Measurement[], config: ModelConfig, basel
     // Keep all observations in reported fits; omission is only a diagnostic refit.
     const influential = rows.reduce((a, b) => Math.abs(a.y - predict(baseline, a.x)) >= Math.abs(b.y - predict(baseline, b.x)) ? a : b);
     const retained = rows.filter(r => r.id !== influential.id);
-    const checked = search(retained, config, linearRegression(retained, config.intercept));
+    const checked = search(retained, config, fitBaseline(retained, config));
     const sameSlopeDirection = Math.sign(checked.best.slopeChange) === Math.sign(best.slopeChange);
     influenceCheck = { omittedRowId: influential.id, improvement: checked.improvement, sustainedRowIds: checked.sustainedRowIds, sameSlopeDirection, passed: checked.improvement >= POLICY.criterionImprovement && checked.sustainedRowIds.length >= POLICY.minimumRun && sameSlopeDirection };
   }

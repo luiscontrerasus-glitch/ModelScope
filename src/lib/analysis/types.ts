@@ -1,5 +1,8 @@
 export interface Measurement { id: string; x: number; y: number }
-export interface ModelConfig { intercept: boolean; noiseFloor: number }
+export interface ModelConfig {
+  intercept: boolean; noiseFloor: number;
+  baseline?: { kind: 'pendulum-small-angle'; length: number; gravity: number };
+}
 export interface Fit { slope: number; intercept: number; sse: number; rmse: number; r2: number | null; n: number }
 export interface EvidencePoint extends Measurement { predicted: number; residual: number; normalizedResidual: number }
 export interface Candidate { knee: number; slope: number; intercept: number; slopeChange: number; sse: number; rmse: number; criterion: number; deltaFromBest: number }
@@ -35,6 +38,7 @@ export interface Finding {
   methodology: string; caveats: string[];
 }
 export interface AnalysisResult {
+  experimentId?: string;
   config: ModelConfig; originalObservations: Measurement[]; measurements: Measurement[]; globalFit: Fit; referenceFit: Fit;
   referenceScope: 'early-region' | 'complete-data'; points: EvidencePoint[];
   transition: Transition; findings: Finding[];
