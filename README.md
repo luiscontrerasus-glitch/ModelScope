@@ -2,7 +2,7 @@
 
 Equations have limits. Find them.
 
-ModelScope is a scientific workspace for exploring where a configured model increasingly disagrees with observations. Milestone 1 is a Hooke's law vertical slice, built from scratch in this repository. All scientific calculations run in deterministic TypeScript; no AI service is required.
+ModelScope is a scientific workspace for exploring where a configured model increasingly disagrees with observations. Milestone 1.5 audits and hardens the existing Hooke's law vertical slice. All scientific calculations run in deterministic TypeScript; no AI service is required.
 
 The engine, editable table, linked plots, and inspectable evidence form a complete Hooke's law workflow. See [the methodology](docs/methodology.md) for alternatives considered, calculations, the selected method, and its limitations.
 
@@ -17,7 +17,7 @@ A high R² can hide a systematic pattern. Students can inspect the actual force 
 - Deterministic fits, predictions, residuals, RMSE, centered R², and penalized transition comparison.
 - Aligned force and residual plots, sampled sensitivity region, exact point values, and linked selection from findings, graph points, evidence rows, and the input table.
 - Stale snapshot labels after edits, blocked stale export, runtime validation, and explicit rerun.
-- Inspectable methodology, caveats, raw evidence, normalized residuals, and full JSON export.
+- Concise model comparison, expandable candidate-score profile and influence diagnostic, caveats, normalized residuals, and versioned reproducible JSON export.
 - Desktop analysis workspace and a mobile stack with charts first, then editable table and diagnostics.
 
 ## Architecture and deterministic philosophy
@@ -28,7 +28,7 @@ Next.js App Router, React, strict TypeScript, Tailwind's CSS pipeline with delib
 
 ## Transition method
 
-Compare a single configured line against continuous hinge candidates using the same complete data. Penalize additional coefficients, the searched knee, and candidate search. Require at least 10 criterion units of improvement plus four consecutive same-sign post-knee reference residuals beyond twice the early noise scale. Require at least 14 observations and six on each side. The candidate region combines near-best knees and measurement spacing; it is a sensitivity range, not a confidence interval. These are transparent prototype heuristics, not statistically calibrated probabilities. If evidence is weak or sample size insufficient, the engine says no clear transition is supported.
+Compare the configured OLS line against continuous hinge candidates on the same complete data with a dimensionless penalized criterion. Require 10 units of improvement, four consecutive same-sign post-knee residuals beyond twice the early noise scale, and support surviving a diagnostic omission of the largest absolute baseline residual. All observations remain in reported fits. Require 14 observations, six at/below each knee and six above. Results distinguish supported, ambiguous, none, and insufficient evidence. Near-best knees within 2 criterion units, expanded by neighboring measurements, define a transition sensitivity range, not a confidence interval. These are prototype heuristics, not calibrated probabilities.
 
 ## Development
 
@@ -52,7 +52,7 @@ If a production server is already running, stop it before rebuilding, then resta
 
 ## Tests and verification
 
-The scientific suite covers analytical regression results, predictions, residual signs and scale, independently calculated RMSE/R², perfect linear data, sustained curved departure, an exact known hinge, fixed noisy controls, 40 deterministic noisy-line fixtures, an isolated outlier, softening with an offset, malformed input, small samples, input immutability, and edited measurements. See [verification notes](docs/verification.md) for executed checks and browser observations. See [the exact file inventory](docs/files.md).
+The 49-test suite covers analytical fits and metrics, both intercept modes, perfect and Gaussian-noisy controls, sustained and sharp transitions, isolated outliers at every position, adjacent disturbances, influence-sensitive ambiguity, compatible unit scaling, sensitivity construction, malformed/small inputs, edits, immutability, and export round trips. Fixture sweeps are not population false-positive calibration. See [verification notes](docs/verification.md) for executed checks and browser observations and [the exact file inventory](docs/files.md).
 
 ## Remaining limitations
 
