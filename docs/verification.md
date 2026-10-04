@@ -1,4 +1,60 @@
-# Milestone 1.5 verification
+# Milestone 2 verification
+
+Executed on 2026-10-04 in the existing repository, with Node 24.14.1. Verification concerns deterministic software behavior and synthetic educational fixtures; it does not establish laboratory validity or calibrated statistical error rates.
+
+## Final checks
+
+| Command | Executed result after final code changes |
+| --- | --- |
+| `npm test` | Passed: 3 files, 90 tests |
+| `npm run typecheck` | Passed, exit 0 |
+| `npm run lint` | Passed, exit 0 |
+| `npm run build` | Passed, exit 0; production compilation, TypeScript, static pages and traces |
+| `npm audit --omit=dev --json` | Passed, exit 0; zero production vulnerabilities |
+
+No dependencies were added. The previously documented development-only lint advisory remains a known limitation; the production audit is not a clean full audit. Worker spawning and local production startup used approved process permissions. Production was served on 127.0.0.1:3000; no deployment or AI integration was performed.
+
+## Regression and scientific fixtures
+
+All original 49 tests remain unchanged and pass. Added 41 tests, including exact comparisons with results captured from the committed Milestone 1.5 engine for both Spring datasets in both intercept modes. The committed `tests/hooke-baseline.json` is the intentional pre-refactor numerical regression fixture, not a generated runtime artifact.
+
+Every experiment has model-consistent, sustained-departure, isolated-outlier, high-noise ambiguous, and insufficient-sample fixtures. Isolated disturbances are swept over all 24 positions in both directions for each family. New checks cover fixed theoretical parameter counting, known small-angle periods, AGM finite-amplitude periods, empirical calibration slopes/offsets, compatible unit scaling, 50 fixed-seed noisy theoretical controls, exact sensitivity semantics, fresh switching sessions, validation, and shared exports in all four outcome states. These sweeps are regression checks, not estimated population error rates.
+
+Default computed fixture results:
+
+| Experiment | Best candidate | Sensitivity range | Adjusted improvement | Sustained observations |
+| --- | --- | --- | --- | --- |
+| Spring | 0.080 m | 0.075–0.085 m | 84.02 | 8 |
+| Pendulum | 17.5° | 15.0–22.5° | 101.71 | 17 |
+| Beer–Lambert | 0.640 mmol/L | 0.600–0.680 mmol/L | 72.42 | 8 |
+| Sensor calibration | 7.50 N | 7.00–8.00 N | 70.35 | 9 |
+
+All four pass the diagnostic omission safeguard. These are calculated outputs rather than encoded transition answers. The pendulum reference remains 2.00640929258904 s, derived from L = 1 m and g = 9.80665 m/s². Its displayed centered R² can be negative because the theoretical constant is not fitted. Ranges describe candidate sensitivity and sampling, not confidence intervals or universal physical boundaries.
+
+## Actual production-browser checks
+
+Inspected every experiment in the in-app browser at desktop 1440 × 1000 and mobile 390 × 844. Used the final production build, not the development server. Checked the loaded measurements, scientific question, configured equation, prediction curve, variable labels, axes, units, candidate shading, evidence and provenance. Full-page mobile screenshots were visually inspected for all four; desktop charts were also inspected. Neither viewport had document horizontal overflow. Mobile equations and selectors fit within the page; tables and expanded methods remained usable.
+
+For every experiment on both desktop and mobile:
+
+- Switched experiments and verified fresh default data, configuration, units and computed findings; the preceding experiment's edits and noise settings did not persist.
+- Selected table row M08 and confirmed one selected marker in each chart.
+- Selected plot observation M20 and confirmed its row and both markers updated. Mobile Space activation retained focus on M20.
+- Selected sustained disagreement and confirmed its exact supporting rows and twice that many selected markers across the two charts.
+- Edited M08, confirmed stale export was disabled and old selections cleared, reran, and inspected updated exact values and residuals.
+- Downloaded the actual JSON export after rerunning.
+
+Desktop additionally checked every model-consistent control (`none`) and every progressive fixture at a noise floor 100 times its default (`ambiguous`, no reported sensitivity range or shading). Mobile expanded variables/assumptions and evidence/statistics/methods for each family without page overflow. The final browser warning/error query returned an empty list. Temporary viewport overrides were reset.
+
+Ignored screenshot records are under `browser-artifacts/milestone2-*-desktop.jpg` and `browser-artifacts/milestone2-*-mobile.jpg`; they are not committed. The Beer–Lambert desktop record is `milestone2-beer-desktop.jpg`.
+
+## Actual downloaded exports
+
+Independently parsed 12 downloads from the final production build: default and edited desktop exports for each family, plus edited mobile exports for each family. All had common schema 1.1.0, methodology 1.2.0, matching experiment/analysis identities, correct baseline IDs and units, 24 original observations and 24 prediction/residual points, synthetic status, model parameter definitions and calculated outcomes. Default exports had `edited: false`; edited exports had `edited: true` and the exact new M08 values: 1.275 N, 2.02191 s, 0.4015 dimensionless absorbance, and 1.0990 V respectively. Pendulum exports contained configured L/g and derived T₀, rather than fitted period parameters. Legacy Spring schema 1.0.0/method 1.1.0 remains covered by the original tests.
+
+---
+
+# Historical Milestone 1.5 verification
 
 Executed on 2026-10-04 in the existing repository. These checks verify software behavior and illustrative fixtures, not laboratory validity or calibrated statistical error rates.
 

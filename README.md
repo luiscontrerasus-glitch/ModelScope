@@ -2,60 +2,58 @@
 
 Equations have limits. Find them.
 
-ModelScope is a scientific workspace for exploring where a configured model increasingly disagrees with observations. Milestone 1.5 audits and hardens the existing Hooke's law vertical slice. All scientific calculations run in deterministic TypeScript; no AI service is required.
+ModelScope is a deterministic scientific workspace for inspecting where a configured model increasingly disagrees with measurements. Milestone 2 extends the verified Hooke's-law implementation to four built-in experiment families, using the same evidence architecture. No AI, accounts, database, or deployment is involved.
 
-The engine, editable table, linked plots, and inspectable evidence form a complete Hooke's law workflow. See [the methodology](docs/methodology.md) for alternatives considered, calculations, the selected method, and its limitations.
+| Demonstration | Configured baseline | Input → response |
+| --- | --- | --- |
+| Spring — Hooke's Law | F = kx by default; optional F = kx + c | Extension / m → force / N |
+| Pendulum — Small-Angle Approximation | T₀ = 2π√(L/g), fixed L = 1 m, g = 9.80665 m/s² | Initial angle / degrees → period / s |
+| Beer–Lambert — Concentration Response | A = mc + b, fitted intercept by default | Concentration / mmol/L → dimensionless absorbance |
+| Sensor Calibration — Linear Range | V = mQ + b, fitted intercept by default | Reference force / N → output / V |
 
-## Why validity matters
+Every demonstration and control is labeled **Synthetic educational dataset**. Data provides reproducible, controlled examples; it is not laboratory validation. See [experiment notes](docs/experiments.md) for generation methods, questions, assumptions, and limits.
 
-A high R² can hide a systematic pattern. Students can inspect the actual force measurements, compare a configured line, examine residuals, and locate a candidate transition region without treating an equation as universal. A statistical diagnostic does not establish a physical mechanism.
+## Scientific workflow
 
-## What works
+Switching experiments loads the correct data, model configuration, units, and assumptions and immediately recomputes evidence. Edit measurements, inspect linked response/residual plots, select findings or candidate-profile rows, and rerun to replace stale evidence. Both linear intercept modes remain available where configured; pendulum theory is fixed rather than fitted to the observed periods.
 
-- Editable 24-row synthetic spring example and a noisy linear control; add, remove, and reset observations.
-- Through-origin Hooke's law or a line with fitted force offset; configurable assumed noise floor.
-- Deterministic fits, predictions, residuals, RMSE, centered R², and penalized transition comparison.
-- Aligned force and residual plots, sampled sensitivity region, exact point values, and linked selection from findings, graph points, evidence rows, and the input table.
-- Stale snapshot labels after edits, blocked stale export, runtime validation, and explicit rerun.
-- Concise model comparison, expandable candidate-score profile and influence diagnostic, caveats, normalized residuals, and versioned reproducible JSON export.
-- Desktop analysis workspace and a mobile stack with charts first, then editable table and diagnostics.
+The concise model comparison expands into numerical evidence, the complete candidate score profile, influence results, and supporting measurements. Transition shading is restrained and never marks later measurements as invalid. Keyboard marker focus survives selection, and mobile controls retain accessible target sizes.
 
-## Architecture and deterministic philosophy
+Results distinguish **supported**, **ambiguous**, **none**, and **insufficient** evidence. A high R² or a no-transition result does not establish physical correctness. Only supported results have a transition sensitivity range, which is not a confidence interval.
 
-Next.js App Router, React, strict TypeScript, Tailwind's CSS pipeline with deliberately authored workspace styling, Recharts, Zod, and Vitest. All authoritative science lives in pure functions under `src/lib/analysis`. The experiment definition and synthetic measurements live under `src/lib/experiments`. Components format and link structured findings; they do not create scientific findings from prose. There is no database, authentication, backend science service, AI call, external font, or required API key.
+## Analysis architecture
 
-`ExplanationProvider` reserves an interface for a future optional explanation service consuming computed evidence. Natural-language configuration parsing is not implemented; any future proposed configuration needs user confirmation before use.
+Pure TypeScript functions under `src/lib/analysis` separate baseline fitting/prediction (`models.ts`) from candidate search, penalized comparison, sustained residuals, and influence diagnostics. This supports empirical lines and one fixed theoretical constant; it is deliberately not an arbitrary-model framework. Typed experiment definitions provide metadata, model identity, defaults, variables, parameters, assumptions and datasets. Generators are separate from detection. Components display and link computed evidence without inventing findings.
 
-## Transition method
+The detector compares the configured baseline with a continuous hinge alternative on the same complete observations. It uses a dimensionless criterion with baseline-specific fitted-parameter counts, two extra hinge/search parameters, and a candidate-search penalty. Require improvement ≥10, four consecutive same-sign deviations beyond twice the early residual scale, and support surviving a diagnostic omission of the largest absolute baseline residual with the same deviation direction. Reported analysis retains all observations. Require 14 measurements with six at/below and six above each candidate. [Methodology](docs/methodology.md) gives exact formulas and transferability limits.
 
-Compare the configured OLS line against continuous hinge candidates on the same complete data with a dimensionless penalized criterion. Require 10 units of improvement, four consecutive same-sign post-knee residuals beyond twice the early noise scale, and support surviving a diagnostic omission of the largest absolute baseline residual. All observations remain in reported fits. Require 14 observations, six at/below each knee and six above. Results distinguish supported, ambiguous, none, and insufficient evidence. Near-best knees within 2 criterion units, expanded by neighboring measurements, define a transition sensitivity range, not a confidence interval. These are prototype heuristics, not calibrated probabilities.
+The UI exports one common JSON schema **1.1.0**, method **1.2.0**, for all four families: scientific question, variable identities and units, configured baseline and parameter treatments, assumptions, provenance including edits, original observations, complete numerical analysis, comparisons, candidate profile, outcome, sensitivity, influence evidence, findings and caveats. The legacy schema 1.0 spring export API remains available for compatibility; new experiments use the common experiment-aware API.
 
-## Development
+## Development and verification
 
-Use Node.js 24 LTS and npm (the verified environment used Node 24.14.1). Runtime and tool versions are recorded in the lockfile.
+Next.js App Router, React, strict TypeScript, authored workspace CSS through Tailwind's pipeline, Recharts, Zod, and Vitest. Use Node 24 LTS and npm (verified Node 24.14.1). No new dependency was needed for this milestone.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open http://localhost:3000. Validation commands: `npm test`, `npm run typecheck`, `npm run lint`, and `npm run build`.
-
-Production locally:
+Open http://localhost:3000. Checks:
 
 ```sh
+npm test
+npm run typecheck
+npm run lint
 npm run build
 npm run start -- --hostname 127.0.0.1 --port 3000
 ```
 
-If a production server is already running, stop it before rebuilding, then restart to load the new build.
+Stop an existing production server before rebuilding and restart it afterward. The suite retains all original 49 tests and adds cross-family controls, departures, contamination, ambiguous states, predictions, metadata, exports, switching, and exact pre-generalization Hooke numerical snapshots. Executed results are recorded in [verification notes](docs/verification.md); [file inventory](docs/files.md) lists repository artifacts.
 
-## Tests and verification
+## Limits
 
-The 49-test suite covers analytical fits and metrics, both intercept modes, perfect and Gaussian-noisy controls, sustained and sharp transitions, isolated outliers at every position, adjacent disturbances, influence-sensitive ambiguity, compatible unit scaling, sensitivity construction, malformed/small inputs, edits, immutability, and export round trips. Fixture sweeps are not population false-positive calibration. See [verification notes](docs/verification.md) for executed checks and browser observations and [the exact file inventory](docs/files.md).
+Four built-in families, one hinge, ordinary least squares, fixed theoretical pendulum parameters, assumed response noise scales, no calibrated false-positive rate, no confidence intervals or physical-mechanism inference. A hinge can lag a smooth departure; an influence diagnostic can withhold real support. Measurement-input uncertainty, heteroscedastic weighting and repeated independent-variable values are not supported. Canonical units are explicit; automatic unit conversion is not implemented.
 
-## Remaining limitations
+Edits are in memory; exports provide a record, and reload resets the workspace. AI, CSV import, arbitrary custom experiments, persistence, authentication, collaboration, and deployment remain deferred.
 
-Synthetic educational data, one transition, ordinary least squares, no causal inference, no calibrated false-positive rate, no confidence intervals, no x uncertainty, no weighted fit, and no repeated-extension support. A gradual curve's fitted hinge can lag the actual generating onset. Outliers can suppress real-transition detection. “No clear transition” does not mean adequate. Editing is in-memory; reload resets it, and JSON export is the persistence option. CSV import, additional experiments, and AI are intentionally deferred. No deployment has been performed.
-
-The compatible Next.js lint stack currently requires ESLint 9 because bundled plugins do not declare ESLint 10 support. Its glob-parser dependency has an unpatched advisory; see the verification notes. Do not feed untrusted path patterns into the development linter.
+The production dependency audit is recorded in verification notes. The existing development lint chain retains an unpatched braces advisory; no forced breaking upgrade was applied.

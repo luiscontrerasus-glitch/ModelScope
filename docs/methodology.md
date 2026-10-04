@@ -1,70 +1,83 @@
-# Transition methodology · version 1.1.0
+# Transition methodology · version 1.2.0
 
-ModelScope compares a configured line with an ordered spring dataset. A statistical departure does not establish a physical cause or an exact failure point. The method identifier is `continuous-hinge-sustained-residuals`.
+ModelScope asks where a configured baseline increasingly disagrees with observations. This milestone supports four built-in families using empirical lines or a fixed small-angle pendulum period. It does not establish a physical cause, exact failure point, or calibrated operating boundary.
 
-## Model and regression
+## Baseline models and parameter counts
 
-The built-in experiment defaults to ideal Hooke's law **F = kx**, assuming extension from unloaded length and a correctly zeroed force sensor. The selectable empirical model **F = kx + c** fits an offset that can represent preload or zeroing bias. Neither choice is imposed independently of configuration. Both modes are tested.
+Baseline fitting/prediction lives in `analysis/models.ts`; regime-deviation search lives in `analysis/breakpoint.ts`. Typed experiment definitions provide identities, units, parameter labels, assumptions and defaults, with no JSX or detection logic. Separate generators construct synthetic observations and never supply generating departure locations to the detector.
 
-The ordinary least-squares baseline uses every observation: k = Σ(xF)/Σ(x²) for fixed zero; for a fitted offset, k = Σ[(x−x̄)(F−F̄)]/Σ[(x−x̄)²], c = F̄−kx̄. Predictions are kx+c. Stiffness is not constrained positive.
+For spring, the default is ideal F = kx, requiring unloaded extension and correctly zeroed force. Optional F = kx + c fits an empirical offset. Beer–Lambert defaults to A = mc + b; sensor calibration defaults to V = mQ + b. Their offsets are fitted unless fixed zero is explicitly selected. Ordinary least squares uses every observation:
 
-Residual = observed force − prediction; SSE = Σresidual²; RMSE = √(SSE/n). Centered R² = 1−SSE/Σ(F−F̄)² in both modes. It can be negative for a through-origin fit and is null for constant response. R² alone cannot establish model adequacy.
+- Fixed zero: slope = Σ(xy)/Σ(x²), offset = 0; p = 1 fitted parameter.
+- Fitted offset: slope = Σ[(x−x̄)(y−ȳ)]/Σ[(x−x̄)²], offset = ȳ−slope·x̄; p = 2.
+- Pendulum: T₀ = 2π√(L/g), fixed L = 1 m and g = 9.80665 m/s²; p = 0. No period/offset is fitted. The internal affine representation has slope 0 and intercept T₀; these are not empirical pendulum parameters. Export exposes L, g and derived T₀ with their parameter treatments.
 
-## Continuous candidate search and comparison
+Stiffness/calibration slope is not constrained positive. For every baseline, residual = observation − prediction; SSE = Σresidual²; RMSE = √(SSE/n). Centered R² = 1−SSE/Σ(y−ȳ)². R² can be negative for fixed-zero or fixed-theory predictions and is null for constant observed response. It is not proof of physical adequacy and is particularly limited for a constant theoretical prediction.
 
-For each eligible measured extension b, fit **F = kx + c + a max(0,x−b)** on the same complete dataset as the baseline. The hinge is continuous; c remains zero in fixed-zero mode. Require at least six observations at or below b and six strictly above b. There are n−11 eligible candidates. Fewer than 14 distinct-extension observations produce `insufficient`, without a candidate search.
+## Continuous candidate search
 
-Hinge coefficients use a small reorthogonalized modified Gram–Schmidt QR least-squares solver. Extension is scaled internally; fitted-offset candidates also shift extension before solving. Numerically dependent columns are rejected. This replaces the earlier normal-equation solver.
+At every eligible measured independent-variable value b, compare the baseline with a continuous hinge alternative on the same complete observations:
 
-For p = 1 (fixed zero) or 2 (fitted offset), force noise floor σ₀, and M candidates, the dimensionless criterion is:
+- Empirical line: y = slope·x + offset + a max(0,x−b); re-estimate the configured baseline coefficients and a by least squares. Offset stays zero if configured.
+- Pendulum: T = T₀ + a max(0,θ−b); T₀ stays fixed, and only a is estimated at each tested b. The finite-amplitude generating model is not used here.
 
-- Single line: C₀ = n ln(max(SSE₀/(nσ₀²), 10⁻¹²)) + p ln(n).
-- Candidate hinge: Cᵦ = n ln(max(SSEᵦ/(nσ₀²), 10⁻¹²)) + (p+2) ln(n) + 2 ln(M).
-- Improvement: Δ = C₀ − min(Cᵦ). Require Δ ≥ 10.
+Require at least six observations at or below b and six strictly above b. There are M = n−11 candidates. Original samples below 14 return insufficient evidence without searching. Extension/angle/concentration/reference force must be distinct; input order is sorted without mutating the caller, while original order is retained separately.
 
-The extra two parameters represent the additional slope and searched knee. The additional 2 ln(M) search penalty is a conservative prototype choice. This is a BIC-style heuristic, not an exact Bayesian calculation, calibrated significance level, or p-value. The common dimensionless floor prevents numerical noise from creating transitions in perfect lines. Exact candidate ties select the earlier measured extension.
+Hinge coefficients use reorthogonalized modified Gram–Schmidt QR. Independent-variable values are scaled internally; fitted-offset linear candidates also shift their origin. Numerically dependent columns are rejected. The linear branch preserves Milestone 1.5 arithmetic exactly; captured pre-generalization fits, residuals, candidate profiles, and decisions remain identical in both intercept modes and both datasets.
 
-## Sustained residual and influence safeguards
+## Dimensionless penalized comparison
 
-Refit the configured line to observations at or below the best knee. Define scale = max(σ₀, √(SSEearly/(nearly−p))). Require at least four consecutive observations strictly after the knee with residuals of the same sign and magnitude **strictly greater than twice that scale**. A sign change or subthreshold point ends a run. Qualifying runs contribute their exact row IDs. Normalized residuals are residual/scale; they are descriptive, not studentized residuals or z-test statistics.
+With assumed response noise floor σ₀ and baseline fitted count p:
 
-If comparison and sustained gates pass, identify the observation with largest absolute residual from the **complete-data baseline** (ties select the earlier sorted row). Omit it only for a diagnostic refit, repeat baseline fitting and candidate search, and require Δ ≥ 10, a qualifying four-point run, and the same sign of hinge slope change. Candidate search still requires six observations in each region; the diagnostic can have 13 observations when the original has 14.
+- C₀ = n ln(max(SSE₀/(nσ₀²), 10⁻¹²)) + p ln(n).
+- Cᵦ = n ln(max(SSEᵦ/(nσ₀²), 10⁻¹²)) + (p+2) ln(n) + 2 ln(M).
+- Improvement Δ = C₀ − min(Cᵦ). Require Δ ≥ 10.
 
-This is one targeted influence check, not exhaustive leave-one-out analysis or robust regression. It can withhold a real transition when coverage is sparse. **No observation is removed from reported fits, predictions, residuals, findings, or original observations.** The diagnostic omission and its result are exported separately.
+The extra two parameters count the departure slope a and searched knee b, including for fixed theory. Configured L/g are not fitted parameters. The extra 2 ln(M) is a conservative candidate-search penalty, not exact Bayesian evidence. The common dimensionless floor prevents perfect-line floating-point artifacts from creating transitions. Ties select the earlier measured input.
 
-## Decision states
+Compatible response-unit changes must convert observations, predictions, parameter values and σ₀ together. Independent-variable scaling transforms knees and slopes; angle-unit conversion leaves the theoretical constant unchanged. The ratio SSE/(nσ₀²) and adjusted comparison are invariant within numerical tolerance. The app accepts explicit canonical units only and does not implement unit conversion.
 
-| State | Implemented rule | Reported transition location |
+The normalized residual threshold and dimensionless score make shared heuristic thresholds interpretable across the implemented families; baseline-specific parameter counts account for fitted flexibility. This does **not** establish shared statistical calibration, power, or a universal false-positive rate. Noise floors are explicit assumed scales, not independently measured uncertainties: 0.040 N (spring), 0.006 s (pendulum), 0.008 dimensionless absorbance, and 0.015 V (sensor). Changing the physical noise assumption can change persistence and the decision.
+
+## Sustained residuals and influence safeguard
+
+For the best candidate, evaluate the baseline on observations at or below the knee. Empirical lines are refitted there; theoretical T₀ stays fixed. Scale = max(σ₀, √(SSEearly/(nearly−p))). For p = 0 this is early residual RMS, not an independently measured timing-error variance.
+
+Require at least four consecutive strictly post-knee residuals of the same sign and magnitude **strictly greater than twice that scale**. A sign change or subthreshold observation ends a run. Qualifying runs retain their exact row IDs. Normalized residuals are residual/scale, not studentized residuals or z-test statistics.
+
+When comparison and persistence pass, diagnostically omit the observation with largest absolute complete-baseline residual (ties select the earlier sorted row). Recompute baseline errors, candidate search and persistence; empirical models refit while theoretical constants remain fixed. Require Δ ≥ 10, a qualifying four-point run, and the same sign of hinge departure slope. The diagnostic can have 13 observations if the original has 14; six observations in each candidate region still apply.
+
+All original observations remain in actual reported fits, predictions, residuals, findings and export. Diagnostic omission is recorded separately. This is one targeted influence check, not exhaustive leave-one-out analysis or robust regression, and can withhold real support when coverage is sparse. Isolated/adjacent fixture resistance is evidence about those fixtures, not a universal guarantee.
+
+## Decision states and displayed reference
+
+| State | Implemented condition | Reported location/range |
 | --- | --- | --- |
-| `insufficient` | n < 14 | None; no candidate search |
-| `none` | Comparison improvement < 10 | None; candidate/comparison remain inspectable |
-| `ambiguous` | Comparison passes, but sustained gate or influence check fails | None; no positive transition shading |
-| `supported` | Comparison, sustained gate, and influence check pass | Best candidate and transition sensitivity range |
+| insufficient | n < 14 | None; no search |
+| none | Δ < 10 | None; alternative comparison/profile remains inspectable |
+| ambiguous | Δ ≥ 10, but persistence or influence fails | None; no positive transition shading |
+| supported | Comparison, persistence, and influence all pass | Best knee and transition sensitivity range |
 
-Only supported results use the early-region line as the plotted reference. Other states use the complete-data baseline. A poor model can yield no clear transition; this does not validate it. The four-point gate and influence refit limit isolated-point explanations; the tested isolated and adjacent disturbances did not produce supported regime changes. This is fixture evidence, not a guarantee for every contaminated dataset.
+Supported empirical results use an early-region reference; other empirical states use the complete-data baseline. Pendulum prediction always uses fixed theory regardless of state. A model can be inadequate without a supported hinge; no transition does not validate it.
 
-## Transition sensitivity range
+## Sensitivity construction
 
-For a supported result, retain all tested knees whose criterion is within 2 units of the best candidate. Export that exact list and its minimum/maximum. Expand these endpoints by one neighboring measured extension on each side to produce the displayed sampling range. This hull can include untested positions or gaps between near-best knees. Near-best candidates are defined by scores, not by independently passing every safeguard.
+For supported results, retain the exact set of tested knees within 2 penalized criterion units of the optimum. Export that list and its min/max. Expand endpoints by one neighboring measured independent-variable value on each side to produce the displayed sampling range. This hull can span gaps or untested positions. Near-best scores do not independently prove every candidate passes all safeguards.
 
-This is **not a confidence interval**, probability distribution, or calibrated uncertainty estimate. It describes objective sensitivity and sampling resolution under this model and candidate grid. Ambiguous, none, and insufficient results have null estimate, range, and sensitivity.
+This is **not a confidence interval**, probability distribution, or calibrated uncertainty estimate. It describes objective sensitivity and sampling under this baseline and grid. Other states have null estimate, range and sensitivity. A hinge can lag the onset of a gradual generating correction.
 
-## Units and reproducible export
+## Reproducible evidence schema
 
-The interface accepts extension in m and force in N, with stiffness in N/m and SSE in N². It does not offer unit conversion. In the numerical engine, compatible extension scaling transforms slopes and knees; compatible force scaling transforms forces, slopes, offsets, residuals, and the configured noise floor together. SSE/(nσ₀²) and criterion improvements then remain invariant within floating-point tolerance. Changing the physical noise assumption is different from converting units and can change the decision.
+All four UI exports use schema 1.1.0 and method 1.2.0, preserving the evidence architecture: experiment/question, variable definitions and canonical units, baseline ID/equation/fit mode, reference and complete-data parameters with treatments, assumptions, synthetic provenance and edit flag, original input order, full sorted analysis, predictions/residuals, comparisons, every candidate score, support state, sensitivity when supported, influence result when evaluated, findings and caveats.
 
-JSON schema 1.0.0 includes experiment and variable identities, SI units, configured equation/intercept/noise floor, method identifier/version/policy, original observations in input order, sorted analysis, fitted parameters, predictions, residuals and normalized residuals, both model errors/criteria, every candidate score, support state, sensitivity when supported, influence result when evaluated, and deterministic findings with caveats. It contains only computed values. Export is disabled after edits until successful recomputation.
+The original schema 1.0 spring helper and method 1.1.0 metadata remain available to existing callers and original tests. It rejects other experiment identities rather than mislabeling them. New exports use one common structure across all four families. Export is disabled after edits until a successful rerun.
 
-## Built-in example and limits
+## Scientific limits and sources
 
-The 24-row synthetic example spans 0.005–0.120 m. Its nominal early stiffness is 32 N/m, with fixed alternating noise and quadratic stiffening beginning at 0.060 m. The diagnostic hinge is an approximation to curvature and can lag the generating onset (the built-in result selects 0.080 m). The generating formula is never supplied to detection.
+Synthetic educational demonstrations are not laboratory validation. Assume accurate independent-variable measurements, approximately independent/equal-variance response errors, coverage adequate for one hinge, and known theoretical pendulum parameters. No causal inference, calibrated error rates, parameter confidence intervals, uncertainty propagation, errors-in-variables fitting, heteroscedastic weighting, repeated-input support or multiple transitions are implemented. Sorting loses acquisition-order information. See [experiment notes](experiments.md) for family-specific assumptions and generating formulas.
 
-Assumptions include accurate extension, independent approximately equal-variance force errors, adequate coverage, and at most one hinge. Sorting discards acquisition order. No laboratory validation, causal inference, calibrated false-positive rate, parameter confidence intervals, x-uncertainty treatment, weighting, or repeated-extension support is implemented. Ordinary least squares remains sensitive to contamination. A single diagnostic omission does not prove immunity to outliers, and outliers can suppress real support.
+Alternatives considered in Milestone 1 included first-threshold crossing (single-point triggering), persistence alone (reference dependence), independent lines (discontinuity), and general multi-change methods (unjustified flexibility for this slice). The audited continuous hinge plus explicit residual/influence gates was retained rather than replacing working mathematics.
 
-## Alternatives and sources
-
-A first-threshold crossing was rejected because one point can trigger it. Sustained residuals alone depend strongly on the reference. Independent lines allow discontinuity. General multiple-change algorithms add unjustified choices for this educational slice. Continuous hinge comparison plus explicit residual and influence safeguards provides inspectable prototype evidence.
-
-- [R information criterion documentation](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/AIC.html): comparison on the same observations and log(n) parameter penalties.
+- [R information criteria](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/AIC.html): same-observation comparison and log(n) parameter penalties.
 - [NIST residual analysis](https://www.itl.nist.gov/div898/handbook/pmd/section6/pmd614.htm): residual patterns diagnose model inadequacy.
-- [NIST model refinement](https://itl.nist.gov/div898/handbook/pmd/section4/pmd45.htm): diagnostics do not by themselves establish a physical mechanism.
+- [NIST pendulum application](https://dlmf.nist.gov/22.19) and [AGM elliptic-integral computation](https://dlmf.nist.gov/19.8#E5): finite-amplitude synthetic period generation only.
