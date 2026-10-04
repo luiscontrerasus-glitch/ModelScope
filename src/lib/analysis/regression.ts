@@ -13,24 +13,28 @@ export function linearRegression(rows: Measurement[], intercept = false): Fit {
   if (![slope, offset, scores.sse, scores.rmse].every(Number.isFinite)) throw new Error('Values exceed the numerical range.');
   return { slope, intercept: offset, ...scores, n: rows.length };
 }
-// Small least-squares system with pivoted Gaussian elimination. Normalize extensions before calling.
+// Reorthogonalized modified Gram–Schmidt QR avoids squaring the condition number.
 export function leastSquares(design: number[][], values: number[]): number[] {
   const p = design[0].length;
-  const matrix = Array.from({ length: p }, (_, i) => [
-    ...Array.from({ length: p }, (_, j) => sum(design.map(row => row[i] * row[j]))),
-    sum(design.map((row, r) => row[i] * values[r]))
-  ]);
-  for (let i = 0; i < p; i++) {
-    let pivot = i;
-    for (let r = i + 1; r < p; r++) if (Math.abs(matrix[r][i]) > Math.abs(matrix[pivot][i])) pivot = r;
-    [matrix[i], matrix[pivot]] = [matrix[pivot], matrix[i]];
-    if (Math.abs(matrix[i][i]) < 1e-12) throw new Error('Candidate fit is singular.');
-    const scale = matrix[i][i];
-    for (let j = i; j <= p; j++) matrix[i][j] /= scale;
-    for (let r = 0; r < p; r++) if (r !== i) {
-      const factor = matrix[r][i];
-      for (let j = i; j <= p; j++) matrix[r][j] -= factor * matrix[i][j];
+  const q: number[][] = [];
+  const r = Array.from({ length: p }, () => Array<number>(p).fill(0));
+  for (let j = 0; j < p; j++) {
+    const v = design.map(row => row[j]);
+    const originalNorm = Math.hypot(...v);
+    for (let pass = 0; pass < 2; pass++) {
+      for (let i = 0; i < j; i++) {
+        const projection = sum(v.map((value, row) => value * q[i][row]));
+        r[i][j] += projection;
+        for (let row = 0; row < v.length; row++) v[row] -= projection * q[i][row];
+      }
     }
+    r[j][j] = Math.hypot(...v);
+    if (r[j][j] <= Number.EPSILON * 64 * originalNorm || !r[j][j]) throw new Error('Candidate fit is singular.');
+    q.push(v.map(value => value / r[j][j]));
   }
-  return matrix.map(row => row[p]);
+  const coefficients = Array<number>(p).fill(0);
+  for (let i = p - 1; i >= 0; i--) {
+    coefficients[i] = (sum(q[i].map((value, row) => value * values[row])) - sum(r[i].map((value, j) => j > i ? value * coefficients[j] : 0))) / r[i][i];
+  }
+  return coefficients;
 }

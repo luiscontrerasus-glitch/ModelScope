@@ -7,5 +7,6 @@ export function metrics(observed: number[], predicted: number[]) {
   return { sse, rmse: Math.sqrt(sse / observed.length), r2: sst > 0 ? 1 - sse / sst : null };
 }
 export function criterion(sse: number, n: number, parameters: number, floor: number): number {
-  return n * Math.log(Math.max(sse / n, floor ** 2 * 1e-12)) + parameters * Math.log(n);
+  // Changing force units must also change the configured force scale.
+  return n * Math.log(Math.max(sse / (n * floor ** 2), 1e-12)) + parameters * Math.log(n);
 }

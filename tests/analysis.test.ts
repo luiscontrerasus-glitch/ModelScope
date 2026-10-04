@@ -29,7 +29,7 @@ describe('regression and diagnostics', () => {
 describe('transition evidence', () => {
   it('does not trigger on a perfect line', () => {
     const data = springData().map(r => ({ ...r, y: 32 * r.x }));
-    expect(analyze(data).transition.status).toBe('weak');
+    expect(analyze(data).transition.status).toBe('none');
   });
   it('supports sustained spring departure with a sampled candidate region', () => {
     const result = analyze(springData());
@@ -43,7 +43,7 @@ describe('transition evidence', () => {
     expect(evidence.evidence.map(p => p.id)).toEqual(evidence.rowIds);
     for (const point of evidence.evidence) expect(Math.abs(point.normalizedResidual)).toBeGreaterThan(2);
   });
-  it('does not mistake fixed noisy linear data for a transition', () => { expect(analyze(springData('linear')).transition.status).toBe('weak'); });
+  it('does not mistake fixed noisy linear data for a transition', () => { expect(analyze(springData('linear')).transition.status).toBe('none'); });
   it('resists a deterministic ensemble of noisy lines', () => {
     for (let seed = 1; seed <= 40; seed++) {
       let state = seed;
@@ -51,16 +51,16 @@ describe('transition evidence', () => {
         state = (Math.imul(1664525, state) + 1013904223) >>> 0;
         return { ...r, y: 32 * r.x + (state / 4294967296 - 0.5) * 0.14 };
       });
-      expect(analyze(data).transition.status, `seed ${seed}`).toBe('weak');
+      expect(analyze(data).transition.status, `seed ${seed}`).toBe('none');
     }
   });
   it('does not support a transition caused by one isolated outlier', () => {
     const data = springData('linear'); data[18].y += 2;
-    expect(analyze(data).transition.status).toBe('weak');
+    expect(analyze(data).transition.status).toBe('none');
   });
   it('recalculates when the later force measurements are edited', () => {
     const original = springData(); const edited = original.map(r => ({ ...r, y: 32 * r.x }));
-    expect(analyze(original).transition.status).toBe('supported'); expect(analyze(edited).transition.status).toBe('weak');
+    expect(analyze(original).transition.status).toBe('supported'); expect(analyze(edited).transition.status).toBe('none');
     expect(analyze(edited).globalFit.slope).toBeCloseTo(32, 10);
   });
   it('detects a known hinge and is stable to input order', () => {
@@ -68,7 +68,9 @@ describe('transition evidence', () => {
     const result = analyze(fixture);
     expect(result.transition.estimate).toBeCloseTo(0.06, 12);
     expect(result.transition.candidate!.slopeChange).toBeCloseTo(25, 8);
-    expect(analyze([...fixture].reverse())).toEqual(result);
+    const reversed = analyze([...fixture].reverse());
+    expect(reversed.originalObservations).toEqual([...fixture].reverse());
+    expect({ ...reversed, originalObservations: result.originalObservations }).toEqual(result);
   });
   it('supports an optional intercept and a softening response', () => {
     const data = springData('linear').map(r => ({ ...r, y: 0.4 + 32 * r.x - 20 * Math.max(0, r.x - 0.06) }));
@@ -94,3 +96,4 @@ describe('input validation', () => {
   });
   it('rejects invalid noise configuration', () => { expect(() => analyze(rows([1, 2]), { intercept: false, noiseFloor: 0 })).toThrow(); });
 });
+
