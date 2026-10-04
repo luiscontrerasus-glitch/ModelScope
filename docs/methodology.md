@@ -35,3 +35,17 @@ Candidate knees within 2 units of the best penalized criterion define a sensitiv
 This illustrative spring dataset is synthetic, not laboratory validation. The early response is approximately linear; later force progressively stiffens. Changes could reflect spring geometry, material response, calibration drift, loading history, or other causes. Statistical evidence alone cannot choose between these mechanisms.
 
 Assume extension is accurately measured, independent force errors, adequate coverage, and one possible transition ordered by extension. No errors-in-variables fit, heteroscedastic weighting, causal inference, parameter confidence intervals, or general multi-transition analysis is implemented. Sorting by extension discards acquisition-order information. Duplicated extensions are rejected in this milestone. An isolated outlier can affect ordinary least squares; the sustained gate helps but is not a robust regression guarantee. A poor fit without a hinge pattern can still yield “no clear transition”; that does not validate the model.
+
+## Regression and residual calculations
+
+For a zero-offset model, k = Σ(xᵢFᵢ) / Σ(xᵢ²). For a fitted offset, k = Σ[(xᵢ − x̄)(Fᵢ − F̄)] / Σ[(xᵢ − x̄)²], and c = F̄ − kx̄. Predictions are kxᵢ + c. The fit does not constrain stiffness to be positive; a negative estimate should prompt inspection of sign conventions and experiment configuration.
+
+Residual rᵢ = Fᵢ − predictionᵢ; SSE = Σrᵢ²; RMSE = √(SSE/n). Centered R² = 1 − SSE / Σ(Fᵢ − F̄)². We use this same centered definition for the zero-offset model, where it can be negative. R² is undefined for constant observed forces and is returned as null, never an invented perfect score. A large R² can coexist with systematic residuals.
+
+Hinge coefficients are solved with a small pivoted least-squares normal system after scaling extension to unit maximum magnitude. Inputs are finite and range-limited, duplicate extensions and row IDs are rejected, and input order is normalized without mutating the caller. Closely spaced extensions can still make a candidate ill-conditioned; this prototype reports singular fits instead of fabricating results.
+
+The early noise scale uses √(SSEearly / (nearly − p)), where p is one or two reference coefficients. Normalized residual = reference residual / noise scale. There is no independent measurement-error estimate in the synthetic data; the default 0.04 N floor is an explicitly assumed scale that users can change.
+
+## Interpreting the built-in example
+
+There are 24 observations from 0.005 to 0.120 m, with nominal early stiffness 32 N m⁻¹, fixed alternating experimental-style noise, and gradual quadratic stiffening. Its synthetic departure term begins at 0.060 m; a continuous hinge approximates the later curvature and can place the candidate knee later than that generating value. This illustrates approximation and sampling limitations: the method estimates a useful diagnostic region, not the latent physical onset. The generating formula is used only to create the input fixture; it is never supplied to the detection engine.
