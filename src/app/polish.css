@@ -14,6 +14,16 @@
 .motion-control{display:flex;align-items:center;gap:10px;min-height:44px;font-size:11px;color:#7c8b9c}
 .motion-control button{width:36px;min-height:36px;border-radius:50%;border:1px solid #acb9c8;background:transparent;color:inherit;font-size:12px;flex-shrink:0}
 .motion-control button:hover{background:#2378e810}.motion-control button:disabled{opacity:.6;cursor:default}
+.ambient-control button{width:30px;min-height:30px;opacity:.65;border-color:#73869b;font-size:10px}.ambient-control button:hover,.ambient-control button:focus-visible{opacity:1}
+.reality-visual>svg{animation:reality-depth 18s ease-in-out infinite;animation-play-state:paused;transform-origin:50% 50%}
+.reality-visual[data-ambient-active=true]>svg{animation-play-state:running}
+.explore-exhibit{animation:instrument-arrive .36s ease-out both}.explore-instrument canvas{animation:instrument-arrive .36s ease-out both}
+.instrument-control input[type=range]{touch-action:none}
+.method-observation{animation:observation-arrive .45s ease-out both;animation-delay:var(--observation-delay);animation-play-state:paused}
+.method-demo[data-ambient-active=true] .method-observation{animation-play-state:running}
+@keyframes reality-depth{0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(-2px);opacity:.96}}
+@keyframes instrument-arrive{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes observation-arrive{from{opacity:0}to{opacity:1}}
 .reality-controls{display:flex;align-items:center;gap:22px}.reality-scrub{width:min(180px,35%)}
 .reality-scrub input{width:100%;accent-color:#2378e8}
 .visual-disclosure{font-size:10px;line-height:1.7;color:#7a8795;margin-top:10px}
