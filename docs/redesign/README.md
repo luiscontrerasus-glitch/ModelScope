@@ -1,5 +1,7 @@
 # ModelScope visual redesign review
 
+**Latest refinement:** [Final polish report, flow verification and screenshots](POLISH.md). The original visual-pass report below is retained as historical review evidence; its long Home layout has since been consolidated.
+
 Branch: `modelscope-elite-redesign`. Starting verified revision: `dd83b26`. This is a local review build; it has not been pushed, deployed, or merged into main.
 
 ## Requested report
