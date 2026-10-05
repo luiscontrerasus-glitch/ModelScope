@@ -19,7 +19,7 @@ Checked items are executed or verified. Open items require real external deliver
 - [x] Environment files ignored; only placeholder `.env.example` tracked.
 - [x] Server-only SDK/key boundary; bounded AI contracts, sanitized errors, and throttling tests.
 - [x] Local production desktop/mobile release verification; see [record](release-verification.md).
-- [ ] Confirm public GitHub URL and complete history push (update after delivery).
+- [x] Public [GitHub repository](https://github.com/luiscontrerasus-glitch/ModelScope) and full-history push confirmed against the public branch and original root.
 - [ ] Authenticate Vercel, deploy on personal Hobby without billing, and verify public URL.
 - [ ] Set optional server Gemini variables only after checking an unbilled free-tier project.
 - [ ] Public browser matrix: homepage, four demos, custom setup, edits/rerun, evidence, export, mobile, console, errors, and AI if configured.

@@ -74,7 +74,7 @@ ModelScope was started from scratch during the overlapping eligible build period
 
 ## Submission links and images
 
-- Source: [ModelScope on GitHub](https://github.com/luiscontrerasus-glitch/ModelScope); full-history push pending final verification.
+- Source: [ModelScope on GitHub](https://github.com/luiscontrerasus-glitch/ModelScope) — public source with the complete verified release history.
 - Live demo: pending Vercel authentication and deployment; replace with verified URL.
 - Video: **TODO — public 2–4 minute recording**, following [the script](demo-video.md).
 - Use the six recommended real product images in [the screenshot manifest](screenshots/README.md). Do not include internal AI mocks.

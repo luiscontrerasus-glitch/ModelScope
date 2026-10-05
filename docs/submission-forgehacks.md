@@ -52,7 +52,7 @@ Next.js, React, strict TypeScript, Recharts, Zod, Papa Parse, Vitest, Testing Li
 
 ## Links and recording
 
-- Source: [ModelScope on GitHub](https://github.com/luiscontrerasus-glitch/ModelScope); full-history push pending final verification.
+- Source: [ModelScope on GitHub](https://github.com/luiscontrerasus-glitch/ModelScope) — public source with the complete verified release history.
 - Live demo: pending Vercel authentication/deployment.
 - Video: **TODO — public 2–4 minute recording** using [the exact shot list](demo-video.md).
 - Images: use the six recommended actual product screenshots in [the manifest](screenshots/README.md).

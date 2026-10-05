@@ -16,7 +16,7 @@ ModelScope is a local scientific workspace for evaluating model adequacy. Config
 
 ## Demo
 
-Public deployment is **pending Vercel authentication**. The production build is verified locally; no public URL is claimed yet. See the [release record](docs/release-verification.md) and [credential handoff](docs/final-checklist.md#credential-handoff).
+[Public source code](https://github.com/luiscontrerasus-glitch/ModelScope) contains the complete development history. Public deployment is **pending Vercel authentication**. The production build is verified locally; no public URL is claimed yet. See the [release record](docs/release-verification.md) and [credential handoff](docs/final-checklist.md#credential-handoff).
 
 For a fast demonstration, keep Spring's progressive-departure dataset and click **Run analysis**. Compare the response with its dashed reference, inspect residual structure, select Candidate transition, and expand Evidence. Then switch experiments or choose **Analyze your data**. [Recording script and exact shot list](docs/demo-video.md).
 

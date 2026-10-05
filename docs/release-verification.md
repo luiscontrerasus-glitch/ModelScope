@@ -44,8 +44,15 @@ Client chunks contain no `GEMINI_API_KEY`, billing-confirmation variable, `Googl
 
 ## External delivery and honest limitations
 
-Public repository creation was confirmed: [ModelScope](https://github.com/luiscontrerasus-glitch/ModelScope). History push remains pending final checks. No history has been rewritten or force-pushed. Vercel credentials are absent; deployment and public browser verification are **PENDING USER ACTION**. Run `npx vercel login`, using the personal account that will own the free Hobby project.
+Public repository creation was confirmed: [ModelScope](https://github.com/luiscontrerasus-glitch/ModelScope). The complete 18-commit release history was pushed to `main`; GitHub confirmed public visibility and commit `b8d1328aa4ceaba1557677955eb678062b87ebab` matched the local release-package commit, and the original root was retrievable. Subsequent delivery-status edits are documentation only. No history has been rewritten or force-pushed. Vercel credentials are absent; deployment and public browser verification are **PENDING USER ACTION**. Run `npx vercel login`, using the personal account that will own the free Hobby project.
 
 Gemini live smoke: **PENDING — no live key configured**. Default model remains `gemini-3.5-flash-lite`; official model capability and free-tier documentation were checked October 4. No live inference is claimed. No release tag is created while external verification remains pending.
 
 Solo participant: **Luis Contreras**. Event-specific drafts, architecture, actual screenshots, and the 2:45 recording plan are prepared. Video recording/upload and manual Devpost submission remain user actions. Cross-hackathon permission and participant eligibility are not assumed.
+
+## Release commits
+
+- `b711539`: production origin validation and regression tests.
+- `ef94a84`: visual and accessibility refinements.
+- `b8d1328`: solo-participant judging package, diagram, and actual screenshots.
+- Delivery-status documentation follows these commits; inspect public `main` for its latest hash.
