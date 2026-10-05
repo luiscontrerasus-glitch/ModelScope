@@ -6,6 +6,7 @@ import type { Instrument } from './instrument-scene';
 import { finiteAmplitudePeriod } from '@/lib/experiments/generators';
 import { smallAnglePeriod } from '@/lib/analysis/models';
 import { ConceptPlot } from './concept-plot';
+import { InstrumentFallback } from './instrument-fallback';
 
 const Scene = dynamic(() => import('./instrument-scene'), { ssr: false, loading: () => <div className="scene-loading">Preparing the instrument…</div> });
 const workspace = (experiment = 'spring-hooke') => `/workspace?experiment=${experiment}`;
@@ -56,7 +57,7 @@ export default function Home() {
   }, []);
   function scene(id: string, kind: Instrument, value: number, onChange?: (n: number) => void, dark = false) {
     return <div className={`scene-slot scene-${kind}`} data-scene={id} aria-label={`Interactive ${kind} illustration`}>
-      {active === id ? <Scene kind={kind} value={value} onChange={onChange} dark={dark} /> : <div className="scene-loading" aria-hidden="true">{kind === 'spring' ? 'Spring' : kind === 'beer' ? 'Beer–Lambert' : kind === 'sensor' ? 'Sensor' : 'Pendulum'}</div>}
+      {active === id ? <Scene kind={kind} value={value} onChange={onChange} dark={dark} /> : <InstrumentFallback kind={kind} />}
     </div>;
   }
   return <main className="home" ref={root}>
@@ -65,7 +66,7 @@ export default function Home() {
     <section className="home-hero" id="home-content" aria-labelledby="hero-heading">
       <div className="hero-copy"><h1 id="hero-heading">Equations<br />have limits.<br /><span>Find them.</span></h1><p>ModelScope reveals where experimental measurements begin systematically disagreeing with a scientific model.</p><div className="home-actions"><a className="home-button" href="#explore">Explore a model <span aria-hidden="true">→</span></a><Link className="home-button light" href={workspace('custom')}>Analyze your data</Link></div></div>
       <div className="hero-instrument">{scene('hero', 'spring', extension, setExtension)}<span className="drag-hint">Drag the free end to stretch <span aria-hidden="true">↔</span></span></div>
-      <Readout items={[[ 'Extension', `${extension.toFixed(3)} m` ],[ 'Model prediction', `${(50 * extension).toFixed(2)} N` ],[ 'Regime', extension <= .08 ? 'Near-linear' : 'Growing departure' ]]}><Control label="Spring extension" min={.01} max={.14} step={.001} value={extension} onChange={setExtension} /><small>Illustrative visualization · k = 50 N/m.<br />Open the workspace for measured evidence.</small></Readout>
+      <Readout items={[[ 'Extension', `${extension.toFixed(3)} m` ],[ 'Model prediction', `${(50 * extension).toFixed(2)} N` ],[ 'Regime', extension <= .08 ? 'Near-linear' : 'Growing departure' ]]}><Control label="Spring extension" min={.01} max={.14} step={.001} value={extension} onChange={setExtension} /><svg className="spring-response" viewBox="0 0 120 40" role="img" aria-label="Illustrative response compared with the ideal linear model"><path d="M2 36L116 4" stroke="#8294a7" strokeDasharray="3 3" fill="none" /><path d={extension <= .08 ? 'M2 36L116 4' : 'M2 36L63 19Q94 13 116 1'} stroke={extension <= .08 ? '#2378e8' : '#b47a35'} fill="none" strokeWidth="1.5" /></svg><small>Illustrative visualization · k = 50 N/m.<br />Open the workspace for measured evidence.</small></Readout>
       <div className="hero-footnote"><span />Four scientific systems. One question.<br />Where do models stop working?</div>
     </section>
     <section className="home-explorer" id="explore" aria-labelledby="explorer-heading">
@@ -97,4 +98,5 @@ export default function Home() {
     <footer className="home-footer"><Link href="/" className="home-brand">ModelScope</Link><span>Scientific models. Visible limits.</span><a href="https://github.com/luiscontrerasus-glitch/ModelScope/blob/main/docs/methodology.md" target="_blank" rel="noreferrer">Read the methodology <span aria-hidden="true">↗</span></a></footer>
   </main>;
 }
+
 
