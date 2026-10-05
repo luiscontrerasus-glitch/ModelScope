@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import type { Instrument } from './instrument-scene';
+import { finiteAmplitudePeriod } from '@/lib/experiments/generators';
+import { smallAnglePeriod } from '@/lib/analysis/models';
 
 const Scene = dynamic(() => import('./instrument-scene'), { ssr: false, loading: () => <div className="scene-loading">Preparing the instrument…</div> });
 const workspace = (experiment = 'spring-hooke') => `/workspace?experiment=${experiment}`;
@@ -25,7 +27,16 @@ function Control({ label, value, min, max, step, onChange }: { label: string; va
 export default function Home() {
   const [extension, setExtension] = useState(.072);
   const [exhibit, setExhibit] = useState(0);
+  const [angle, setAngle] = useState(5.2);
+  const [concentration, setConcentration] = useState(.45);
+  const [input, setInput] = useState(6.2);
   const current = exhibits[exhibit];
+  const period = smallAnglePeriod(1, 9.80665);
+  const finitePeriod = finiteAmplitudePeriod(angle);
+  const absorbance = 1.2 * concentration + .018;
+  const beerResponse = absorbance - .9 * Math.max(0, concentration - .48) ** 2;
+  const voltage = .25 * input + .1;
+  const sensorResponse = voltage - .015 * Math.max(0, input - 5) ** 2;
   const [active, setActive] = useState('hero');
   const root = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -58,9 +69,27 @@ export default function Home() {
     </section>
     <section className="home-explorer" id="explore" aria-labelledby="explorer-heading">
       <div className="exhibit-copy"><span className="home-kicker">{String(exhibit + 1).padStart(2, '0')} / 04</span><h2 id="explorer-heading">{current.title}<span>{current.subtitle}</span></h2><p>{current.copy}</p><Link className="home-button outline" href={workspace(current.experiment)}>Open analysis <span aria-hidden="true">→</span></Link></div>
-      <div className="exhibit-instrument" key={current.kind}>{scene('explorer', current.kind, current.value, undefined, true)}</div>
+      <div className="exhibit-instrument">{scene('explorer', current.kind, current.value, undefined, true)}</div>
       <div className="exhibit-selector" role="group" aria-label="Select a scientific model">{exhibits.map((item, i) => <button key={item.kind} aria-pressed={i === exhibit} onClick={() => setExhibit(i)}><span className={`exhibit-symbol ${item.kind}`} aria-hidden="true">{['〰', '◯', '▯', '⊥'][i]}</span><span>{item.title}<small>{item.category}</small></span><span className="selector-arrow" aria-hidden="true">↗</span></button>)}</div>
       <span className="exhibit-caption">Procedural illustrations. Explore the evidence in the workspace.</span>
+    </section>
+    <section className="home-model pendulum-section" id="pendulum" aria-labelledby="pendulum-heading">
+      <div className="model-copy"><span className="home-kicker">02 / 04</span><h2 id="pendulum-heading">Pendulum</h2><h3>Small-Angle Approximation</h3><p>Small angles are powerful.<br />But “small” has limits.</p><Link className="home-button light" href={workspace('pendulum')}>Explore Pendulum <span aria-hidden="true">→</span></Link></div>
+      <div className="model-instrument">{scene('pendulum', 'pendulum', angle, setAngle)}<span className="drag-hint">Drag the bob to change the angle <span aria-hidden="true">↔</span></span></div>
+      <Readout items={[[ 'Angle', `${angle.toFixed(1)}°` ],[ 'Small-angle period', `${period.toFixed(3)} s` ],[ 'Finite-amplitude period', `${finitePeriod.toFixed(3)} s` ],[ 'Difference', `+${((finitePeriod / period - 1) * 100).toFixed(2)}%` ]]}><Control label="Pendulum angle" min={0} max={60} step={.1} value={angle} onChange={setAngle} /></Readout>
+      <p className="model-caption">Idealized pendulum illustration · L = 1 m, g = 9.80665 m/s² · no damping.</p>
+    </section>
+    <section className="home-model beer-section" id="beer-lambert" aria-labelledby="beer-heading">
+      <div className="model-copy"><span className="home-kicker">03 / 04</span><h2 id="beer-heading">Beer–Lambert</h2><h3>Concentration Response</h3><p>Light absorbance is often linear.<br />At higher concentrations,<br />deviations appear.</p><Link className="home-button light" href={workspace('beer-lambert')}>Explore Beer–Lambert <span aria-hidden="true">→</span></Link></div>
+      <div className="model-instrument">{scene('beer', 'beer', concentration)}</div>
+      <Readout items={[[ 'Concentration', `${concentration.toFixed(2)} mmol/L` ],[ 'Predicted absorbance', absorbance.toFixed(3) ],[ 'Illustrative response', beerResponse.toFixed(3) ],[ 'Deviation', `${((beerResponse / absorbance - 1) * 100).toFixed(1)}%` ]]}><Control label="Solution concentration" min={0} max={1} step={.01} value={concentration} onChange={setConcentration} /></Readout>
+      <p className="model-caption">Synthetic educational response · absorbance is dimensionless · a generic fixed-path calibration.</p>
+    </section>
+    <section className="home-model sensor-section" id="sensor" aria-labelledby="sensor-heading">
+      <div className="model-copy"><span className="home-kicker">04 / 04</span><h2 id="sensor-heading">Sensor Calibration</h2><h3>Linear Range</h3><p>Many sensors are linear<br />only within a certain range.</p><Link className="home-button light" href={workspace('sensor-calibration')}>Explore Sensor <span aria-hidden="true">→</span></Link></div>
+      <div className="model-instrument">{scene('sensor', 'sensor', input)}</div>
+      <Readout items={[[ 'Applied input', `${input.toFixed(1)} N` ],[ 'Expected output', `${voltage.toFixed(3)} V` ],[ 'Illustrative response', `${sensorResponse.toFixed(3)} V` ],[ 'Deviation', `${((sensorResponse / voltage - 1) * 100).toFixed(1)}%` ]]}><Control label="Sensor applied input" min={0} max={12} step={.1} value={input} onChange={setInput} /></Readout>
+      <p className="model-caption">Generic sensor illustration · compression is synthetic and does not identify a physical mechanism.</p>
     </section>
   </main>;
 }
