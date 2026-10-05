@@ -6,18 +6,20 @@ import type { AnalysisResult, Finding } from '@/lib/analysis/types';
 import { analyzeExperiment, createExperimentSession, modelParameters, referenceEquation } from '@/lib/experiments/analysis';
 import { experiments, getExperiment } from '@/lib/experiments/registry';
 import type { DatasetKind, ExperimentDefinition, ExperimentId } from '@/lib/experiments/types';
+import { EvidenceExplanation } from './ai-assistance';
+import { evidenceContext } from '@/lib/ai/contracts';
 import { Plots } from './plots';
 import { CustomSetup } from './custom-setup';
 import { analyzeCustomMeasurements, customDefinition, defaultSettings, type CustomSession } from '@/lib/custom/analysis';
 type EditableRow = { id: string; x: string; y: string };
 const editable = (experiment: ExperimentDefinition, kind: DatasetKind): EditableRow[] => experiment.datasets[kind].map(r => ({ id: r.id, x: r.x.toFixed(experiment.independent.decimals), y: r.y.toFixed(experiment.dependent.decimals) }));
 const number = (value: number | null, digits = 4) => value === null ? 'Undefined' : value.toFixed(digits);
-function Evidence({ finding, result, experiment, onSelect, disabled }: { finding: Finding; result: AnalysisResult; experiment: ExperimentDefinition; onSelect: (id: string) => void; disabled: boolean }) {
+function Evidence({ finding, result, experiment, onSelect, disabled, analysisVersion }: { analysisVersion: string; finding: Finding; result: AnalysisResult; experiment: ExperimentDefinition; onSelect: (id: string) => void; disabled: boolean }) {
   const x = experiment.independent; const y = experiment.dependent;
   const transitionFinding = finding.rule === 'transition';
   const comparison = transitionFinding ? result.transition.comparison : null;
   const sensitivity = transitionFinding ? result.transition.sensitivity : null;
-  return <div className="evidence-detail"><span className="eyebrow">INSPECTABLE EVIDENCE</span><h3>{finding.title}</h3><p>{finding.summary}</p>
+  return <div className="evidence-detail"><span className="eyebrow">DETECTED BY MODELSCOPE</span><h3>{finding.title}</h3><p>{finding.summary}</p>
     {comparison && <div className="comparison-summary"><span className="eyebrow">SAME {result.measurements.length} OBSERVATIONS</span><table><thead><tr><th>Model</th><th>SSE / {experiment.sseUnit}</th><th>RMSE / {y.unit}</th></tr></thead><tbody><tr><td>Baseline</td><td>{number(comparison.singleSse)}</td><td>{number(comparison.singleRmse)}</td></tr><tr><td>With hinge</td><td>{number(comparison.segmentedSse)}</td><td>{number(comparison.segmentedRmse)}</td></tr></tbody></table><p>Penalty-adjusted improvement: <b>{number(comparison.improvement, 2)}</b> / required 10.</p></div>}
     {finding.transition && <p className="evidence-range">Best candidate: <b>{number(finding.transition.estimate, x.decimals)} {x.unit}</b><br />Transition sensitivity range: <b>{finding.transition.range.map(v => number(v, x.decimals)).join('–')} {x.unit}</b></p>}
     {sensitivity && <p className="sensitivity-explainer">Near-best tested knees: {sensitivity.nearBestKnees.map(v => number(v, x.decimals)).join(', ')} {x.unit}. The displayed range includes neighboring measurements for sampling resolution; it is not a confidence interval.</p>}
@@ -28,9 +30,12 @@ function Evidence({ finding, result, experiment, onSelect, disabled }: { finding
     {transitionFinding && result.transition.candidates.length > 0 && <><h4>Candidate search profile</h4><p>Δ criterion is relative to the best candidate. Near-best means Δ ≤ 2.</p><div className="candidate-table-wrap"><table className="candidate-table"><thead><tr><th>Knee / {x.unit}</th><th>Criterion</th><th>Δ criterion</th></tr></thead><tbody>{result.transition.candidates.map(c => <tr key={c.knee} className={c.deltaFromBest <= 2 ? 'near-best' : ''}><td><button disabled={disabled} onClick={() => onSelect(result.measurements.find(r => r.x === c.knee)!.id)}>{number(c.knee, x.decimals)}</button></td><td>{number(c.criterion, 3)}</td><td>{number(c.deltaFromBest, 3)}</td></tr>)}</tbody></table></div></>}
     </details>
     {finding.evidence.length > 0 && <details open><summary>Supporting measurements ({finding.evidence.length})</summary><div className="evidence-table-wrap"><table className="evidence-table"><thead><tr><th>Row / {x.symbol} ({x.unit})</th><th>{y.symbol} ({y.unit})</th><th>Pred. ({y.unit})</th><th>Δ{y.symbol} ({y.unit})</th><th>Δ / scale</th></tr></thead><tbody>{finding.evidence.map(p => <tr key={p.id}><td><button disabled={disabled} onClick={() => onSelect(p.id)}>{p.id} / {p.x.toFixed(x.decimals)}</button></td><td>{p.y.toFixed(Math.max(4, y.decimals))}</td><td>{p.predicted.toFixed(Math.max(4, y.decimals))}</td><td>{p.residual.toFixed(Math.max(4, y.decimals))}</td><td>{p.normalizedResidual.toFixed(3)}</td></tr>)}</tbody></table></div></details>}
+    <EvidenceExplanation key={`${analysisVersion}-${finding.id}`} context={evidenceContext(result, finding, experiment, analysisVersion)} />
   </div>;
 }
 export function Workspace() {
+  const [analysisRevision, setAnalysisRevision] = useState(0);
+  const advanceAnalysis = () => setAnalysisRevision(v => v + 1);
   const [experimentId, setExperimentId] = useState<ExperimentId | 'custom'>('spring-hooke');
   const [customSession, setCustomSession] = useState<CustomSession | null>(null);
   const isCustom = experimentId === 'custom';
@@ -48,8 +53,9 @@ export function Workspace() {
   const [edited, setEdited] = useState(false);
   const [nextId, setNextId] = useState(25);
   const tableScrollRef = useRef<HTMLDivElement>(null);
-  function invalidate(dataEdited = false) { if (dataEdited) setEdited(true); setDirty(true); setError(''); setSelected([]); setFindingId(''); }
+  function invalidate(dataEdited = false) { advanceAnalysis(); if (dataEdited) setEdited(true); setDirty(true); setError(''); setSelected([]); setFindingId(''); }
   function run() {
+    advanceAnalysis();
     try {
       if (rows.some(r => !r.x.trim() || !r.y.trim())) throw new Error(`Complete every ${x.name.toLowerCase()} and ${y.name.toLowerCase()} field before running analysis.`);
       if (!noiseFloor.trim()) throw new Error('Enter a positive response noise floor.');
@@ -60,9 +66,10 @@ export function Workspace() {
       setResult(computed); setDirty(false); setError(''); setFindingId('transition'); setSelected(computed.findings.find(f => f.id === 'transition')!.rowIds);
     } catch (e) { setError(e instanceof Error ? e.message : 'Unable to analyze these measurements.'); }
   }
-  function changeSample(kind: DatasetKind) { setSample(kind); setRows(editable(experiment, kind)); setNextId(25); setResult(null); setDirty(false); setError(''); setSelected([]); setEdited(false); setFindingId('transition'); }
-  function startCustom() { setExperimentId('custom'); setCustomSession(null); setResult(null); setRows([]); setSelected([]); setFindingId(''); setError(''); setEdited(false); setDirty(false); setNoiseFloor(''); setIntercept(false); setNextId(1); }
+  function changeSample(kind: DatasetKind) { advanceAnalysis(); setSample(kind); setRows(editable(experiment, kind)); setNextId(25); setResult(null); setDirty(false); setError(''); setSelected([]); setEdited(false); setFindingId('transition'); }
+  function startCustom() { advanceAnalysis(); setExperimentId('custom'); setCustomSession(null); setResult(null); setRows([]); setSelected([]); setFindingId(''); setError(''); setEdited(false); setDirty(false); setNoiseFloor(''); setIntercept(false); setNextId(1); }
   function acceptCustom(session: CustomSession) {
+    advanceAnalysis();
     setCustomSession(session); setResult(session.analysis); setRows(session.analysis.originalObservations.map(r => ({ id: r.id, x: String(r.x), y: String(r.y) })));
     setIntercept(session.analysis.config.intercept); setNoiseFloor(session.settings.noiseFloor); setSelected(session.analysis.findings.find(f => f.id === 'transition')!.rowIds); setFindingId('transition'); setDirty(false); setEdited(false); setError('');
     setNextId(Math.max(0, ...session.table.rows.map(r => Number(r.id.slice(1)) || 0)) + 1);
@@ -70,6 +77,7 @@ export function Workspace() {
   }
   function switchExperiment(id: ExperimentId | 'custom') {
     if (id === 'custom') { startCustom(); return; }
+    advanceAnalysis();
     const session = createExperimentSession(id);
     setExperimentId(id); setRows(editable(getExperiment(id), session.dataset)); setSample(session.dataset);
     setIntercept(session.config.intercept); setNoiseFloor(String(session.config.noiseFloor)); setNextId(25);
@@ -98,7 +106,7 @@ export function Workspace() {
     <div className="workspace-intro"><div><div className="breadcrumb">{experiment.category.toUpperCase()} <span>/</span> {isCustom ? 'CUSTOM DATASET' : `EXPERIMENT ${String(experiments.findIndex(e => e.id === experimentId) + 1).padStart(2, '0')}`}</div><h1>Where does the model break?</h1><p>Fit the relationship. Inspect the disagreement. Find the limits.</p></div><div className="intro-actions"><button className="secondary" disabled={!result || dirty} onClick={exportEvidence}>Export evidence ↓</button>{(!isCustom || customSession) && <button className="primary" onClick={run}>Run analysis <span aria-hidden="true">↗</span></button>}</div></div>
     <section className="configuration" aria-label="Experiment configuration">
       <div className="experiment-picker"><label htmlFor="experiment">EXPERIMENT</label><select id="experiment" value={experimentId} onChange={e => switchExperiment(e.target.value as ExperimentId | 'custom')}>{experiments.map(e => <option key={e.id} value={e.id}>{e.title}</option>)}<option value="custom">Analyze your data</option></select></div>
-      {isCustom ? <><div><label htmlFor="model">CONFIGURED RELATIONSHIP</label><output id="model" className="fixed-model">{customSession ? experiment.baseline.kind === 'constant' ? `Y = C · C = ${customSession.settings.constant}` : intercept ? 'Y = mX + b · fitted slope and offset' : 'Y = mX · fitted slope, fixed zero' : 'Choose data, variables and model below'}</output></div>{customSession && <div className="noise-setting"><label htmlFor="custom-workspace-noise">ASSUMED RESPONSE SCALE / {y.unit}</label><input id="custom-workspace-noise" type="number" min="0.000001" max="1000" step="any" aria-describedby="workspace-error" value={noiseFloor} onChange={e => { setNoiseFloor(e.target.value); invalidate(); }} /></div>}<div className="config-note">Local processing · no data upload to a server.{customSession && <button className="text-button" onClick={startCustom}>New custom dataset</button>}</div></> : <div><label htmlFor="model">CONFIGURED RELATIONSHIP</label>{experiment.config.baseline?.kind === 'pendulum-small-angle' ? <output id="model" className="fixed-model">{experiment.baseline.equation}<small>L = {experiment.config.baseline.length} m · g = {experiment.config.baseline.gravity} m/s² · fixed theory</small></output> : <><select id="model" value={intercept ? 'offset' : 'origin'} onChange={e => { setIntercept(e.target.value === 'offset'); invalidate(); }}><option value="origin">{experiment.baseline.originEquation} · fixed zero</option><option value="offset">{experiment.baseline.equation} · fitted offset</option></select><small className="model-assumption">{intercept ? 'Fits an empirical response offset.' : 'Assumes a correctly zeroed reference and response.'}</small></> }</div>}
+      {isCustom ? <><div><label htmlFor="model">CONFIGURED RELATIONSHIP</label><output id="model" className="fixed-model">{customSession ? experiment.baseline.kind === 'constant' ? `Y = C · C = ${customSession.settings.constant}` : intercept ? 'Y = mX + b · fitted slope and offset' : 'Y = mX · fitted slope, fixed zero' : 'Choose data, variables and model below'}</output></div>{customSession && <div className="noise-setting"><label htmlFor="custom-workspace-noise">ASSUMED RESPONSE SCALE / {y.unit}</label><input id="custom-workspace-noise" type="number" min="0.000001" max="1000" step="any" aria-describedby="workspace-error" value={noiseFloor} onChange={e => { setNoiseFloor(e.target.value); invalidate(); }} /></div>}<div className="config-note">Deterministic calculations stay local. Optional AI sends requested context.{customSession && <button className="text-button" onClick={startCustom}>New custom dataset</button>}</div></> : <div><label htmlFor="model">CONFIGURED RELATIONSHIP</label>{experiment.config.baseline?.kind === 'pendulum-small-angle' ? <output id="model" className="fixed-model">{experiment.baseline.equation}<small>L = {experiment.config.baseline.length} m · g = {experiment.config.baseline.gravity} m/s² · fixed theory</small></output> : <><select id="model" value={intercept ? 'offset' : 'origin'} onChange={e => { setIntercept(e.target.value === 'offset'); invalidate(); }}><option value="origin">{experiment.baseline.originEquation} · fixed zero</option><option value="offset">{experiment.baseline.equation} · fitted offset</option></select><small className="model-assumption">{intercept ? 'Fits an empirical response offset.' : 'Assumes a correctly zeroed reference and response.'}</small></> }</div>}
       {!isCustom && <div className="noise-setting"><label htmlFor="noise">RESPONSE NOISE FLOOR / {y.unit}</label><input id="noise" type="number" min="0.000001" step={experiment.config.noiseFloor / 2} value={noiseFloor} onChange={e => { setNoiseFloor(e.target.value); invalidate(); }} /></div>}
       {!isCustom && <div className="config-note">Noise floor is an assumed response scale.<br />It is not measured uncertainty.</div>}
     </section>
@@ -123,7 +131,7 @@ export function Workspace() {
         <section className="interpretation-note"><span className="eyebrow">SCIENTIFIC CONTEXT</span><p>{experiment.context}</p></section>
       </div>
       <aside className="panel diagnostics"><div className="panel-heading"><div><span className="eyebrow">OUTPUT / TRACEABILITY</span><h2>Findings & evidence</h2></div><span className="count-badge">{result?.findings.length ?? '—'}</span></div>
-        {result ? <><div className="finding-list">{result.findings.map(f => <button key={f.id} disabled={dirty} className={`finding-button ${findingId === f.id ? 'active' : ''}`} onClick={() => { setFindingId(f.id); setSelected(f.rowIds); const first = f.rowIds[0]; if (first) { const container = tableScrollRef.current; const row = document.getElementById(`row-${first}`); if (container && row) container.scrollTop += row.getBoundingClientRect().top - container.getBoundingClientRect().top - 42; } }} aria-pressed={findingId === f.id}><span className={`finding-category ${f.category}`}>{f.category === 'supported' ? 'SUPPORTED BY RULE' : f.category.toUpperCase()}</span><strong>{f.title}</strong><span>{f.rowIds.length ? `${f.rowIds.length} linked measurements` : 'Inspect method and comparison'}</span><span className="finding-arrow" aria-hidden="true">↗</span></button>)}</div>{dirty ? <p className="stale-evidence">Evidence is paused while measurements are edited. Run analysis to replace the previous findings.</p> : finding && <Evidence key={`${experimentId}-${finding.id}`} finding={finding} result={result} experiment={experiment} disabled={dirty} onSelect={selectRow} />}</> : <div className="empty-evidence"><span className="empty-number">∑</span><h3>Evidence, before explanation.</h3><p>Every finding links to calculated values and the exact measurements behind it.</p><p>Choose a finding after analysis to highlight its rows in both plots and the table.</p></div>}
+        {result ? <><div className="finding-list">{result.findings.map(f => <button key={f.id} disabled={dirty} className={`finding-button ${findingId === f.id ? 'active' : ''}`} onClick={() => { setFindingId(f.id); setSelected(f.rowIds); const first = f.rowIds[0]; if (first) { const container = tableScrollRef.current; const row = document.getElementById(`row-${first}`); if (container && row) container.scrollTop += row.getBoundingClientRect().top - container.getBoundingClientRect().top - 42; } }} aria-pressed={findingId === f.id}><span className={`finding-category ${f.category}`}>{f.category === 'supported' ? 'SUPPORTED BY RULE' : f.category.toUpperCase()}</span><strong>{f.title}</strong><span>{f.rowIds.length ? `${f.rowIds.length} linked measurements` : 'Inspect method and comparison'}</span><span className="finding-arrow" aria-hidden="true">↗</span></button>)}</div>{dirty ? <p className="stale-evidence">Evidence is paused while measurements are edited. Run analysis to replace the previous findings.</p> : finding && <Evidence key={`${experimentId}-${analysisRevision}-${finding.id}`} analysisVersion={`analysis-${analysisRevision}`} finding={finding} result={result} experiment={experiment} disabled={dirty} onSelect={selectRow} />}</> : <div className="empty-evidence"><span className="empty-number">∑</span><h3>Evidence, before explanation.</h3><p>Every finding links to calculated values and the exact measurements behind it.</p><p>Choose a finding after analysis to highlight its rows in both plots and the table.</p></div>}
       </aside>
     </div>
     </>}

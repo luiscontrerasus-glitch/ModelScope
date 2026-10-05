@@ -1,20 +1,23 @@
 'use client';
 import { useRef, useState } from 'react';
 import { createCustomSession, defaultSettings, settingsIssues, unitLabel, type CustomModel, type CustomSession, type CustomSettings, type CustomVariable } from '@/lib/custom/analysis';
+import { SetupAssistant } from './ai-assistance';
+import { applyProposal } from '@/lib/ai/contracts';
 import { emptyManualTable, mapTable, MAX_BYTES, numericColumns, parseTable, type RawTable } from '@/lib/custom/data';
 
 function UnitFields({ role, value, onChange }: { role: 'X' | 'Y'; value: CustomVariable; onChange: (v: CustomVariable) => void }) {
   return <fieldset><legend>{role === 'X' ? 'Independent variable X' : 'Dependent variable Y'}</legend><label htmlFor={`${role}-name`}>Display name</label><input id={`${role}-name`} value={value.name} maxLength={80} aria-describedby="custom-issues" onChange={e => onChange({ ...value, name: e.target.value })} /><label htmlFor={`${role}-units`}>Unit meaning</label><select id={`${role}-units`} value={value.unitKind} onChange={e => onChange({ ...value, unitKind: e.target.value as CustomVariable['unitKind'] })}><option value="unspecified">No unit specified</option><option value="unitless">Unitless quantity (1)</option><option value="label">Known unit label</option></select>{value.unitKind === 'label' && <><label htmlFor={`${role}-unit-label`}>Unit label</label><input id={`${role}-unit-label`} value={value.unit} maxLength={30} aria-describedby="custom-issues" onChange={e => onChange({ ...value, unit: e.target.value })} /></>}</fieldset>;
 }
 export function CustomSetup({ onAnalyze }: { onAnalyze: (session: CustomSession) => void }) {
+  const [sourceRevision, setSourceRevision] = useState(0);
   const [method, setMethod] = useState<'csv' | 'paste' | 'manual'>('paste');
   const [text, setText] = useState('');
   const [table, setTable] = useState<RawTable | null>(null);
   const [settings, setSettings] = useState<CustomSettings>(defaultSettings);
   const [error, setError] = useState('');
   const nextId = useRef(1); const fileInput = useRef<HTMLInputElement>(null); const loadVersion = useRef(0);
-  function loadTable(next: RawTable) { setTable(next); setError(''); nextId.current = next.rows.length + 1; setSettings({ ...defaultSettings(), ...(next.inputMethod === 'manual' ? { mapping: { x: 'X', y: 'Y', ignoreBlankRows: false } } : {}) }); }
-  function chooseMethod(next: typeof method) { loadVersion.current++; setMethod(next); setText(''); setError(''); setTable(next === 'manual' ? emptyManualTable() : null); setSettings(next === 'manual' ? { ...defaultSettings(), mapping: { x: 'X', y: 'Y', ignoreBlankRows: false } } : defaultSettings()); nextId.current = 1; }
+  function loadTable(next: RawTable) { setSourceRevision(v => v + 1); setTable(next); setError(''); nextId.current = next.rows.length + 1; setSettings({ ...defaultSettings(), ...(next.inputMethod === 'manual' ? { mapping: { x: 'X', y: 'Y', ignoreBlankRows: false } } : {}) }); }
+  function chooseMethod(next: typeof method) { setSourceRevision(v => v + 1); loadVersion.current++; setMethod(next); setText(''); setError(''); setTable(next === 'manual' ? emptyManualTable() : null); setSettings(next === 'manual' ? { ...defaultSettings(), mapping: { x: 'X', y: 'Y', ignoreBlankRows: false } } : defaultSettings()); nextId.current = 1; }
   async function readFile(file?: File) {
     if (!file) return;
     const version = ++loadVersion.current;
@@ -50,11 +53,12 @@ export function CustomSetup({ onAnalyze }: { onAnalyze: (session: CustomSession)
   const issueMessages = [...(mapped?.issues.map(i => i.message) ?? []), ...configurationIssues];
   const invalid = !table || !!issueMessages.length;
   return <section className="custom-setup" aria-label="Custom dataset configuration">
-    <div className="custom-heading"><span className="eyebrow">01 / DATA</span><h2>Bring your measurements.</h2><p>Choose columns, name the quantities, and review a supported model. Your data stays in this browser.</p></div>
+    <div className="custom-heading"><span className="eyebrow">01 / DATA</span><h2>Bring your measurements.</h2><p>Choose columns, name the quantities, and review a supported model. Full measurements stay in this browser; optional AI shares limited context only when requested.</p></div>
     <div className="entry-methods" role="group" aria-label="Data input method">{(['csv', 'paste', 'manual'] as const).map(m => <button key={m} className={method === m ? 'active' : ''} aria-pressed={method === m} onClick={() => chooseMethod(m)}>{m === 'csv' ? 'Upload CSV' : m === 'paste' ? 'Paste a table' : 'Enter manually'}</button>)}</div>
     {method === 'csv' && <div className="source-entry"><label htmlFor="csv-file">CSV file · headers required · up to 1 MiB</label><input ref={fileInput} id="csv-file" type="file" accept=".csv,text/csv" aria-describedby="source-help custom-issues" onChange={e => { void readFile(e.target.files?.[0]); e.target.value = ''; }} /><p id="source-help">Comma-separated fields, decimal numbers, quoted text allowed. File contents are read locally.</p></div>}
-    {method === 'paste' && <div className="source-entry"><label htmlFor="pasted-data">Paste CSV or tab-separated data, including headers</label><textarea id="pasted-data" rows={5} value={text} maxLength={MAX_BYTES} aria-describedby="custom-issues" placeholder={'Time,Response\n0,1.2\n1,1.8'} onChange={e => { loadVersion.current++; setText(e.target.value); setTable(null); setError(''); }} /><button className="secondary" onClick={() => loadTable(parseTable(text, 'paste'))}>Preview pasted data</button></div>}
+    {method === 'paste' && <div className="source-entry"><label htmlFor="pasted-data">Paste CSV or tab-separated data, including headers</label><textarea id="pasted-data" rows={5} value={text} maxLength={MAX_BYTES} aria-describedby="custom-issues" placeholder={'Time,Response\n0,1.2\n1,1.8'} onChange={e => { loadVersion.current++; setSourceRevision(v => v + 1); setText(e.target.value); setTable(null); setError(''); }} /><button className="secondary" onClick={() => loadTable(parseTable(text, 'paste'))}>Preview pasted data</button></div>}
     <div className="example-line"><button className="text-button" onClick={() => void example()}>Load synthetic temperature example</button><a href="/examples/temperature-response.csv" download>Download example CSV ↓</a><p>The example uses temperature in °C and response in V. Suggested assumed response scale: 0.05 V. Confirm these labels and scale yourself.</p></div>
+    <SetupAssistant key={`${sourceRevision}-${JSON.stringify(table?.headers ?? [])}`} headers={table?.headers ?? []} onConfirm={proposal => setSettings(current => applyProposal(current, proposal, table?.headers ?? []))} />
     {table && <>
       <div className="preview-heading"><h3>{table.inputMethod === 'manual' ? 'Manual measurements' : 'Source preview'}</h3><span>{table.rows.length} records · {table.headers.length} columns{table.inputMethod !== 'manual' ? ` · ${table.delimiter === '\t' ? 'tab' : 'comma'} separated` : ''}</span></div>
       {table.syntheticExample && <p className="synthetic-label">Synthetic educational example · not laboratory data</p>}
