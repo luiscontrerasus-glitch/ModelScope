@@ -77,3 +77,6 @@ a{color:inherit}
 @media(max-width:760px){.scientific-workspace .workspace-intro{padding:25px 20px 20px}.scientific-workspace .configuration{padding:16px}.scientific-workspace .model-information{margin:14px 20px 0;padding:12px 0}.scientific-workspace .status-strip{padding:15px 20px}}
 @media(max-width:600px){.home-explorer .scene-spring{transform:rotate(-14deg) scale(.95)}}
 .exhibit-control{max-width:235px;margin-top:28px}.exhibit-control>span{display:flex;justify-content:space-between;gap:14px;font-size:11px;color:#aebbc8}.exhibit-control output{font-variant-numeric:tabular-nums;color:#d9e5f1}.exhibit-control .instrument-control{margin-top:8px}.exhibit-control .instrument-control>span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}.exhibit-control input{accent-color:#6aabe8}
+/* Keep the pendulum instruction inside its scene, above the section's scientific note. */
+.pendulum-section .model-instrument{position:relative}
+.pendulum-section .model-instrument .drag-hint{left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100% - 32px);text-align:center}
