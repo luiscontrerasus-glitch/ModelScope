@@ -1,12 +1,12 @@
 'use client';
 import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Canvas, type ThreeEvent } from '@react-three/fiber';
+import { Canvas, useThree, type ThreeEvent } from '@react-three/fiber';
 import { ContactShadows, Environment, Lightformer, RoundedBox, Line } from '@react-three/drei';
 import { CatmullRomCurve3, TubeGeometry, Vector3, type Mesh } from 'three';
 
 import { InstrumentFallback } from './instrument-fallback';
 export type Instrument = 'spring' | 'pendulum' | 'beer' | 'sensor';
-interface Props { kind: Instrument; value: number; onChange?: (value: number) => void; dark?: boolean }
+interface Props { kind: Instrument; value: number; pose?: number; onChange?: (value: number) => void; dark?: boolean }
 const steel = { color: '#b8bcc1', metalness: .9, roughness: .28 };
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
@@ -35,17 +35,16 @@ function Spring({ value, onChange, dark }: Omit<Props, 'kind'>) {
     const points = Array.from({ length: 521 }, (_, i) => {
       const t = i / 520; const angle = t * Math.PI * 2 * 10;
       // Straight leads join the ten-turn helix to the mounting hardware.
-      const radius = .68 - value * .3;
-      return new Vector3(-2.8 + t * length, Math.sin(angle) * radius, Math.cos(angle) * radius);
+      return new Vector3(t * 4.8, Math.sin(angle) * .68, Math.cos(angle) * .68);
     });
     return new TubeGeometry(new CatmullRomCurve3(points), 520, .09, 12, false);
-  }, [length, value]);
+  }, []);
   useEffect(() => () => wire.dispose(), [wire]);
   const drag = useDrag(value, onChange, .0003, .01, .14);
   return <group rotation={[.1, -.22, -.035]} position={[-.3, .08, 0]}>
     <RoundedBox args={[.35, 2.15, 1.65]} radius={.055} position={[-3.07, 0, 0]}><meshStandardMaterial {...steel} roughness={.32} /></RoundedBox>
     {[-.73, .73].flatMap(y => [-.54, .54].map(z => <mesh key={`${y}-${z}`} position={[-2.875, y, z]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[.095, .095, .035, 20]} /><meshStandardMaterial color="#565d64" metalness={.9} roughness={.3} /></mesh>))}
-    <mesh geometry={wire} castShadow><meshStandardMaterial {...steel} /></mesh>
+    <mesh geometry={wire} position={[-2.8, 0, 0]} scale={[length / 4.8, (.68 - value * .3) / .68, (.68 - value * .3) / .68]} castShadow><meshStandardMaterial {...steel} /></mesh>
     <mesh position={[-2.8, 0, 0]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[.45, .45, .25, 48]} /><meshStandardMaterial {...steel} /></mesh>
     <group position={[-2.8 + length, 0, .68 - value * .3]} {...drag}>
       <mesh castShadow rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[.2, .2, .65, 32]} /><meshStandardMaterial {...steel} /></mesh>
@@ -56,17 +55,17 @@ function Spring({ value, onChange, dark }: Omit<Props, 'kind'>) {
   </group>;
 }
 
-function Pendulum({ value, onChange }: Omit<Props, 'kind'>) {
+function Pendulum({ value, pose, onChange }: Omit<Props, 'kind'>) {
   const angle = value * Math.PI / 180;
   const drag = useDrag(value, onChange, .2, 0, 60);
   const arc = useMemo(() => Array.from({ length: 40 }, (_, i) => {
-    const a = angle * i / 39; return new Vector3(Math.sin(a) * 3.4, 1.9 - Math.cos(a) * 3.4, 0);
+    const a = -angle + 2 * angle * i / 39; return new Vector3(Math.sin(a) * 3.4, 1.9 - Math.cos(a) * 3.4, 0);
   }), [angle]);
   return <group position={[-.3, .2, 0]}>
     <mesh position={[0, 2.05, 0]}><cylinderGeometry args={[.32, .32, .25, 48]} /><meshStandardMaterial {...steel} /></mesh>
     <Line points={[[0, 1.9, 0], [0, -1.4, 0]]} color="#bcc1c8" lineWidth={.6} dashed dashSize={.08} gapSize={.06} />
     {angle > .005 && <Line points={arc} color="#82909f" lineWidth={.8} />}
-    <group position={[0, 1.9, 0]} rotation={[0, 0, angle]}>
+    <group position={[0, 1.9, 0]} rotation={[0, 0, (pose ?? value) * Math.PI / 180]}>
       <mesh position={[0, -1.5, 0]} castShadow><cylinderGeometry args={[.028, .028, 3, 16]} /><meshStandardMaterial {...steel} /></mesh>
       <mesh position={[0, -3, 0]} castShadow {...drag}><sphereGeometry args={[.48, 56, 40]} /><meshStandardMaterial {...steel} roughness={.17} /></mesh>
     </group>
@@ -112,6 +111,16 @@ class SceneBoundary extends Component<{ children: ReactNode; fallback: ReactNode
   static getDerivedStateFromError() { return { failed: true }; }
   render() { return this.state.failed ? this.props.fallback : this.props.children; }
 }
+function FitCamera({ kind }: { kind: Instrument }) {
+  const { camera, size, invalidate } = useThree();
+  useEffect(() => {
+    // Reserve the full oscillation/extension envelope within the canvas, away from text.
+    const width = kind === 'spring' || kind === 'pendulum' ? 7.4 : 6;
+    camera.position.setZ(Math.max(8.8, width / (2 * Math.tan(19 * Math.PI / 180) * (size.width / size.height))));
+    camera.updateProjectionMatrix(); invalidate();
+  }, [camera, size.width, size.height, kind, invalidate]);
+  return null;
+}
 export default function InstrumentScene(props: Props) {
   const [lost, setLost] = useState(false);
   if (lost) return <InstrumentFallback kind={props.kind} failed />;
@@ -119,7 +128,7 @@ export default function InstrumentScene(props: Props) {
     <Canvas frameloop="demand" dpr={[1, 1.5]} camera={{ position: [0, 1.1, 8.8], fov: 38 }} gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }} onCreated={({ gl }) => {
       gl.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); setLost(true); }, { once: true });
     }} fallback={<InstrumentFallback kind={props.kind} failed />}>
-      <ambientLight intensity={props.dark ? .3 : .65} />
+      <FitCamera kind={props.kind} /><ambientLight intensity={props.dark ? .3 : .65} />
       <directionalLight position={[-3, 6, 5]} intensity={props.dark ? 2 : 3} />
       <directionalLight position={[4, 2, -3]} intensity={props.dark ? 3 : 1.5} color={props.dark ? '#4c9bff' : '#eaf1ff'} />
       <Environment resolution={128}>
@@ -129,7 +138,7 @@ export default function InstrumentScene(props: Props) {
         <Lightformer intensity={2} position={[0, -3, 4]} scale={[8, 1, 1]} />
       </Environment>
       {props.kind === 'spring' ? <Spring {...props} /> : props.kind === 'pendulum' ? <Pendulum {...props} /> : props.kind === 'beer' ? <Cuvette {...props} /> : <Sensor {...props} />}
-      <ContactShadows key={`${props.kind}-${props.value}`} position={[0, -2.15, 0]} opacity={props.dark ? .3 : .22} scale={14} blur={2.8} far={5} resolution={256} frames={2} />
+      <ContactShadows key={props.kind} position={[0, -2.15, 0]} opacity={props.dark ? .3 : .22} scale={14} blur={2.8} far={5} resolution={256} frames={1} />
     </Canvas>
   </SceneBoundary>;
 }
