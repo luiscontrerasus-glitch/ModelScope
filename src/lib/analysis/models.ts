@@ -11,9 +11,13 @@ export function smallAnglePeriod(length: number, gravity: number): number {
 export function baselineParameterCount(config: ModelConfig): number {
   return config.baseline ? 0 : config.intercept ? 2 : 1;
 }
+export function theoreticalValue(config: ModelConfig): number {
+  if (!config.baseline) throw new Error('A fixed baseline is required.');
+  return config.baseline.kind === 'constant' ? config.baseline.value : smallAnglePeriod(config.baseline.length, config.baseline.gravity);
+}
 export function fitBaseline(rows: Measurement[], config: ModelConfig): Fit {
   if (!config.baseline) return linearRegression(rows, config.intercept);
-  const value = smallAnglePeriod(config.baseline.length, config.baseline.gravity);
+  const value = theoreticalValue(config);
   return { slope: 0, intercept: value, n: rows.length, ...metrics(rows.map(r => r.y), rows.map(() => value)) };
 }
 // This milestone supports empirical lines and a fixed theoretical constant only.
@@ -22,7 +26,7 @@ export function fitHinge(rows: Measurement[], config: ModelConfig, knee: number)
   const scale = config.intercept && !config.baseline ? rows.at(-1)!.x - rows[0].x : Math.max(...rows.map(r => Math.abs(r.x)));
   const origin = config.intercept && !config.baseline ? rows[0].x : 0;
   if (config.baseline) {
-    const intercept = smallAnglePeriod(config.baseline.length, config.baseline.gravity);
+    const intercept = theoreticalValue(config);
     const coefficients = leastSquares(rows.map(r => [Math.max(0, r.x - knee) / scale]), rows.map(r => r.y - intercept));
     return { slope: 0, intercept, slopeChange: coefficients[0] / scale };
   }

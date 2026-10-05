@@ -1,5 +1,5 @@
 import { analyze } from '../analysis';
-import { smallAnglePeriod } from '../analysis/models';
+import { theoreticalValue } from '../analysis/models';
 import type { AnalysisResult, ModelConfig } from '../analysis/types';
 import { getExperiment } from './registry';
 import type { DatasetKind, ExperimentDefinition, ExperimentId } from './types';
@@ -40,12 +40,12 @@ export function modelParameters(experiment: ExperimentDefinition, result: Analys
   const fit = scope === 'reference' ? result.referenceFit : result.globalFit;
   return experiment.baseline.parameters.map(parameter => {
     const baseline = result.config.baseline;
-    const value = parameter.key === 'slope' ? fit.slope : parameter.key === 'intercept' ? fit.intercept : parameter.key === 'length' ? baseline!.length : parameter.key === 'gravity' ? baseline!.gravity : smallAnglePeriod(baseline!.length, baseline!.gravity);
+    const value = parameter.key === 'slope' ? fit.slope : parameter.key === 'intercept' ? fit.intercept : parameter.key === 'length' && baseline?.kind === 'pendulum-small-angle' ? baseline.length : parameter.key === 'gravity' && baseline?.kind === 'pendulum-small-angle' ? baseline.gravity : theoreticalValue(result.config);
     return { ...parameter, treatment: parameter.key === 'intercept' && !result.config.intercept ? 'fixed' as const : parameter.treatment, value };
   });
 }
 export function referenceEquation(experiment: ExperimentDefinition, result: AnalysisResult): string {
-  if (result.config.baseline) return `T₀ = ${result.referenceFit.intercept.toFixed(5)} s`;
+  if (result.config.baseline) return experiment.id === 'custom' ? `${experiment.dependent.symbol} = ${result.referenceFit.intercept.toPrecision(6)} ${experiment.dependent.unit}` : `T₀ = ${result.referenceFit.intercept.toFixed(5)} s`;
   const fit = result.referenceFit;
   return `${experiment.dependent.symbol} = ${fit.slope.toFixed(3)}${experiment.independent.symbol}${result.config.intercept ? ` ${fit.intercept >= 0 ? '+' : '−'} ${Math.abs(fit.intercept).toFixed(4)}` : ''}`;
 }

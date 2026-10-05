@@ -4,14 +4,15 @@ import { residuals } from './residuals';
 import { detectTransition } from './breakpoint';
 import type { AnalysisResult, Finding, ModelConfig } from './types';
 const schema = z.array(z.object({ id: z.string().min(1), x: z.number().finite().min(0).max(1000), y: z.number().finite().min(-1000000).max(1000000) })).min(2).max(500);
-const configSchema = z.object({ intercept: z.boolean(), noiseFloor: z.number().finite().min(0.000001).max(1000), baseline: z.object({ kind: z.literal('pendulum-small-angle'), length: z.number().finite().positive().max(1000), gravity: z.number().finite().positive().max(1000) }).optional() });
-export function analyze(input: unknown, configuration: ModelConfig = { intercept: false, noiseFloor: 0.04 }, labels?: { independent: string; dependent: string; independentUnit: string; dependentUnit: string }): AnalysisResult {
-  const parsed = schema.safeParse(input);
+const signedSchema = z.array(z.object({ id: z.string().min(1), x: z.number().finite().min(-1000000).max(1000000), y: z.number().finite().min(-1000000).max(1000000) })).min(2).max(500);
+const configSchema = z.object({ intercept: z.boolean(), noiseFloor: z.number().finite().min(0.000001).max(1000), baseline: z.discriminatedUnion('kind', [z.object({ kind: z.literal('pendulum-small-angle'), length: z.number().finite().positive().max(1000), gravity: z.number().finite().positive().max(1000) }), z.object({ kind: z.literal('constant'), value: z.number().finite().min(-1000000).max(1000000) })]).optional() });
+export function analyze(input: unknown, configuration: ModelConfig = { intercept: false, noiseFloor: 0.04 }, labels?: { independent: string; dependent: string; independentUnit: string; dependentUnit: string; signedInput?: boolean }): AnalysisResult {
+  const parsed = (labels?.signedInput ? signedSchema : schema).safeParse(input);
   if (!parsed.success) throw new Error(labels ? `Provide 2–500 complete measurements: ${labels.independent} in ${labels.independentUnit} and ${labels.dependent} in ${labels.dependentUnit}. Blank, non-finite or out-of-bounds values are invalid.` : 'Provide 2–500 complete measurements: extension 0–1000 m and force −1,000,000–1,000,000 N. Blank or non-finite values are invalid.');
   const parsedConfig = configSchema.safeParse(configuration);
   if (!parsedConfig.success) throw new Error(labels ? `Choose a valid baseline configuration and a finite response noise floor between 0.000001 and 1000 ${labels.dependentUnit}.` : 'Choose a valid line configuration and a finite force noise floor between 0.000001 and 1000 N.');
   const config = parsedConfig.data;
-  if (config.baseline && config.intercept) throw new Error('A theoretical period has no fitted intercept.');
+  if (config.baseline && config.intercept) throw new Error('A fixed theoretical baseline has no fitted intercept.');
   const measurements = [...parsed.data].sort((a, b) => a.x - b.x);
   if (new Set(measurements.map(r => r.id)).size !== measurements.length) throw new Error('Measurement IDs must be unique.');
   if (new Set(measurements.map(r => r.x)).size !== measurements.length) throw new Error(`Use distinct ${labels ? labels.independent.toLowerCase() + ' values' : 'extensions'}; repeated measurements are not supported in this milestone.`);

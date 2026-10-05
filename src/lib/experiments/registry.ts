@@ -7,7 +7,7 @@ const linearParameters = (slope: string, slopeUnit: string, offset: string, yUni
   { key: 'intercept' as const, name: 'Response offset', symbol: offset, unit: yUnit, treatment: 'fitted' as const },
 ];
 const sharedCaveat = 'Statistical inadequacy does not identify the physical cause; a fitted hinge approximates a gradual departure.';
-export const experiments: ExperimentDefinition[] = [
+export const experiments: (ExperimentDefinition & { id: ExperimentId })[] = [
   {
     ...hookesLaw, id: 'spring-hooke', shortName: 'Spring', category: 'Mechanics',
     question: 'Over what extension range does a constant-stiffness spring model adequately describe these measurements?',
@@ -62,7 +62,7 @@ export const experiments: ExperimentDefinition[] = [
     datasetLabels: { transition: 'Gradual response compression', linear: 'Linear calibration control' }, datasets: { transition: sensorData('transition'), linear: sensorData('linear') },
   },
 ];
-export function getExperiment(id: ExperimentId): ExperimentDefinition {
+export function getExperiment(id: ExperimentId): ExperimentDefinition & { id: ExperimentId } {
   const experiment = experiments.find(e => e.id === id);
   if (!experiment) throw new Error('Unknown built-in experiment.');
   return experiment;

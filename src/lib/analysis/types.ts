@@ -1,7 +1,7 @@
 export interface Measurement { id: string; x: number; y: number }
 export interface ModelConfig {
   intercept: boolean; noiseFloor: number;
-  baseline?: { kind: 'pendulum-small-angle'; length: number; gravity: number };
+  baseline?: { kind: 'pendulum-small-angle'; length: number; gravity: number } | { kind: 'constant'; value: number };
 }
 export interface Fit { slope: number; intercept: number; sse: number; rmse: number; r2: number | null; n: number }
 export interface EvidencePoint extends Measurement { predicted: number; residual: number; normalizedResidual: number }
