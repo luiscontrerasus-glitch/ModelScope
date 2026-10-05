@@ -79,15 +79,15 @@ function Cuvette({ value }: Omit<Props, 'kind'>) {
     <RoundedBox ref={glass} args={[1.3, 3.5, 1.25]} radius={.035} position={[0, .05, 0]}>
       <meshPhysicalMaterial color="#e3effa" transmission={.94} thickness={.12} roughness={.08} ior={1.45} transparent opacity={.42} depthWrite={false} />
     </RoundedBox>
-    <mesh position={[0, -.38, 0]}><boxGeometry args={[1.17, 2.5, 1.12]} /><meshPhysicalMaterial color="#157bc5" transparent opacity={.4 + value * .25} roughness={.14} metalness={.08} /></mesh>
+    <mesh position={[0, -.38, 0]}><boxGeometry args={[1.17, 2.5, 1.12]} /><meshPhysicalMaterial color="#086cb5" transparent opacity={.65 + value * .15} roughness={.14} metalness={.08} /></mesh>
     <mesh position={[0, .88, 0]} rotation={[-Math.PI / 2, 0, 0]}><planeGeometry args={[1.18, 1.12]} /><meshPhysicalMaterial color="#43a7dc" transparent opacity={.8} roughness={.12} metalness={.35} /></mesh>
     {[-.65, .65].flatMap(x => [-.625, .625].map(z => <mesh key={`${x}-${z}`} position={[x, .05, z]}><boxGeometry args={[.018, 3.5, .018]} /><meshStandardMaterial color="#b4cddd" metalness={.4} roughness={.25} /></mesh>))}
     {[-1.7, 1.8].map(x => <group key={x} position={[x, -.45, 0]} rotation={[0, 0, Math.PI / 2]}>
       <mesh castShadow><cylinderGeometry args={[.48, .48, .8, 48]} /><meshStandardMaterial {...steel} roughness={.3} /></mesh>
       <mesh position={[0, x < 0 ? -.405 : .405, 0]}><cylinderGeometry args={[.18, .18, .025, 32]} /><meshStandardMaterial color="#171d24" metalness={.5} roughness={.2} /></mesh>
     </group>)}
-    <mesh position={[-.85, -.45, 0]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[.025, .025, 1.9, 12]} /><meshBasicMaterial color="#7ccaff" /></mesh>
-    <mesh position={[.86, -.45, 0]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[.025, .025, 1.9, 12]} /><meshBasicMaterial color="#5da5ff" transparent opacity={Math.max(.25, 1 - value * .6)} /></mesh>
+    <mesh renderOrder={3} position={[-.85, -.45, 0]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[.025, .025, 1.9, 12]} /><meshBasicMaterial color="#56baff" toneMapped={false} transparent opacity={.95} depthWrite={false} /></mesh>
+    <mesh renderOrder={3} position={[.86, -.45, 0]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[.025, .025, 1.9, 12]} /><meshBasicMaterial color="#4597ff" toneMapped={false} transparent opacity={Math.max(.25, 1 - value * .6)} depthWrite={false} /></mesh>
     <pointLight position={[0, -.45, .6]} color="#258dff" intensity={2} distance={2.5} />
   </group>;
 }
@@ -97,11 +97,11 @@ function Sensor({ value }: Omit<Props, 'kind'>) {
   return <group rotation={[.06, -.35, 0]} position={[0, -.1, 0]}>
     <mesh position={[0, -1.1, 0]} castShadow><cylinderGeometry args={[.85, .85, 1.1, 64]} /><meshStandardMaterial {...steel} roughness={.26} /></mesh>
     <mesh position={[0, -.5, 0]}><cylinderGeometry args={[1, 1, .18, 64]} /><meshStandardMaterial {...steel} /></mesh>
-    <mesh position={[0, -.3 + gap, 0]} castShadow><cylinderGeometry args={[.86, .86, 1.1, 64]} /><meshStandardMaterial {...steel} roughness={.25} /></mesh>
-    <mesh position={[0, .35 + gap, 0]}><cylinderGeometry args={[1, 1, .18, 64]} /><meshStandardMaterial {...steel} /></mesh>
-    <mesh position={[0, 1.15 + gap, 0]}><cylinderGeometry args={[.25, .25, 1.4, 40]} /><meshStandardMaterial color="#6f747a" metalness={.95} roughness={.3} /></mesh>
-    {Array.from({ length: 12 }, (_, i) => <mesh key={i} position={[0, .6 + gap + i * .075, 0]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[.26, .022, 8, 32]} /><meshStandardMaterial color="#42484e" metalness={.8} roughness={.25} /></mesh>)}
-    <mesh position={[0, -.38 + gap / 2, 0]}><cylinderGeometry args={[.42, .42, gap, 40]} /><meshStandardMaterial color="#5682a0" emissive="#0b57ad" emissiveIntensity={.15 + value / 35} metalness={.8} roughness={.25} /></mesh>
+    <mesh position={[0, .14 + gap, 0]} castShadow><cylinderGeometry args={[.86, .86, 1.1, 64]} /><meshStandardMaterial {...steel} roughness={.25} /></mesh>
+    <mesh position={[0, .79 + gap, 0]}><cylinderGeometry args={[1, 1, .18, 64]} /><meshStandardMaterial {...steel} /></mesh>
+    <mesh position={[0, 1.58 + gap, 0]}><cylinderGeometry args={[.25, .25, 1.4, 40]} /><meshStandardMaterial color="#6f747a" metalness={.95} roughness={.3} /></mesh>
+    {Array.from({ length: 12 }, (_, i) => <mesh key={i} position={[0, .93 + gap + i * .075, 0]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[.26, .022, 8, 32]} /><meshStandardMaterial color="#42484e" metalness={.8} roughness={.25} /></mesh>)}
+    <mesh position={[0, -.41 + gap / 2, 0]}><cylinderGeometry args={[.42, .42, gap, 40]} /><meshStandardMaterial color="#5682a0" emissive="#0b57ad" emissiveIntensity={.2 + value / 25} metalness={.8} roughness={.25} /></mesh>
     <mesh position={[-1, -1.12, 0]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[.15, .15, .8, 24]} /><meshStandardMaterial color="#333b42" metalness={.65} roughness={.3} /></mesh>
     <Line points={[[-1.4, -1.12, 0], [-1.9, -1.16, 0], [-2.6, -1.55, 0]]} color="#363d44" lineWidth={7} />
   </group>;
