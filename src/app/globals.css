@@ -16,3 +16,14 @@
 @media(max-width:760px){.custom-setup{margin:16px 20px 30px;padding:16px}.mapping-grid{grid-template-columns:minmax(0,1fr);gap:16px}.entry-methods button{flex:1;padding:10px 8px;font-size:12px}.custom-heading h2{font-size:22px}.custom-review{padding:15px}.custom-review dl>div{grid-template-columns:minmax(0,1fr);gap:4px}.custom-setup select{font-size:12px}.source-table th,.source-table td{padding:8px}.custom-setup .source-table input{font-size:12px}.custom-run{width:100%}.source-filename{max-width:100%}.custom-setup label{line-height:1.5}}
 
 .ai-assistant,.ai-explanation{border-top:1px solid var(--line);margin-top:20px;padding-top:16px;min-width:0;overflow-wrap:anywhere}.ai-assistant summary{cursor:pointer;min-height:44px;padding:10px 0;font-weight:600}.ai-assistant textarea{display:block;width:100%;margin:8px 0 12px;min-height:100px;padding:12px;font:inherit;border:1px solid var(--line);border-radius:4px}.ai-assistant button,.ai-explanation button{min-height:44px}.ai-proposal{margin-top:16px;padding:16px;background:var(--surface);border:1px solid var(--line)}.ai-proposal dl div{margin:10px 0}.ai-proposal dd{margin:0}.ai-assistant label{font-weight:600}.ai-explanation .eyebrow{display:block;margin-top:16px}.ai-assistant textarea:focus-visible,.ai-assistant button:focus-visible,.ai-explanation button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* Release refinements: readable supporting text and consistent local file input. */
+:root{--muted:#59665e}
+.workspace-intro p{max-width:650px;line-height:1.6}
+.configuration select{min-height:36px}
+.custom-setup input[type=file]{padding:0;overflow:hidden;background:var(--surface);font-size:12px;line-height:44px}
+.custom-setup input[type=file]::file-selector-button{border:0;border-right:1px solid var(--line);background:#edf2e9;color:var(--ink);min-height:44px;padding:0 16px;margin-right:12px;font:inherit;cursor:pointer}
+.custom-setup input[type=file]::file-selector-button:hover{background:#e0e9dd}
+.evidence-detail>.ai-explanation .field-help{font-size:11px}
+.ai-explanation .secondary{margin-top:12px}
+@media(max-width:760px){.configuration select{min-height:44px}}
