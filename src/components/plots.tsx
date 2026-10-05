@@ -25,9 +25,10 @@ function PointTooltip({ active, payload, experiment }: { active?: boolean; paylo
 export function Plots({ result, experiment, selected, onSelect }: Props) {
   const x = experiment.independent; const y = experiment.dependent;
   const points = result.points; const range = result.transition.range;
-  const domain: [number, number] = [0, Math.max(...points.map(p => p.x)) * 1.04];
+  const maximum = Math.max(...points.map(p => p.x)); const minimum = Math.min(...points.map(p => p.x));
+  const domain: [number, number] = experiment.id === 'custom' ? [minimum - (maximum - minimum) * 0.04, maximum + (maximum - minimum) * 0.04] : [0, maximum * 1.04];
   const regions = range ? <><ReferenceArea x1={range[0]} x2={range[1]} fill="#b86b24" fillOpacity={0.10} /><ReferenceLine x={result.transition.estimate!} stroke="#a77b48" strokeDasharray="4 4" /></> : null;
-  const axis = { type: 'number' as const, dataKey: 'x', domain, tickFormatter: (v: number) => v.toFixed(x.decimals), tick: { fontSize: 11, fill: '#6c756f' }, tickLine: false, axisLine: { stroke: '#cdd3cc' }, label: { value: `${x.name} ${x.symbol} (${x.unit})`, position: 'insideBottom' as const, offset: -10, fontSize: 11, fill: '#6c756f' } };
+  const axis = { type: 'number' as const, dataKey: 'x', domain, tickFormatter: (v: number) => experiment.id === 'custom' ? Number(v.toPrecision(4)).toString() : v.toFixed(x.decimals), tick: { fontSize: 11, fill: '#6c756f' }, tickLine: false, axisLine: { stroke: '#cdd3cc' }, label: { value: `${x.name} ${x.symbol} (${x.unit})`, position: 'insideBottom' as const, offset: -10, fontSize: 11, fill: '#6c756f' } };
   return <div className="plot-stack">
     <section className="panel plot-panel"><div className="panel-heading"><div><span className="eyebrow">01 / MODEL RESPONSE</span><h2>{y.name} vs. {x.name.toLowerCase()}</h2></div><span className="unit-badge">{y.symbol} / {y.unit}</span></div>
       <div className="chart-main" aria-label={`Measured ${y.name.toLowerCase()} and reference model plotted against ${x.name.toLowerCase()}`}><ResponsiveContainer width="100%" height="100%"><ComposedChart data={points} margin={{ top: 14, right: 20, bottom: 26, left: 4 }}>
