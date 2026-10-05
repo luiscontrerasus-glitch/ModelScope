@@ -30,7 +30,31 @@ export async function handleAI(request: Request, kind: AIKind, factory: () => Pr
   const headers = { 'Cache-Control': 'no-store' };
   const fail = (status: number, message: string) => Response.json({ error: message }, { status, headers });
   const origin = request.headers.get('origin');
-  if (origin && origin !== new URL(request.url).origin || request.headers.get('sec-fetch-site') === 'cross-site') return fail(403, 'Use the AI action from this application.');
+  // Host is the browser's request authority, not an arbitrary forwarded-host value.
+  // Next's Node adapter can normalize a local request URL to localhost internally.
+  try {
+    const applicationURL = new URL(request.url);
+    const requestHost = request.headers.get('host');
+    if (requestHost !== null) {
+      if (!requestHost || /[\s/@?#,\\]/.test(requestHost)) throw new Error('Invalid host');
+      const authority = new URL(`${applicationURL.protocol}//${requestHost}`);
+      const internal = ['localhost', '127.0.0.1', '[::1]'].includes(applicationURL.hostname);
+      if (!internal && authority.host !== applicationURL.host) throw new Error('Host mismatch');
+      applicationURL.hostname = authority.hostname;
+      applicationURL.port = authority.port;
+    }
+    // Vercel terminates TLS and supplies this header. Other deployments use request.url's scheme.
+    if (process.env.VERCEL === '1') {
+      const scheme = request.headers.get('x-forwarded-proto');
+      if (scheme !== null) {
+        if (scheme !== 'http' && scheme !== 'https') throw new Error('Invalid scheme');
+        applicationURL.protocol = `${scheme}:`;
+      }
+    }
+    // Missing Origin is intentional for non-browser clients; this guard is not authentication.
+    // An opaque, malformed, path-bearing, or mismatched Origin never equals the canonical origin.
+    if (origin !== null && origin !== applicationURL.origin || request.headers.get('sec-fetch-site') === 'cross-site') throw new Error('Origin mismatch');
+  } catch { return fail(403, 'Use the AI action from this application.'); }
   if (!request.headers.get('content-type')?.startsWith('application/json')) return fail(415, 'Send a small JSON request.');
   if (Date.now() - windowStart >= 60000) { windowStart = Date.now(); requests = 0; }
   if (active >= 2 || requests >= 6) return fail(429, 'Optional AI is busy. Wait a minute and retry; deterministic analysis is unaffected.');

@@ -68,6 +68,47 @@ describe('provider boundary and HTTP failures', () => {
   it('HTTP no-key returns safe non-blocking error', async () => { vi.spyOn(Date, 'now').mockReturnValue(200000); const response = await handleAI(new Request('http://localhost/api/ai/setup', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) }), 'setup', () => { throw new AIUnavailable(); }); expect(response.status).toBe(503); expect(await response.text()).not.toMatch(/stack|apiKey/); vi.restoreAllMocks(); });
   it('HTTP provider failure does not expose error details', async () => { vi.spyOn(Date, 'now').mockReturnValue(300000); const response = await handleAI(new Request('http://localhost/api/ai/explain', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(request) }), 'explain', () => async () => { throw new Error('PRIVATE_PROVIDER_DETAIL'); }); expect(response.status).toBe(503); expect(await response.text()).not.toContain('PRIVATE_PROVIDER_DETAIL'); vi.restoreAllMocks(); });
   it('rejects cross-site actions', async () => expect((await handleAI(new Request('http://localhost/api/ai/setup', { method: 'POST', headers: { origin: 'https://elsewhere.invalid', 'content-type': 'application/json' } }), 'setup')).status).toBe(403));
+  it('accepts the received same-origin Host when Next uses an internal localhost URL', async () => {
+    vi.spyOn(Date, 'now').mockReturnValue(500000);
+    const response = await handleAI(new Request('http://localhost:3000/api/ai/setup', { method: 'POST', headers: { host: '127.0.0.1:3000', origin: 'http://127.0.0.1:3000', 'content-type': 'application/json' }, body: JSON.stringify(input) }), 'setup', () => { throw new AIUnavailable(); });
+    expect(response.status).toBe(503); expect(await response.text()).toContain('confirmed free-tier'); vi.restoreAllMocks();
+  });
+  it('rejects an internal origin that differs from the received Host', async () => {
+    const factory = vi.fn();
+    const response = await handleAI(new Request('http://localhost:3000/api/ai/setup', { method: 'POST', headers: { host: '127.0.0.1:3000', origin: 'http://localhost:3000', 'content-type': 'application/json' }, body: JSON.stringify(input) }), 'setup', factory);
+    expect(response.status).toBe(403); expect(factory).not.toHaveBeenCalled();
+  });
+  it.each([
+    ['http://localhost:3000/api/ai/setup', 'localhost:3000', 'http://localhost:3000'],
+    ['http://localhost:3000/api/ai/setup', '127.0.0.1:3000', 'http://127.0.0.1:3000'],
+    ['https://modelscope.example/api/ai/setup', 'modelscope.example', 'https://modelscope.example'],
+  ])('permits legitimate authority %s', async (url, host, origin) => {
+    vi.spyOn(Date, 'now').mockReturnValue(600000);
+    const response = await handleAI(new Request(url, { method: 'POST', headers: { host, origin, 'content-type': 'application/json' }, body: JSON.stringify(input) }), 'setup', () => { throw new AIUnavailable(); });
+    expect(response.status).toBe(503); vi.restoreAllMocks();
+  });
+  it.each(['null', '', 'not-an-origin', 'https://modelscope.example/path', 'http://modelscope.example', 'https://elsewhere.example'])('rejects invalid or mismatched Origin %s', async origin => {
+    const factory = vi.fn();
+    const response = await handleAI(new Request('https://modelscope.example/api/ai/setup', { method: 'POST', headers: { host: 'modelscope.example', origin, 'content-type': 'application/json' }, body: JSON.stringify(input) }), 'setup', factory);
+    expect(response.status).toBe(403); expect(factory).not.toHaveBeenCalled();
+  });
+  it.each(['', 'elsewhere.example', 'modelscope.example/path', 'user@modelscope.example', 'modelscope.example,elsewhere.example', 'modelscope.example:bad'])('rejects malformed or conflicting Host %s', async host => {
+    const response = await handleAI(new Request('https://modelscope.example/api/ai/setup', { method: 'POST', headers: { host, origin: 'https://modelscope.example', 'content-type': 'application/json' }, body: JSON.stringify(input) }), 'setup');
+    expect(response.status).toBe(403);
+  });
+  it('ignores untrusted forwarded Host and scheme outside Vercel', async () => {
+    const response = await handleAI(new Request('http://localhost/api/ai/setup', { method: 'POST', headers: { host: 'localhost', origin: 'https://elsewhere.example', 'x-forwarded-host': 'elsewhere.example', 'x-forwarded-proto': 'https', 'content-type': 'application/json' }, body: JSON.stringify(input) }), 'setup');
+    expect(response.status).toBe(403);
+  });
+  it('accepts Vercel TLS termination with the received production Host', async () => {
+    vi.stubEnv('VERCEL', '1'); vi.spyOn(Date, 'now').mockReturnValue(700000);
+    const response = await handleAI(new Request('http://localhost:3000/api/ai/setup', { method: 'POST', headers: { host: 'modelscope.example', origin: 'https://modelscope.example', 'x-forwarded-proto': 'https', 'content-type': 'application/json' }, body: JSON.stringify(input) }), 'setup', () => { throw new AIUnavailable(); });
+    expect(response.status).toBe(503); vi.restoreAllMocks();
+  });
+  it('rejects cross-site metadata even when Origin is missing', async () => {
+    const response = await handleAI(new Request('http://localhost/api/ai/setup', { method: 'POST', headers: { 'sec-fetch-site': 'cross-site', 'content-type': 'application/json' }, body: JSON.stringify(input) }), 'setup');
+    expect(response.status).toBe(403);
+  });
   it('rejects non JSON', async () => expect((await handleAI(new Request('http://localhost/api/ai/setup', { method: 'POST' }), 'setup')).status).toBe(415));
   it('bounds request bytes', async () => { vi.spyOn(Date, 'now').mockReturnValue(400000); expect((await handleAI(new Request('http://localhost/api/ai/setup', { method: 'POST', headers: { 'content-type': 'application/json' }, body: 'x'.repeat(16001) }), 'setup')).status).toBe(413); vi.restoreAllMocks(); });
 });
