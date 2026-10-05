@@ -1,4 +1,66 @@
-# Milestone 2 verification
+# Milestone 3 verification
+
+Executed on 2026-10-04 in the existing repository with Node 24.14.1. All checks concern deterministic software behavior and illustrative fixtures, not laboratory validity or calibrated statistical error rates. Milestone 1–2 history and regression fixtures remain intact.
+
+## Final checks
+
+| Command | Result after final source changes |
+| --- | --- |
+| `npm test` | Passed: 4 files, 173 tests |
+| `npm run typecheck` | Passed, exit 0 |
+| `npm run lint` | Passed, exit 0 |
+| `npm run build` | Passed, exit 0; production Webpack compilation, TypeScript, static pages and traces |
+| `npm audit --omit=dev --json` | Passed, exit 0; zero production vulnerabilities |
+
+Added Papa Parse 5.7.0 and development type definitions 5.5.2. Installation reported the same five high-severity development lint-chain entries documented below; no forced breaking update was applied. Final production server/browser JS and trace search returned no matches for braces, micromatch, fast-glob or eslint-config-next. This is not a clean full dependency audit or a general security certification.
+
+## Deterministic tests
+
+Preserved all existing 90 tests without editing them. Added 83 tests in `tests/custom.test.ts`. They cover CSV/TSV quoting, multiline cells, BOM, raw-value/header preservation, empty/missing/duplicate headers, malformed widths/quotes, numeric syntax, blank-record confirmation, mapping, bounds, repeated/degenerate X, unsorted order, manual identities, three model families, reference-scale and constant validation, every outcome, unit-label distinction/scaling, source basenames, immutable source versus edited observations, exports and fresh custom/built-in contexts. Each model's isolated-outlier test sweeps all 24 positions in both directions. Those sweeps do not estimate population error rates.
+
+The separate synthetic temperature CSV produces a supported candidate at 35 °C with a 32–38 °C sensitivity range, adjusted improvement approximately 76.83 and eight sustained observations at the explicitly chosen 0.05 V scale. These are computed outputs, not stored transition answers. Raising its scale to 5 V produces ambiguous evidence with no reported range. Exact through-origin control reports none. A 14-row manual fixed-C control reports none; three-row examples report insufficient.
+
+## Actual production desktop checks
+
+Ran the production app on 127.0.0.1:3000 at 1440 × 1000; used no development server. Uploaded the actual local example CSV through the file chooser and inspected the raw preview of all 24 records, including signed X. Confirmed Temperature/Response mapping, °C/V labels, free-intercept baseline, explicit 0.05 V scale and review panel before running.
+
+Executed:
+
+- CSV supported analysis with correct equation, signed-domain response/residual plots, restrained candidate shading and generic scientific wording.
+- Row M08 and plot M20 linking, Enter activation and retained marker focus; exact selected values updated in the readout.
+- Edited M08 response from 5.796 to 5.806 V, confirmed stale custom plots were hidden and export disabled, then reran and downloaded revised evidence while retaining the source value.
+- Raised assumed scale to 5 V, obtained ambiguous evidence, and downloaded a no-range export.
+- Entered a blank selected value, reran, and confirmed a useful validation alert, retained editable input and no old custom plots.
+- Pasted malformed TSV with an extra field, observed a record-specific error and disabled analysis.
+- Pasted a 24-row model-consistent TSV; explicitly distinguished dimensionless X from unspecified Y, obtaining none.
+- Entered 14 manual observations, chose user-supplied C = 3 and scale 0.1, obtained none, edited/reran while preserving C/scale, and checked empty-table validation after clearing.
+- Verified the final manual Add row focuses X, Tab moves to Y with a visible focus outline, and deleting M01 focuses surviving M02 without renumbering it.
+- Pasted a perfect through-origin line, chose Y = mX, and obtained slope 2 with none.
+- Switched custom → Pendulum → fresh custom, confirming fixed period, restored built-in provenance and no stale custom result.
+
+Full-page desktop review/workspace screenshots were visually inspected. Final custom views retained the existing three-column scientific workspace. No page overflow occurred.
+
+## Actual 390px mobile checks
+
+Used 390 × 844 with the final production build. Inspected the labeled file input (44 px high, within page width); loaded the static synthetic CSV example through its one-click control, then completed X/Y mapping, known-unit labels, model/scale review and analysis. The native file chooser upload itself was exercised on desktop, not repeated on mobile.
+
+Inspected full-page review and workspace screenshots. Response and residual plots were readable; long selectors, equations, review descriptions and unit labels caused no horizontal page overflow. Row M08 and Space-activated M20 linked correctly, retaining keyboard marker focus. Sustained evidence selected eight rows and sixteen markers. Expanded the 13-candidate profile without overflow; selecting 35 °C linked M16. Edited/reran M08 and downloaded the updated evidence.
+
+Pasted unsorted TSV with an interior blank record: analysis stayed disabled until explicit blank exclusion. Review warned about sorting and insufficient coverage; the three surviving rows retained source order/IDs M01, M02, M04, and analysis reported insufficient. Entered a new three-row manual constant dataset, selected C = 3, reviewed and ran it, obtaining insufficient with correct fixed predictions. Manual delete targets measured 44 × 44 px. Downloaded both short-dataset exports. Fresh custom context reset units/model/data and all four built-in experiments restored their proper data, units and synthetic provenance after custom analysis. All four still computed supported default examples without page overflow.
+
+Final browser warning/error log query returned an empty list. Temporary viewport overrides were reset. Screenshot records under ignored `browser-artifacts/milestone3-*-review.jpg` and `milestone3-*-workspace.jpg` are not committed.
+
+## Actual JSON downloads and privacy review
+
+Independently parsed nine custom downloads: CSV baseline supported, edited supported, high-scale ambiguous; TSV none; manual constant none; through-origin none; mobile edited synthetic CSV supported; mobile unsorted/blank-excluded TSV insufficient; mobile manual constant insufficient.
+
+All use schema 1.2.0/method 1.3.0 with user-supplied source, correct input method, model settings, unit kinds, current observations, raw original records and shared numerical evidence. Source filenames contain basenames only. Edited CSV retains raw source M08 = `5.796` separately from current 5.806. Blank-excluded export retains four raw records, three analyzed observations and excluded ID M03. Non-supported results have null sensitivity/location. Fixed C exports identify a user-supplied parameter with zero fitted baseline parameters. The one-click example is explicitly synthetic; uploaded file provenance is not guessed from its name.
+
+Source review found only a same-origin static example GET in the custom workflow. No AI integration, measurement upload endpoint or scientific-data analytics was introduced. Files are read and analyzed in browser memory. No uploaded temporary test files, credentials, user filesystem paths, screenshots or generated instruction files are tracked. The intentional downloadable CSV and inline deterministic tests belong to source control.
+
+---
+
+# Historical Milestone 2 verification
 
 Executed on 2026-10-04 in the existing repository, with Node 24.14.1. Verification concerns deterministic software behavior and synthetic educational fixtures; it does not establish laboratory validity or calibrated statistical error rates.
 

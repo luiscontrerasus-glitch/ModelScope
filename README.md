@@ -2,7 +2,7 @@
 
 Equations have limits. Find them.
 
-ModelScope is a deterministic scientific workspace for inspecting where a configured model increasingly disagrees with measurements. Milestone 2 extends the verified Hooke's-law implementation to four built-in experiment families, using the same evidence architecture. No AI, accounts, database, or deployment is involved.
+ModelScope is a deterministic scientific workspace for inspecting where a configured model increasingly disagrees with measurements. Milestone 3 adds user-supplied CSV, pasted tables and manual measurements to the four verified built-in experiments, using the same evidence architecture. No AI, accounts, database, or deployment is involved.
 
 | Demonstration | Configured baseline | Input → response |
 | --- | --- | --- |
@@ -12,6 +12,14 @@ ModelScope is a deterministic scientific workspace for inspecting where a config
 | Sensor Calibration — Linear Range | V = mQ + b, fitted intercept by default | Reference force / N → output / V |
 
 Every demonstration and control is labeled **Synthetic educational dataset**. Data provides reproducible, controlled examples; it is not laboratory validation. See [experiment notes](docs/experiments.md) for generation methods, questions, assumptions, and limits.
+
+## Analyze your data
+
+Choose **Analyze your data** in the experiment selector. Upload a local comma-separated CSV with headers, paste CSV/TSV from a spreadsheet, or enter measurements manually. Inspect the raw preview, explicitly map X/Y, confirm names and units, select Y = mX + b, Y = mX, or user-supplied fixed Y = C, and review before running. Custom data enters the same linked scientific workspace. A separate synthetic temperature-response CSV demonstrates the workflow.
+
+Unknown units stay unspecified, distinct from a declared unitless quantity. Unit strings are labels only; no conversions are guessed. A positive response reference scale is required and has no silent default: users must justify it from prior knowledge, measurement resolution or an explicit tolerance. If unknown, pause and investigate. Validation reports malformed records, mapped-cell errors, repeated X, unsupported numerical ranges and insufficient coverage. Blank records require explicit exclusion; meaningful rows are never silently dropped. Original source values/order and stable IDs are preserved.
+
+All custom processing stays in browser memory. No measurement contents go to AI, analytics or an upload server. Edits pause evidence and hide stale custom plots until a valid rerun. Custom export schema 1.2.0/method 1.3.0 records user provenance, input method, filename basename, mappings, settings, immutable source records and current analyzed observations alongside the shared evidence. Built-in and legacy exports retain their prior versions. See [custom-data guidance](docs/custom-data.md) for formats, limits, uncertainty handling and interpretation.
 
 ## Scientific workflow
 
@@ -31,7 +39,7 @@ The UI exports one common JSON schema **1.1.0**, method **1.2.0**, for all four 
 
 ## Development and verification
 
-Next.js App Router, React, strict TypeScript, authored workspace CSS through Tailwind's pipeline, Recharts, Zod, and Vitest. Use Node 24 LTS and npm (verified Node 24.14.1). No new dependency was needed for this milestone.
+Next.js App Router, React, strict TypeScript, authored workspace CSS through Tailwind's pipeline, Recharts, Zod, Papa Parse and Vitest. Use Node 24 LTS and npm (verified Node 24.14.1). This milestone adds Papa Parse and its TypeScript definitions for local CSV/TSV parsing.
 
 ```sh
 npm ci
@@ -48,12 +56,12 @@ npm run build
 npm run start -- --hostname 127.0.0.1 --port 3000
 ```
 
-Stop an existing production server before rebuilding and restart it afterward. The suite retains all original 49 tests and adds cross-family controls, departures, contamination, ambiguous states, predictions, metadata, exports, switching, and exact pre-generalization Hooke numerical snapshots. Executed results are recorded in [verification notes](docs/verification.md); [file inventory](docs/files.md) lists repository artifacts.
+Stop an existing production server before rebuilding and restart it afterward. The suite retains all 90 tests from Milestones 1–2 and adds 83 custom-data tests for parsing, validation, models, provenance, state isolation and exports. Exact pre-generalization Hooke numerical snapshots remain unchanged. Executed results are recorded in [verification notes](docs/verification.md); [file inventory](docs/files.md) lists repository artifacts.
 
 ## Limits
 
-Four built-in families, one hinge, ordinary least squares, fixed theoretical pendulum parameters, assumed response noise scales, no calibrated false-positive rate, no confidence intervals or physical-mechanism inference. A hinge can lag a smooth departure; an influence diagnostic can withhold real support. Measurement-input uncertainty, heteroscedastic weighting and repeated independent-variable values are not supported. Canonical units are explicit; automatic unit conversion is not implemented.
+Four built-in families and three explicit custom baselines, one hinge, ordinary least squares, fixed theoretical parameters, assumed response scales, no calibrated false-positive rate, no confidence intervals or physical-mechanism inference. A hinge can lag a smooth departure; an influence diagnostic can withhold real support. Measurement-input uncertainty, heteroscedastic weighting and repeated independent-variable values are not supported. Built-in canonical units are explicit; custom labels never trigger automatic conversion.
 
-Edits are in memory; exports provide a record, and reload resets the workspace. AI, CSV import, arbitrary custom experiments, persistence, authentication, collaboration, and deployment remain deferred.
+Edits are in memory; exports provide a record, and reload resets the workspace. Arbitrary equations, AI, XLSX/PDF import, persistence, authentication, collaboration, and deployment remain deferred.
 
 The production dependency audit is recorded in verification notes. The existing development lint chain retains an unpatched braces advisory; no forced breaking upgrade was applied.

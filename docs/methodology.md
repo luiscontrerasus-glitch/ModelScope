@@ -1,6 +1,12 @@
-# Transition methodology · version 1.2.0
+# Transition methodology · version 1.3.0
 
-ModelScope asks where a configured baseline increasingly disagrees with observations. This milestone supports four built-in families using empirical lines or a fixed small-angle pendulum period. It does not establish a physical cause, exact failure point, or calibrated operating boundary.
+ModelScope asks where a configured baseline increasingly disagrees with observations. The four built-in families and custom data support empirical lines or a fixed theoretical constant. It does not establish a physical cause, exact failure point, or calibrated operating boundary. The Milestone 1–2 numerical branches and built-in export versions remain unchanged.
+
+## Custom-data extension
+
+Custom Y = mX + b and Y = mX use the same OLS/search code as built-in calibrations. User-supplied Y = C uses the same fixed-constant branch as the pendulum, with C supplied directly rather than derived from L/g. Its fitted baseline count is p = 0; C remains fixed in full, early-region, hinge and influence calculations. No second detector is introduced. Custom inputs may be signed; the original built-in bounds and exact Spring regression fixtures remain intact.
+
+The custom workflow requires an explicit positive response reference scale. It supplies no default or guessed uncertainty. If none can be justified, analysis cannot proceed. Once supplied, the formulas below remain unchanged; scale is an assumption, not calibrated measurement uncertainty. Import validation, original-cell preservation, mapping, label-only units and state handling are described in [custom-data guidance](custom-data.md).
 
 ## Baseline models and parameter counts
 
@@ -69,6 +75,8 @@ This is **not a confidence interval**, probability distribution, or calibrated u
 ## Reproducible evidence schema
 
 All four UI exports use schema 1.1.0 and method 1.2.0, preserving the evidence architecture: experiment/question, variable definitions and canonical units, baseline ID/equation/fit mode, reference and complete-data parameters with treatments, assumptions, synthetic provenance and edit flag, original input order, full sorted analysis, predictions/residuals, comparisons, every candidate score, support state, sensitivity when supported, influence result when evaluated, findings and caveats.
+
+Custom exports use schema 1.2.0/method 1.3.0 with the same evidence structure, extending provenance and configuration for user inputs, selected columns, unspecified/unitless/labeled unit kinds, explicit reference-scale source, raw source records and edited analyzed observations. They contain filename basenames, never private filesystem paths. Built-in exports continue using their verified prior versions.
 
 The original schema 1.0 spring helper and method 1.1.0 metadata remain available to existing callers and original tests. It rejects other experiment identities rather than mislabeling them. New exports use one common structure across all four families. Export is disabled after edits until a successful rerun.
 
