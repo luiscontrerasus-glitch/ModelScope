@@ -86,8 +86,8 @@ function Cuvette({ value }: Omit<Props, 'kind'>) {
       <mesh castShadow><cylinderGeometry args={[.48, .48, .8, 48]} /><meshStandardMaterial {...steel} roughness={.3} /></mesh>
       <mesh position={[0, x < 0 ? -.405 : .405, 0]}><cylinderGeometry args={[.18, .18, .025, 32]} /><meshStandardMaterial color="#171d24" metalness={.5} roughness={.2} /></mesh>
     </group>)}
-    <mesh renderOrder={3} position={[-.85, -.45, 0]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[.025, .025, 1.9, 12]} /><meshBasicMaterial color="#56baff" toneMapped={false} transparent opacity={.95} depthWrite={false} /></mesh>
-    <mesh renderOrder={3} position={[.86, -.45, 0]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[.025, .025, 1.9, 12]} /><meshBasicMaterial color="#4597ff" toneMapped={false} transparent opacity={Math.max(.25, 1 - value * .6)} depthWrite={false} /></mesh>
+    <mesh renderOrder={3} position={[-.675, -.45, 0]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[.025, .025, 1.35, 12]} /><meshBasicMaterial color="#56baff" toneMapped={false} transparent opacity={.95} depthWrite={false} depthTest={false} /></mesh>
+    <mesh renderOrder={3} position={[.7, -.45, 0]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[.025, .025, 1.4, 12]} /><meshBasicMaterial color="#4597ff" toneMapped={false} transparent opacity={Math.max(.25, 1 - value * .6)} depthWrite={false} depthTest={false} /></mesh>
     <pointLight position={[0, -.45, .6]} color="#258dff" intensity={2} distance={2.5} />
   </group>;
 }

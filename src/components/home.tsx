@@ -39,6 +39,10 @@ export default function Home() {
   const beerResponse = absorbance - .9 * Math.max(0, concentration - .48) ** 2;
   const voltage = .25 * input + .1;
   const sensorResponse = voltage - .015 * Math.max(0, input - 5) ** 2;
+  const exhibitControl = current.kind === 'spring' ? { value: extension, set: setExtension, label: 'Extension', unit: 'm', min: .01, max: .14, step: .001, decimals: 3 }
+    : current.kind === 'pendulum' ? { value: angle, set: setAngle, label: 'Starting angle', unit: '°', min: 0, max: 60, step: .1, decimals: 1 }
+    : current.kind === 'beer' ? { value: concentration, set: setConcentration, label: 'Concentration', unit: 'mmol/L', min: 0, max: 1, step: .01, decimals: 2 }
+    : { value: input, set: setInput, label: 'Applied input', unit: 'N', min: 0, max: 12, step: .1, decimals: 1 };
   const [active, setActive] = useState('hero');
   const root = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -70,8 +74,8 @@ export default function Home() {
       <div className="hero-footnote"><span />Four scientific systems. One question.<br />Where do models stop working?</div>
     </section>
     <section className="home-explorer" id="explore" aria-labelledby="explorer-heading">
-      <div className="exhibit-copy"><span className="home-kicker">{String(exhibit + 1).padStart(2, '0')} / 04</span><h2 id="explorer-heading">{current.title}<span>{current.subtitle}</span></h2><p>{current.copy}</p><Link className="home-button outline" href={workspace(current.experiment)}>Open analysis <span aria-hidden="true">→</span></Link></div>
-      <div className="exhibit-instrument">{scene('explorer', current.kind, current.value, undefined, true)}</div>
+      <div className="exhibit-copy"><span className="home-kicker">{String(exhibit + 1).padStart(2, '0')} / 04</span><h2 id="explorer-heading">{current.title}<span>{current.subtitle}</span></h2><p>{current.copy}</p><div className="exhibit-control"><span>{exhibitControl.label}<output>{exhibitControl.value.toFixed(exhibitControl.decimals)} {exhibitControl.unit}</output></span><Control label={`Explorer ${exhibitControl.label.toLowerCase()}`} value={exhibitControl.value} onChange={exhibitControl.set} min={exhibitControl.min} max={exhibitControl.max} step={exhibitControl.step} /></div><Link className="home-button outline" href={workspace(current.experiment)}>Open analysis <span aria-hidden="true">→</span></Link></div>
+      <div className="exhibit-instrument">{scene('explorer', current.kind, exhibitControl.value, exhibitControl.set, true)}</div>
       <div className="exhibit-selector" role="group" aria-label="Select a scientific model">{exhibits.map((item, i) => <button key={item.kind} aria-pressed={i === exhibit} onClick={() => setExhibit(i)}><span className={`exhibit-symbol ${item.kind}`} aria-hidden="true">{['〰', '◯', '▯', '⊥'][i]}</span><span>{item.title}<small>{item.category}</small></span><span className="selector-arrow" aria-hidden="true">↗</span></button>)}</div>
       <span className="exhibit-caption">Procedural illustrations. Explore the evidence in the workspace.</span>
     </section>
