@@ -1,0 +1,6 @@
+/* Visual system shared by the exhibition and the scientific workspace. */
+:root{--bg:#f7f7f4;--surface:#fff;--ink:#11151a;--muted:#606773;--line:#e3e5e8;--accent:#1668d9;--warning:#ae6b24}
+body{font-family:var(--font-geist),Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,output{font-variant-numeric:tabular-nums}
+a{color:inherit}
+::selection{background:#dceaff;color:#11151a}
