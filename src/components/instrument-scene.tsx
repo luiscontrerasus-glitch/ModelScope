@@ -1,5 +1,5 @@
 'use client';
-import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Component, memo, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Canvas, useThree, type ThreeEvent } from '@react-three/fiber';
 import { ContactShadows, Environment, Lightformer, RoundedBox, Line } from '@react-three/drei';
 import { CatmullRomCurve3, TubeGeometry, Vector3, type Mesh } from 'three';
@@ -111,6 +111,17 @@ class SceneBoundary extends Component<{ children: ReactNode; fallback: ReactNode
   static getDerivedStateFromError() { return { failed: true }; }
   render() { return this.state.failed ? this.props.fallback : this.props.children; }
 }
+const StudioShadow = memo(function StudioShadow({ dark }: { dark?: boolean }) {
+  return <ContactShadows position={[0, -2.15, 0]} opacity={dark ? .3 : .22} scale={14} blur={2.8} far={5} resolution={256} frames={1} />;
+});
+const StudioEnvironment = memo(function StudioEnvironment({ dark }: { dark?: boolean }) {
+  return <Environment resolution={128}>
+    <Lightformer intensity={4} position={[0, 5, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[10, 3, 1]} />
+    <Lightformer intensity={3} position={[-5, 1, 3]} rotation={[0, Math.PI / 3, 0]} scale={[2, 8, 1]} />
+    <Lightformer intensity={dark ? 6 : 2} color={dark ? '#3185ed' : '#e2ebf6'} position={[5, 1, -2]} rotation={[0, -Math.PI / 2, 0]} scale={[2, 7, 1]} />
+    <Lightformer intensity={2} position={[0, -3, 4]} scale={[8, 1, 1]} />
+  </Environment>;
+});
 function FitCamera({ kind }: { kind: Instrument }) {
   const { camera, size, invalidate } = useThree();
   useEffect(() => {
@@ -131,14 +142,9 @@ export default function InstrumentScene(props: Props) {
       <FitCamera kind={props.kind} /><ambientLight intensity={props.dark ? .3 : .65} />
       <directionalLight position={[-3, 6, 5]} intensity={props.dark ? 2 : 3} />
       <directionalLight position={[4, 2, -3]} intensity={props.dark ? 3 : 1.5} color={props.dark ? '#4c9bff' : '#eaf1ff'} />
-      <Environment resolution={128}>
-        <Lightformer intensity={4} position={[0, 5, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[10, 3, 1]} />
-        <Lightformer intensity={3} position={[-5, 1, 3]} rotation={[0, Math.PI / 3, 0]} scale={[2, 8, 1]} />
-        <Lightformer intensity={props.dark ? 6 : 2} color={props.dark ? '#3185ed' : '#e2ebf6'} position={[5, 1, -2]} rotation={[0, -Math.PI / 2, 0]} scale={[2, 7, 1]} />
-        <Lightformer intensity={2} position={[0, -3, 4]} scale={[8, 1, 1]} />
-      </Environment>
+      <StudioEnvironment dark={props.dark} />
       {props.kind === 'spring' ? <Spring {...props} /> : props.kind === 'pendulum' ? <Pendulum {...props} /> : props.kind === 'beer' ? <Cuvette {...props} /> : <Sensor {...props} />}
-      <ContactShadows key={props.kind} position={[0, -2.15, 0]} opacity={props.dark ? .3 : .22} scale={14} blur={2.8} far={5} resolution={256} frames={1} />
+      <StudioShadow key={props.kind} dark={props.dark} />
     </Canvas>
   </SceneBoundary>;
 }
