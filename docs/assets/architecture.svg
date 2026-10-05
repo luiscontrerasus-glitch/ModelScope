@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="850" viewBox="0 0 1200 850" role="img" aria-labelledby="title desc">
+<title id="title">ModelScope architecture: local scientific analysis and optional AI</title>
+<desc id="desc">Raw measurements remain in the browser. Configuration enters a deterministic engine and produces evidence and visualizations. Optional server-mediated Gemini receives description and headers for a proposal requiring user confirmation, or minimal finding context for an explanation. AI does not decide scientific findings.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#19716b"/></marker><style>text{font-family:Arial,Helvetica,sans-serif;fill:#26322d} .small{font-size:16px;fill:#59665e} .label{font-size:13px;letter-spacing:1.4px;fill:#59665e} .box{fill:#fffefa;stroke:#b8c6ba} .flow{fill:none;stroke:#19716b;stroke-width:2;marker-end:url(#arrow)} .optional{fill:none;stroke:#a36222;stroke-width:2;stroke-dasharray:6 5;marker-end:url(#arrow)}</style></defs>
+<rect width="1200" height="850" fill="#f5f6f1"/>
+<text x="45" y="53" font-size="29" font-weight="600">ModelScope</text>
+<text x="45" y="84" class="small">AI interprets and explains. The deterministic engine decides.</text>
+<rect x="40" y="118" width="560" height="660" fill="#edf2e9" stroke="#dce1d7"/>
+<text x="65" y="150" class="label">LOCAL BROWSER / RAW MEASUREMENTS STAY HERE</text>
+<rect class="box" x="80" y="174" width="480" height="65"/>
+<text x="105" y="201" font-size="20">User data</text><text x="105" y="224" class="small">CSV, pasted table, manual entry, or synthetic demo</text>
+<path class="flow" d="M320 240 V268"/>
+<rect class="box" x="80" y="275" width="480" height="75"/>
+<text x="105" y="306" font-size="20">Model configuration</text><text x="105" y="332" class="small">Explicit variables, units, baseline, and response scale</text>
+<path class="flow" d="M320 351 V386"/>
+<rect x="80" y="393" width="480" height="158" fill="#19716b"/>
+<text x="105" y="430" font-size="21" style="fill:white" font-weight="600">Deterministic analysis engine</text>
+<text x="105" y="465" font-size="17" style="fill:white">Baseline regression or fixed theory</text>
+<text x="105" y="494" font-size="17" style="fill:white">Residuals and segmented model comparison</text>
+<text x="105" y="523" font-size="17" style="fill:white">Sustained disagreement and influence safeguards</text>
+<path class="flow" d="M320 552 V589"/>
+<rect class="box" x="80" y="596" width="480" height="106"/>
+<text x="105" y="629" font-size="20">Evidence + visualizations</text>
+<text x="105" y="657" class="small">Linked findings, plots, diagnostics, and JSON export</text>
+<text x="105" y="682" class="small">Supported / ambiguous / none / insufficient</text>
+<text x="80" y="748" class="small">No AI request is needed for scientific analysis.</text>
+<text x="650" y="150" class="label">OPTIONAL AI / EXPLICIT USER ACTIONS ONLY</text>
+<rect class="box" x="650" y="174" width="500" height="65"/>
+<text x="675" y="202" font-size="19">Experiment description + column headers</text>
+<text x="675" y="225" class="small">No raw values, filename, or local file path</text>
+<path class="optional" d="M900 240 V269"/>
+<rect class="box" x="650" y="276" width="500" height="74"/>
+<text x="675" y="306" font-size="19">Next.js server → Gemini → validated proposal</text>
+<text x="675" y="331" class="small">Bounded schema, timeout, throttling, sanitized failures</text>
+<path class="optional" d="M900 351 V386"/>
+<rect class="box" x="650" y="393" width="500" height="82"/>
+<text x="675" y="425" font-size="20">User confirmation</text>
+<text x="675" y="451" class="small">Fill normal form; review scale; separately run analysis</text>
+<path class="optional" d="M650 433 H624 V313 H568"/>
+<text x="650" y="518" class="label">EXPLANATION PATH</text>
+<path class="optional" d="M561 649 H630 V568 H643"/>
+<rect class="box" x="650" y="537" width="500" height="65"/>
+<text x="675" y="565" font-size="19">Selected finding + minimal evidence context</text>
+<text x="675" y="589" class="small">Includes summary statistics and caveats, not raw rows</text>
+<path class="optional" d="M900 603 V631"/>
+<rect class="box" x="650" y="638" width="500" height="80"/>
+<text x="675" y="669" font-size="19">Next.js server → Gemini → optional explanation</text>
+<text x="675" y="696" class="small">Bound to finding + revision; cannot modify analysis</text>
+<text x="650" y="755" class="small">Server-only key. Free-tier context may improve</text>
+<text x="650" y="777" class="small">Google products; avoid sensitive input.</text>
+<text x="45" y="819" class="small">One possible transition. Sensitivity is not confidence. Evidence does not identify a physical cause.</text>
+</svg>

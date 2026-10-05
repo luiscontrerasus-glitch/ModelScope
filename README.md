@@ -1,75 +1,124 @@
 # ModelScope
 
-Equations have limits. Find them.
+**Equations have limits. Find them.**
 
-ModelScope is a deterministic scientific workspace for inspecting where a configured model increasingly disagrees with measurements. Four built-in experiments and user-supplied CSV, pasted tables and manual measurements share the same evidence architecture. Milestone 4 adds optional, bounded Gemini setup proposals and evidence explanations; deterministic mathematics remains authoritative. No accounts, database, or deployment is involved.
+Compare experimental measurements with a scientific model and inspect where disagreement becomes systematic.
 
-| Demonstration | Configured baseline | Input → response |
+![Spring analysis: linked measurements, response, residuals, and candidate transition](docs/screenshots/02-spring-analysis.jpg)
+
+## The problem
+
+Students often learn equations without understanding the assumptions and regimes in which those models apply. A good fit statistic can conceal structured disagreement. Science learning needs a way to connect model assumptions to inspectable observations.
+
+## The solution
+
+ModelScope is a local scientific workspace for evaluating model adequacy. Configure a baseline, run deterministic analysis, inspect residuals and comparisons, and trace findings back to their measurements. Evidence distinguishes supported, ambiguous, no clear transition, and insufficient outcomes. Model inadequacy does not establish a physical cause.
+
+## Demo
+
+Public deployment is **pending Vercel authentication**. The production build is verified locally; no public URL is claimed yet. See the [release record](docs/release-verification.md) and [credential handoff](docs/final-checklist.md#credential-handoff).
+
+For a fast demonstration, keep Spring's progressive-departure dataset and click **Run analysis**. Compare the response with its dashed reference, inspect residual structure, select Candidate transition, and expand Evidence. Then switch experiments or choose **Analyze your data**. [Recording script and exact shot list](docs/demo-video.md).
+
+## Key capabilities
+
+- Four scientific demonstrations across mechanics, physics approximation, chemistry, and engineering instrumentation.
+- Custom CSV, pasted CSV/TSV, and manual measurements with explicit mappings and assumptions.
+- Deterministic baseline/segmented comparison, sustained residual gate, and influence safeguard.
+- Linked response/residual plots, measurement table, findings, and numerical evidence.
+- Supported, ambiguous, none, and insufficient evidence; careful sensitivity-range semantics.
+- Provenance-preserving JSON evidence exports and edit/rerun invalidation.
+- Optional reviewed AI setup proposals and explanations of existing evidence; manual analysis works without a key.
+
+## How it works
+
+![Local deterministic architecture and optional AI paths](docs/assets/architecture.svg)
+
+Pure TypeScript functions separate fitting and prediction from candidate search, comparison, residuals, and diagnostics. Typed experiment definitions provide models, units, questions, parameters, assumptions, and synthetic generators. React displays calculated evidence; it does not invent findings. CSV parsing, numerical analysis, plotting, and exports run in browser memory.
+
+Optional Next.js Node routes mediate Gemini calls. Setup receives a description and headers, returns a validated proposal, and requires confirmation into the normal configuration. Explanation receives minimal context from a selected deterministic finding and returns separately labeled prose bound to its ID and analysis revision.
+
+## Responsible AI
+
+**AI interprets and explains. ModelScope's deterministic engine decides.**
+
+AI cannot determine fits, residuals, transitions, sensitivity ranges, support states, or uncertainty. Setup is restricted to existing model families, literal source-backed units, and exact headers. Confirmation never runs analysis or supplies a response scale. Explanations are optional prose, visibly separated from **DETECTED BY MODELSCOPE**, and excluded from reproducible exports. Edits, reruns, and switching discard stale AI output.
+
+The server uses strict schemas, semantic validation, 16 KB request bounds, a 15-second provider timeout, output limits, process-local throttling, and sanitized failures. Free-text validation reduces errors but cannot guarantee perfect interpretation or prompt-injection immunity.
+
+Default: `gemini-3.5-flash-lite` via `@google/genai` 2.27.0. Its [structured-output capability](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite) and [standard text free tier](https://ai.google.dev/gemini-api/docs/pricing) were checked October 4, 2026. **Live provider smoke tests remain pending a free, unbilled key.** Mocks are test evidence, not live verification. [AI design, exact sharing, and setup](docs/ai.md).
+
+## Scientific methodology
+
+The configured baseline is compared with a continuous hinge alternative on the same complete observations. A dimensionless penalized criterion accounts for fitted parameters and candidate search. Support requires improvement of at least 10, four consecutive same-sign deviations beyond twice the early residual scale, and retained support after diagnostic omission of the largest absolute baseline residual with the same deviation direction. Reported fits retain all observations.
+
+Transition search requires 14 measurements and at least six at/below and six above a candidate. Only supported results have a transition sensitivity range. It includes near-best tested knees and neighboring measurements for sampling resolution; **it is not a confidence interval**. High R² and no detected transition do not establish physical correctness. [Exact methodology, formulas, and limits](docs/methodology.md).
+
+## Built-in experiments
+
+| Demonstration | Baseline | Input → response |
 | --- | --- | --- |
-| Spring — Hooke's Law | F = kx by default; optional F = kx + c | Extension / m → force / N |
-| Pendulum — Small-Angle Approximation | T₀ = 2π√(L/g), fixed L = 1 m, g = 9.80665 m/s² | Initial angle / degrees → period / s |
-| Beer–Lambert — Concentration Response | A = mc + b, fitted intercept by default | Concentration / mmol/L → dimensionless absorbance |
-| Sensor Calibration — Linear Range | V = mQ + b, fitted intercept by default | Reference force / N → output / V |
+| Spring — Hooke's Law | F = kx; optional fitted offset | Extension / m → force / N |
+| Pendulum — Small-Angle Approximation | T₀ = 2π√(L/g), fixed L = 1 m and g = 9.80665 m/s² | Initial angle / degrees → period / s |
+| Beer–Lambert — Concentration Response | A = mc + b, fitted offset by default | Concentration / mmol/L → dimensionless absorbance |
+| Sensor Calibration — Linear Range | V = mQ + b, fitted offset by default | Reference force / N → output / V |
 
-Every demonstration and control is labeled **Synthetic educational dataset**. Data provides reproducible, controlled examples; it is not laboratory validation. See [experiment notes](docs/experiments.md) for generation methods, questions, assumptions, and limits.
+All examples and controls are explicitly **synthetic educational datasets**, not laboratory validation. Pendulum theory stays fixed instead of being fitted to the observed periods. [Questions, generators, assumptions, and experiment notes](docs/experiments.md).
 
-## Analyze your data
+## Custom data
 
-Choose **Analyze your data** in the experiment selector. Upload a local comma-separated CSV with headers, paste CSV/TSV from a spreadsheet, or enter measurements manually. Inspect the raw preview, explicitly map X/Y, confirm names and units, select Y = mX + b, Y = mX, or user-supplied fixed Y = C, and review before running. Custom data enters the same linked scientific workspace. A separate synthetic temperature-response CSV demonstrates the workflow.
+Choose **Analyze your data**. Upload a local CSV with headers, paste CSV/TSV, or enter measurements manually. Inspect source records, map X/Y, declare names/units, and select Y = mX + b, Y = mX, or user-supplied fixed Y = C. Enter a positive response scale justified by prior knowledge, resolution, or an explicit tolerance. If unknown, investigate; no uncertainty is silently estimated.
 
-Unknown units stay unspecified, distinct from a declared unitless quantity. Unit strings are labels only; no conversions are guessed. A positive response reference scale is required and has no silent default: users must justify it from prior knowledge, measurement resolution or an explicit tolerance. If unknown, pause and investigate. Validation reports malformed records, mapped-cell errors, repeated X, unsupported numerical ranges and insufficient coverage. Blank records require explicit exclusion; meaningful rows are never silently dropped. Original source values/order and stable IDs are preserved.
+Unknown units remain unspecified and differ from a unitless quantity. Labels never convert numbers. Blank records require explicit exclusion; meaningful records are never silently discarded. Original values/order and stable IDs are preserved. Edits pause evidence until a valid rerun. A synthetic temperature-response CSV is supplied for practice. [Formats, validation, limits, and export provenance](docs/custom-data.md).
 
-Full datasets, parsing and calculations stay in browser memory. Optional AI setup sends only a description and headers; explanation sends a selected deterministic finding and summary statistics. No raw measurements are uploaded. These explicit actions share limited context with Google Gemini, whose free-tier inputs may be used to improve its products. Edits pause evidence and hide stale custom plots until a valid rerun. Custom export schema 1.2.0/method 1.3.0 records user provenance, input method, filename basename, mappings, settings, immutable source records and current analyzed observations alongside the shared evidence. Built-in and legacy exports retain their prior versions. See [custom-data guidance](docs/custom-data.md) for formats, limits, uncertainty handling and interpretation.
+## Privacy
 
-## Responsible AI design
+Raw measurements remain in the browser. Optional setup sends only your experiment description and dataset headers. Explanation sends the selected deterministic finding and minimal model/evidence context, including summary statistics and caveats. It does not send raw rows, filenames, local paths, or the complete analysis. Summary statistics can still reveal information about measurements.
 
-ModelScope uses AI only where natural-language interpretation is useful. The scientific analysis itself is deterministic and reproducible. Gemini may propose a supported configuration or explain existing evidence, but it cannot create or change ModelScope's mathematical findings.
+Gemini free-tier inputs may be used to improve Google products under its [current data-handling terms and pricing](https://ai.google.dev/gemini-api/docs/pricing). Avoid sensitive descriptions, labels, and evidence context. No accounts, database, or server-side dataset persistence are used. The key is server-only and never `NEXT_PUBLIC_`.
 
-Custom setup offers **Optional AI · describe your experiment**. Review **AI PROPOSED SETUP**, explicitly confirm into the normal form, enter your own response scale, and separately run analysis. Findings offer **Explain evidence** on demand, with **AI EXPLANATION** separated from **DETECTED BY MODELSCOPE** evidence. Editing, rerunning and switching discard old explanations. AI failure never removes scientific evidence or data.
+## Tech stack
 
-Default server model: `gemini-3.5-flash-lite` via `@google/genai` 2.27.0, verified against current official [model capabilities](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite) and [free-tier pricing](https://ai.google.dev/gemini-api/docs/pricing) on 2026-10-04. Optional setup uses `GEMINI_API_KEY`, `GEMINI_MODEL`, and `GEMINI_FREE_TIER_CONFIRMED`; see placeholder `.env.example`. Never enable billing. The server requires explicit confirmation of an unbilled project and permits only documented free-tier models. All manual and deterministic features work without a key. Live provider smoke tests remain pending because no key is configured. See [AI architecture, privacy and exact local setup](docs/ai.md).
+Next.js App Router, React, strict TypeScript, authored CSS through Tailwind's pipeline, Recharts, Zod, Papa Parse, and the official Google GenAI SDK. Vitest, Testing Library, and jsdom are development tools. Verified with Node 24.14.1.
 
-## Scientific workflow
-
-Switching experiments loads the correct data, model configuration, units, and assumptions and immediately recomputes evidence. Edit measurements, inspect linked response/residual plots, select findings or candidate-profile rows, and rerun to replace stale evidence. Both linear intercept modes remain available where configured; pendulum theory is fixed rather than fitted to the observed periods.
-
-The concise model comparison expands into numerical evidence, the complete candidate score profile, influence results, and supporting measurements. Transition shading is restrained and never marks later measurements as invalid. Keyboard marker focus survives selection, and mobile controls retain accessible target sizes.
-
-Results distinguish **supported**, **ambiguous**, **none**, and **insufficient** evidence. A high R² or a no-transition result does not establish physical correctness. Only supported results have a transition sensitivity range, which is not a confidence interval.
-
-## Analysis architecture
-
-Pure TypeScript functions under `src/lib/analysis` separate baseline fitting/prediction (`models.ts`) from candidate search, penalized comparison, sustained residuals, and influence diagnostics. This supports empirical lines and one fixed theoretical constant; it is deliberately not an arbitrary-model framework. Typed experiment definitions provide metadata, model identity, defaults, variables, parameters, assumptions and datasets. Generators are separate from detection. Components display and link computed evidence without inventing findings.
-
-The detector compares the configured baseline with a continuous hinge alternative on the same complete observations. It uses a dimensionless criterion with baseline-specific fitted-parameter counts, two extra hinge/search parameters, and a candidate-search penalty. Require improvement ≥10, four consecutive same-sign deviations beyond twice the early residual scale, and support surviving a diagnostic omission of the largest absolute baseline residual with the same deviation direction. Reported analysis retains all observations. Require 14 measurements with six at/below and six above each candidate. [Methodology](docs/methodology.md) gives exact formulas and transferability limits.
-
-The UI exports one common JSON schema **1.1.0**, method **1.2.0**, for all four families: scientific question, variable identities and units, configured baseline and parameter treatments, assumptions, provenance including edits, original observations, complete numerical analysis, comparisons, candidate profile, outcome, sensitivity, influence evidence, findings and caveats. The legacy schema 1.0 spring export API remains available for compatibility; new experiments use the common experiment-aware API.
-
-## Development and verification
-
-Next.js App Router, React, strict TypeScript, authored workspace CSS through Tailwind's pipeline, Recharts, Zod, Papa Parse and Vitest. Use Node 24 LTS and npm (verified Node 24.14.1). The official Google GenAI SDK is server-only. Testing Library and jsdom are development-only DOM test tools.
+## Running locally
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open http://localhost:3000. Checks:
+Open http://localhost:3000. AI is optional. To enable it, privately configure ignored `.env.local` using `.env.example`: `GEMINI_API_KEY`, `GEMINI_MODEL=gemini-3.5-flash-lite`, and `GEMINI_FREE_TIER_CONFIRMED=true` only after verifying an unbilled project. Do not enable billing or add a card. [Exact steps](docs/final-checklist.md#free-gemini-key).
+
+Production preview:
+
+```sh
+npm run build
+npm run start -- --hostname 127.0.0.1 --port 3000
+```
+
+Stop an existing production server before rebuilding and restart it afterward.
+
+## Tests
 
 ```sh
 npm test
 npm run typecheck
 npm run lint
 npm run build
-npm run start -- --hostname 127.0.0.1 --port 3000
+npm audit --omit=dev
 ```
 
-Stop an existing production server before rebuilding and restart it afterward. The suite preserves all 173 tests from Milestones 1-3 and adds 97 AI contract, provider-boundary and client interaction tests (270 total). Normal tests never call Gemini. Exact pre-generalization Hooke numerical snapshots remain unchanged. Executed results are recorded in [verification notes](docs/verification.md); [file inventory](docs/files.md) lists repository artifacts.
+**290 tests across six files** pass, including frozen Hooke numerical snapshots, the four experiments, custom provenance/validation, adversarial analysis inputs, and AI server/client contracts. Normal tests never call Gemini. Final typecheck, lint, production build, and production audit pass; zero production vulnerabilities. Five development-only high advisories remain in the lint dependency chain, documented without a forced breaking upgrade. [Release verification](docs/release-verification.md), [historical milestone verification](docs/verification.md), [file inventory](docs/files.md).
 
-## Limits
+## Limitations
 
-Four built-in families and three explicit custom baselines, one hinge, ordinary least squares, fixed theoretical parameters, assumed response scales, no calibrated false-positive rate, no confidence intervals or physical-mechanism inference. A hinge can lag a smooth departure; an influence diagnostic can withhold real support. Measurement-input uncertainty, heteroscedastic weighting and repeated independent-variable values are not supported. Built-in canonical units are explicit; custom labels never trigger automatic conversion.
+Four built-in families and three custom baselines, one possible hinge, ordinary least squares, fixed theoretical parameters, assumed response scales, no calibrated false-positive rate, no confidence intervals or inferred mechanism. Measurement-input uncertainty, heteroscedastic weighting, and repeated independent-variable values are unsupported. A hinge can lag smooth departure; the influence check can withhold genuine support. Reload resets in-memory edits; export provides a record. Arbitrary equations, XLSX/PDF, persistence, and collaboration are outside this prototype. Public AI throttling is process-local, not distributed.
 
-Edits are in memory; exports provide a record, and reload resets the workspace. Arbitrary equations, XLSX/PDF import, persistence, authentication, collaboration, and deployment remain deferred.
+## Hackathon development
 
-The production dependency audit is recorded in verification notes. The existing development lint chain retains an unpatched braces advisory; no forced breaking upgrade was applied.
+**Luis Contreras** started ModelScope from scratch during the overlapping ImpactHack 2026 and ForgeHacks Online 2026 build period. Full incremental Git history begins October 4, 2026; it has not been squashed, rewritten, or backdated. Codex assisted development, debugging, research, documentation, and verification. Open-source libraries and pre-trained Gemini are disclosed above.
+
+ImpactHack's [official window](https://impacthack26.devpost.com/details/dates) runs October 1 at midnight PDT through October 7 at 11:45 PM PDT. Forge's intended track is **AI + Education**; use its [live Devpost deadline](https://forgehacks-2026.devpost.com/) of October 10 at noon EDT. Team eligibility and organizer permission for cross-hackathon submission remain checks, not claims of approval.
+
+[ImpactHack draft](docs/submission-impacthack.md) · [ForgeHacks draft](docs/submission-forgehacks.md) · [Video script](docs/demo-video.md) · [Final checklist and credential handoff](docs/final-checklist.md) · [Screenshot manifest](docs/screenshots/README.md). Nothing has been submitted automatically.
