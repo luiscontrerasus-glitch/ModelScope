@@ -1,0 +1,180 @@
+{
+  "implementation": "ea08be7",
+  "baseline": {
+    "revision": "f511f74",
+    "model": "spring",
+    "width": 1440,
+    "seconds": 14.575231,
+    "sceneCallbacks": 333,
+    "sceneCallbacksPerSecond": 22.778369687588484,
+    "medianSceneIntervalMs": 41.953,
+    "p95SceneIntervalMs": 50.069,
+    "layouts": 333
+  },
+  "finalSamples": [
+    {
+      "label": "sensor mobile",
+      "width": 390,
+      "cadences": [
+        {
+          "key": "page-572be821b6bf937d.js:i:20025",
+          "callbacks": 1757,
+          "seconds": 14.718578,
+          "callbacksPerSecond": 119.30500351324699,
+          "medianIntervalMs": 8.351,
+          "p95IntervalMs": 9.067
+        },
+        {
+          "key": "f5ef5e1c.2da34c5fc26fb3fa.js:eW:21614",
+          "callbacks": 1756,
+          "seconds": 14.710485,
+          "callbacksPerSecond": 119.30266065326873,
+          "medianIntervalMs": 8.357,
+          "p95IntervalMs": 9.034
+        },
+        {
+          "key": "4bd1b696-92152b0f5947070d.js::148823",
+          "callbacks": 352,
+          "seconds": 14.668723,
+          "callbacksPerSecond": 23.92846330249743,
+          "medianIntervalMs": 0.717,
+          "p95IntervalMs": 83.942
+        },
+        {
+          "key": "794-000a715ce19c7a17.js:w:51265",
+          "callbacks": 176,
+          "seconds": 14.667971,
+          "callbacksPerSecond": 11.930757157891845,
+          "medianIntervalMs": 83.522,
+          "p95IntervalMs": 85.945
+        },
+        {
+          "key": "4bd1b696-92152b0f5947070d.js:fV:191579",
+          "callbacks": 4,
+          "seconds": 0.008111,
+          "callbacksPerSecond": 369.8680803846628,
+          "medianIntervalMs": 0.195,
+          "p95IntervalMs": 7.844
+        }
+      ],
+      "layouts": 90,
+      "mainFunctionCallsOver50Ms": 0
+    },
+    {
+      "label": "spring desktop",
+      "width": 1440,
+      "cadences": [
+        {
+          "key": "page-572be821b6bf937d.js:i:20025",
+          "callbacks": 1950,
+          "seconds": 16.41223,
+          "callbacksPerSecond": 118.75290560758653,
+          "medianIntervalMs": 8.359,
+          "p95IntervalMs": 9.025
+        },
+        {
+          "key": "f5ef5e1c.2da34c5fc26fb3fa.js:eW:21614",
+          "callbacks": 1949,
+          "seconds": 16.404059,
+          "callbacksPerSecond": 118.75109690839322,
+          "medianIntervalMs": 8.36,
+          "p95IntervalMs": 9.01
+        },
+        {
+          "key": "4bd1b696-92152b0f5947070d.js::148823",
+          "callbacks": 390,
+          "seconds": 16.295084,
+          "callbacksPerSecond": 23.872230422377694,
+          "medianIntervalMs": 0.504,
+          "p95IntervalMs": 84.061
+        },
+        {
+          "key": "794-000a715ce19c7a17.js:w:51265",
+          "callbacks": 195,
+          "seconds": 16.294055,
+          "callbacksPerSecond": 11.906182960595137,
+          "medianIntervalMs": 83.551,
+          "p95IntervalMs": 87.384
+        },
+        {
+          "key": "4bd1b696-92152b0f5947070d.js:fV:191579",
+          "callbacks": 4,
+          "seconds": 0.008498,
+          "callbacksPerSecond": 353.02424099788186,
+          "medianIntervalMs": 0.068,
+          "p95IntervalMs": 8.371
+        }
+      ],
+      "layouts": 160,
+      "mainFunctionCallsOver50Ms": 0
+    },
+    {
+      "label": "pendulum desktop",
+      "width": 1280,
+      "cadences": [
+        {
+          "key": "f5ef5e1c.2da34c5fc26fb3fa.js:eW:21614",
+          "callbacks": 4116,
+          "seconds": 34.699193,
+          "callbacksPerSecond": 118.59065425527331,
+          "medianIntervalMs": 8.354,
+          "p95IntervalMs": 9.011
+        },
+        {
+          "key": "page-572be821b6bf937d.js:i:20025",
+          "callbacks": 4116,
+          "seconds": 34.699174,
+          "callbacksPerSecond": 118.59071919118306,
+          "medianIntervalMs": 8.351,
+          "p95IntervalMs": 9.026
+        },
+        {
+          "key": "4bd1b696-92152b0f5947070d.js::148823",
+          "callbacks": 828,
+          "seconds": 34.664951,
+          "callbacksPerSecond": 23.85694992039654,
+          "medianIntervalMs": 0.715,
+          "p95IntervalMs": 84.18
+        },
+        {
+          "key": "794-000a715ce19c7a17.js:w:51265",
+          "callbacks": 414,
+          "seconds": 34.664206,
+          "callbacksPerSecond": 11.914307225153232,
+          "medianIntervalMs": 83.565,
+          "p95IntervalMs": 91.074
+        },
+        {
+          "key": "4bd1b696-92152b0f5947070d.js:fV:191579",
+          "callbacks": 4,
+          "seconds": 0.008505,
+          "callbacksPerSecond": 352.7336860670194,
+          "medianIntervalMs": 0.094,
+          "p95IntervalMs": 8.34
+        },
+        {
+          "key": "f5ef5e1c.2da34c5fc26fb3fa.js::4812",
+          "callbacks": 2,
+          "seconds": 0.000465,
+          "callbacksPerSecond": 2150.537634408602,
+          "medianIntervalMs": 0.465,
+          "p95IntervalMs": 0.465
+        }
+      ],
+      "layouts": 0,
+      "mainFunctionCallsOver50Ms": 0
+    }
+  ],
+  "highDpi": {
+    "emulatedDeviceDpr": 3,
+    "canvasBackingWidth": 1011,
+    "canvasCssWidth": 674.6517944335938,
+    "effectiveCanvasDpr": 1.498550820351391
+  },
+  "notes": [
+    "Chrome FunctionCall cadence, not a GPU frame-rate benchmark.",
+    "The page driver and R3F frame function are separate callbacks; do not add their frequencies.",
+    "Readout scheduling stays near 12 Hz.",
+    "Mobile samples are viewport emulation on this computer, not physical-phone performance."
+  ]
+}
