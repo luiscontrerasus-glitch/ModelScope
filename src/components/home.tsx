@@ -1,106 +1,12 @@
-'use client';
-import { useEffect, useRef, useState } from 'react';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import type { Instrument } from './instrument-scene';
-import { finiteAmplitudePeriod } from '@/lib/experiments/generators';
-import { smallAnglePeriod } from '@/lib/analysis/models';
+import { SiteNav, SiteFooter } from './site-nav';
+import { ModelReality } from './model-reality';
 import { ConceptPlot } from './concept-plot';
-import { InstrumentFallback } from './instrument-fallback';
-
-const Scene = dynamic(() => import('./instrument-scene'), { ssr: false, loading: () => <div className="scene-loading">Preparing the instrument…</div> });
-const workspace = (experiment = 'spring-hooke') => `/workspace?experiment=${experiment}`;
-const exhibits: { kind: Instrument; title: string; subtitle: string; category: string; copy: string; experiment: string; value: number }[] = [
-  { kind: 'spring', title: 'Spring', subtitle: 'Hooke’s Law', category: 'Mechanics', copy: 'A linear model that works — until it doesn’t.', experiment: 'spring-hooke', value: .083 },
-  { kind: 'pendulum', title: 'Pendulum', subtitle: 'Small-Angle Approximation', category: 'Physics', copy: 'Small angles are powerful. But “small” has limits.', experiment: 'pendulum', value: 28 },
-  { kind: 'beer', title: 'Beer–Lambert', subtitle: 'Concentration Response', category: 'Chemistry', copy: 'Light absorbance is often linear. Until it isn’t.', experiment: 'beer-lambert', value: .64 },
-  { kind: 'sensor', title: 'Sensor', subtitle: 'Linear Range', category: 'Instrumentation', copy: 'Linear response is a design goal. Not a guarantee.', experiment: 'sensor-calibration', value: 8 },
-];
-
-function Nav() {
-  return <header className="home-nav"><Link href="/" className="home-brand">ModelScope</Link><nav aria-label="Main navigation"><a href="#explore">Explore</a><Link href={workspace('custom')}>Analyze</Link><a href="https://github.com/luiscontrerasus-glitch/ModelScope/blob/main/docs/methodology.md" target="_blank" rel="noreferrer">Methodology</a><a href="https://github.com/luiscontrerasus-glitch/ModelScope" target="_blank" rel="noreferrer">GitHub</a></nav><Link className="home-button nav-action" href={workspace()}>Open ModelScope <span aria-hidden="true">→</span></Link></header>;
-}
-function Readout({ items, children }: { items: [string, string][]; children?: React.ReactNode }) {
-  return <div className="instrument-readout"><dl>{items.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>{children}</div>;
-}
-function Control({ label, value, min, max, step, onChange }: { label: string; value: number; min: number; max: number; step: number; onChange: (n: number) => void }) {
-  return <label className="instrument-control"><span>{label}</span><input aria-label={label} type="range" min={min} max={max} step={step} value={value} onChange={e => onChange(Number(e.target.value))} /></label>;
-}
 export default function Home() {
-  const [extension, setExtension] = useState(.072);
-  const [exhibit, setExhibit] = useState(0);
-  const [angle, setAngle] = useState(5.2);
-  const [concentration, setConcentration] = useState(.45);
-  const [input, setInput] = useState(6.2);
-  const current = exhibits[exhibit];
-  const period = smallAnglePeriod(1, 9.80665);
-  const finitePeriod = finiteAmplitudePeriod(angle);
-  const absorbance = 1.2 * concentration + .018;
-  const beerResponse = absorbance - .9 * Math.max(0, concentration - .48) ** 2;
-  const voltage = .25 * input + .1;
-  const sensorResponse = voltage - .015 * Math.max(0, input - 5) ** 2;
-  const exhibitControl = current.kind === 'spring' ? { value: extension, set: setExtension, label: 'Extension', unit: 'm', min: .01, max: .14, step: .001, decimals: 3 }
-    : current.kind === 'pendulum' ? { value: angle, set: setAngle, label: 'Starting angle', unit: '°', min: 0, max: 60, step: .1, decimals: 1 }
-    : current.kind === 'beer' ? { value: concentration, set: setConcentration, label: 'Concentration', unit: 'mmol/L', min: 0, max: 1, step: .01, decimals: 2 }
-    : { value: input, set: setInput, label: 'Applied input', unit: 'N', min: 0, max: 12, step: .1, decimals: 1 };
-  const [active, setActive] = useState('hero');
-  const root = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const slots = Array.from(root.current?.querySelectorAll<HTMLElement>('[data-scene]') ?? []);
-    const pick = () => {
-      const center = window.innerHeight / 2;
-      const visible = slots.filter(el => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < window.innerHeight; });
-      const closest = visible.sort((a, b) => Math.abs(a.getBoundingClientRect().top + a.offsetHeight / 2 - center) - Math.abs(b.getBoundingClientRect().top + b.offsetHeight / 2 - center))[0];
-      setActive(closest?.dataset.scene ?? '');
-    };
-    const observer = new IntersectionObserver(pick, { threshold: [0, .2, .4, .6, .8, 1] });
-    slots.forEach(el => observer.observe(el)); pick();
-    const visibility = () => document.hidden ? setActive('') : pick();
-    document.addEventListener('visibilitychange', visibility);
-    return () => { observer.disconnect(); document.removeEventListener('visibilitychange', visibility); };
-  }, []);
-  function scene(id: string, kind: Instrument, value: number, onChange?: (n: number) => void, dark = false) {
-    return <div className={`scene-slot scene-${kind}`} data-scene={id} aria-label={`Interactive ${kind} illustration`}>
-      {active === id ? <Scene kind={kind} value={value} onChange={onChange} dark={dark} /> : <InstrumentFallback kind={kind} />}
-    </div>;
-  }
-  return <main className="home" ref={root}>
-    <a className="skip-link" href="#home-content">Skip to content</a>
-    <Nav />
-    <section className="home-hero" id="home-content" aria-labelledby="hero-heading">
-      <div className="hero-copy"><h1 id="hero-heading">Equations<br />have limits.<br /><span>Find them.</span></h1><p>ModelScope reveals where experimental measurements begin systematically disagreeing with a scientific model.</p><div className="home-actions"><a className="home-button" href="#explore">Explore a model <span aria-hidden="true">→</span></a><Link className="home-button light" href={workspace('custom')}>Analyze your data</Link></div></div>
-      <div className="hero-instrument">{scene('hero', 'spring', extension, setExtension)}<span className="drag-hint">Drag the free end to stretch <span aria-hidden="true">↔</span></span></div>
-      <Readout items={[[ 'Extension', `${extension.toFixed(3)} m` ],[ 'Model prediction', `${(50 * extension).toFixed(2)} N` ],[ 'Regime', extension <= .08 ? 'Near-linear' : 'Growing departure' ]]}><Control label="Spring extension" min={.01} max={.14} step={.001} value={extension} onChange={setExtension} /><svg className="spring-response" viewBox="0 0 120 40" role="img" aria-label="Illustrative response compared with the ideal linear model"><path d="M2 36L116 4" stroke="#8294a7" strokeDasharray="3 3" fill="none" /><path d={extension <= .08 ? 'M2 36L116 4' : 'M2 36L63 19Q94 13 116 1'} stroke={extension <= .08 ? '#2378e8' : '#b47a35'} fill="none" strokeWidth="1.5" /></svg><small>Illustrative visualization · k = 50 N/m.<br />Open the workspace for measured evidence.</small></Readout>
-      <div className="hero-footnote"><span />Four scientific systems. One question.<br />Where do models stop working?</div>
-    </section>
-    <section className="home-explorer" id="explore" aria-labelledby="explorer-heading">
-      <div className="exhibit-copy"><span className="home-kicker">{String(exhibit + 1).padStart(2, '0')} / 04</span><h2 id="explorer-heading">{current.title}<span>{current.subtitle}</span></h2><p>{current.copy}</p><div className="exhibit-control"><span>{exhibitControl.label}<output>{exhibitControl.value.toFixed(exhibitControl.decimals)} {exhibitControl.unit}</output></span><Control label={`Explorer ${exhibitControl.label.toLowerCase()}`} value={exhibitControl.value} onChange={exhibitControl.set} min={exhibitControl.min} max={exhibitControl.max} step={exhibitControl.step} /></div><Link className="home-button outline" href={workspace(current.experiment)}>Open analysis <span aria-hidden="true">→</span></Link></div>
-      <div className="exhibit-instrument">{scene('explorer', current.kind, exhibitControl.value, exhibitControl.set, true)}</div>
-      <div className="exhibit-selector" role="group" aria-label="Select a scientific model">{exhibits.map((item, i) => <button key={item.kind} aria-pressed={i === exhibit} onClick={() => setExhibit(i)}><span className={`exhibit-symbol ${item.kind}`} aria-hidden="true">{['〰', '◯', '▯', '⊥'][i]}</span><span>{item.title}<small>{item.category}</small></span><span className="selector-arrow" aria-hidden="true">↗</span></button>)}</div>
-      <span className="exhibit-caption">Procedural illustrations. Explore the evidence in the workspace.</span>
-    </section>
-    <section className="home-model pendulum-section" id="pendulum" aria-labelledby="pendulum-heading">
-      <div className="model-copy"><span className="home-kicker">02 / 04</span><h2 id="pendulum-heading">Pendulum</h2><h3>Small-Angle Approximation</h3><p>Small angles are powerful.<br />But “small” has limits.</p><Link className="home-button light" href={workspace('pendulum')}>Explore Pendulum <span aria-hidden="true">→</span></Link></div>
-      <div className="model-instrument">{scene('pendulum', 'pendulum', angle, setAngle)}<span className="drag-hint">Drag the bob to change the angle <span aria-hidden="true">↔</span></span></div>
-      <Readout items={[[ 'Angle', `${angle.toFixed(1)}°` ],[ 'Small-angle period', `${period.toFixed(3)} s` ],[ 'Finite-amplitude period', `${finitePeriod.toFixed(3)} s` ],[ 'Difference', `+${((finitePeriod / period - 1) * 100).toFixed(2)}%` ]]}><Control label="Pendulum angle" min={0} max={60} step={.1} value={angle} onChange={setAngle} /></Readout>
-      <p className="model-caption">Idealized pendulum illustration · L = 1 m, g = 9.80665 m/s² · no damping.</p>
-    </section>
-    <section className="home-model beer-section" id="beer-lambert" aria-labelledby="beer-heading">
-      <div className="model-copy"><span className="home-kicker">03 / 04</span><h2 id="beer-heading">Beer–Lambert</h2><h3>Concentration Response</h3><p>Light absorbance is often linear.<br />At higher concentrations,<br />deviations appear.</p><Link className="home-button light" href={workspace('beer-lambert')}>Explore Beer–Lambert <span aria-hidden="true">→</span></Link></div>
-      <div className="model-instrument">{scene('beer', 'beer', concentration)}</div>
-      <Readout items={[[ 'Concentration', `${concentration.toFixed(2)} mmol/L` ],[ 'Predicted absorbance', absorbance.toFixed(3) ],[ 'Illustrative response', beerResponse.toFixed(3) ],[ 'Deviation', `${((beerResponse / absorbance - 1) * 100).toFixed(1)}%` ]]}><Control label="Solution concentration" min={0} max={1} step={.01} value={concentration} onChange={setConcentration} /></Readout>
-      <p className="model-caption">Synthetic educational response · absorbance is dimensionless · a generic fixed-path calibration.</p>
-    </section>
-    <section className="home-model sensor-section" id="sensor" aria-labelledby="sensor-heading">
-      <div className="model-copy"><span className="home-kicker">04 / 04</span><h2 id="sensor-heading">Sensor Calibration</h2><h3>Linear Range</h3><p>Many sensors are linear<br />only within a certain range.</p><Link className="home-button light" href={workspace('sensor-calibration')}>Explore Sensor <span aria-hidden="true">→</span></Link></div>
-      <div className="model-instrument">{scene('sensor', 'sensor', input)}</div>
-      <Readout items={[[ 'Applied input', `${input.toFixed(1)} N` ],[ 'Expected output', `${voltage.toFixed(3)} V` ],[ 'Illustrative response', `${sensorResponse.toFixed(3)} V` ],[ 'Deviation', `${((sensorResponse / voltage - 1) * 100).toFixed(1)}%` ]]}><Control label="Sensor applied input" min={0} max={12} step={.1} value={input} onChange={setInput} /></Readout>
-      <p className="model-caption">Generic sensor illustration · compression is synthetic and does not identify a physical mechanism.</p>
-    </section>
-    <section className="home-thesis" id="the-bigger-picture" aria-labelledby="thesis-heading"><div><span className="home-kicker">The bigger picture</span><h2 id="thesis-heading">The model looks right.<br />Until it doesn’t.</h2><p>Scientific equations are approximations.<br />ModelScope helps students see where their assumptions stop matching the measurements.</p><Link className="home-button light" href={workspace()}>Explore the spring <span aria-hidden="true">→</span></Link></div><ConceptPlot /></section>
-    <section className="home-architecture" aria-labelledby="architecture-heading"><span className="home-kicker">Under the surface</span><h2 id="architecture-heading">Deterministic science.<br /><span>Optional AI.</span></h2><div className="architecture-flow"><div><span>01</span><h3>Your data</h3><p>CSV, pasted tables<br />or manual measurements</p></div><div><span>02</span><h3>Analysis engine</h3><p>Regression · residuals<br />Segmented comparison<br />Influence safeguards</p></div><div><span>03</span><h3>Evidence</h3><p>Model disagreement<br />Sensitivity ranges<br />Linked observations</p></div><div><span>04 / OPTIONAL</span><h3>AI</h3><p>Setup interpretation<br />Evidence explanation</p></div></div><p className="architecture-statement">AI explains. The analysis engine decides.</p><p className="architecture-privacy">Calculations stay in your browser. Optional AI sends only requested setup or evidence context to the provider, never the full raw dataset.</p><Link className="home-button" href={workspace('custom')}>Analyze your data <span aria-hidden="true">→</span></Link></section>
-    <footer className="home-footer"><Link href="/" className="home-brand">ModelScope</Link><span>Scientific models. Visible limits.</span><a href="https://github.com/luiscontrerasus-glitch/ModelScope/blob/main/docs/methodology.md" target="_blank" rel="noreferrer">Read the methodology <span aria-hidden="true">↗</span></a></footer>
+  return <main className="home refined-home"><a className="skip-link" href="#home-content">Skip to content</a><SiteNav page="home" />
+    <section className="reality-hero" id="home-content" aria-labelledby="hero-heading"><div className="hero-copy"><h1 id="hero-heading">Equations<br />have limits.<br /><span>Find them.</span></h1><p>ModelScope reveals where experimental measurements begin systematically disagreeing with a scientific model.</p><div className="home-actions"><Link className="home-button" href="/explore">Explore Models <span aria-hidden="true">→</span></Link><Link className="home-button light" href="/workspace?experiment=custom">Analyze Your Data</Link></div></div><ModelReality /></section>
+    <section className="model-teasers" aria-labelledby="teasers-heading"><div><span className="home-kicker">A closer look</span><h2 id="teasers-heading">Four scientific systems.<br />One question.</h2></div><div className="teaser-links">{[['spring', 'Spring', 'Mechanics'], ['pendulum', 'Pendulum', 'Physics'], ['beer-lambert', 'Beer–Lambert', 'Chemistry'], ['sensor', 'Sensor', 'Instrumentation']].map(([id, title, category], i) => <Link key={id} href={`/explore?model=${id}`}><span className="teaser-number">0{i + 1}</span><strong>{title}</strong><small>{category}</small><span aria-hidden="true">↗</span></Link>)}</div></section>
+    <section className="home-thesis" aria-labelledby="thesis-heading"><div><span className="home-kicker">The bigger picture</span><h2 id="thesis-heading">The model looks right.<br />Until it doesn’t.</h2><p>Scientific equations are approximations. ModelScope makes their disagreement with measurements visible.</p><Link className="home-button light" href="/workspace?experiment=spring-hooke">Inspect the evidence <span aria-hidden="true">→</span></Link></div><ConceptPlot /></section>
+    <section className="home-architecture" aria-labelledby="architecture-heading"><span className="home-kicker">Under the surface</span><h2 id="architecture-heading">Deterministic science.<br /><span>Optional AI.</span></h2><div className="architecture-flow"><div><span>01</span><h3>Your data</h3><p>CSV, pasted tables<br />or manual measurements</p></div><div><span>02</span><h3>Analysis engine</h3><p>Regression · residuals<br />Segmented comparison<br />Influence safeguards</p></div><div><span>03</span><h3>Evidence</h3><p>Model disagreement<br />Sensitivity ranges<br />Linked observations</p></div><div><span>04 / OPTIONAL</span><h3>AI</h3><p>Setup interpretation<br />Evidence explanation</p></div></div><p className="architecture-statement">AI explains. The analysis engine decides.</p><p className="architecture-privacy">Calculations stay in your browser. Optional AI sends only requested setup or evidence context to the provider, never the full raw dataset.</p><Link className="home-button" href="/workspace?experiment=custom">Start an analysis <span aria-hidden="true">→</span></Link></section><SiteFooter />
   </main>;
 }
-
-
