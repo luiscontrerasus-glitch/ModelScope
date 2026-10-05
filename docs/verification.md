@@ -1,4 +1,57 @@
-# Milestone 3 verification
+# Milestone 4 verification
+
+Executed on 2026-10-04 in the existing repository with Node 24.14.1. No deployment, billing change or real provider call was performed. Mathematical analysis modules, experiment definitions, prior exports, all 173 existing tests and milestone history are unchanged.
+
+## Final commands and dependency review
+
+| Command | Executed result |
+| --- | --- |
+| `npm test` | Passed: 6 files, 270 tests; 173 preserved plus 97 new |
+| `npm run typecheck` | Passed, exit 0 |
+| `npm run lint` | Passed, exit 0, no warnings |
+| `npm run build` | Passed, exit 0; production compilation, TypeScript, pages/traces and two dynamic AI routes |
+| `npm audit --omit=dev --json` | Passed, zero production vulnerabilities |
+
+Added official `@google/genai` 2.27.0 for server inference and development-only Testing Library React 16.3.3/jsdom 29.1.1 for DOM interaction tests. The existing five high-severity development lint-chain entries remain; no forced breaking update was applied. Windows sandbox worker spawning produced EPERM for build/test commands; those commands passed with approved execution.
+
+## Provider verification and pending live smoke
+
+Read official Google SDK, structured-output, model and pricing documentation before implementation. Default `gemini-3.5-flash-lite` is stable, structured-output capable and listed with free-tier standard text input/output. Allowlisted alternative `gemini-3.1-flash-lite` also has those capabilities/pricing. Sources and exact local setup steps are in `docs/ai.md`.
+
+No Gemini key or local environment file was present: **live Gemini smoke tests remain pending**. Automated mocks and browser screenshots do not establish live inference or account quota. The server requires a key, allowlisted model and operator confirmation that the project has no billing enabled; this is an attestation, not a billing-status API check.
+
+## Automated coverage
+
+Added 84 server/contract tests and 13 DOM tests. Normal tests mock the provider boundary and never call Google. Coverage includes supported/unsupported proposals, hallucinated columns, invalid enums, no-header descriptions, missing/invented/literal units, fixed constants and missing/invalid values, unauthorized fields, numerical uncertainty advice, injection-style input, malformed JSON, aborting timeout, quota/network/model/refusal failures, no key, bounded request bodies and safe HTTP errors.
+
+Explanation tests cover actual finding membership, unknown IDs, inconsistent bindings/category, old versions, extra authority fields, numerical/causal/outcome claims and deterministic-state preservation. DOM tests exercise explicit confirmation, rejection, unsupported no-op, no automatic analysis or reference scale, manual fallback, minimal transmitted fields, separate provenance labels, dismiss/retry, description-change cancellation, edit/rerun/switch invalidation, pending responses after rerun and altered context even with a reused version. All prior test files and numerical fixtures remain unedited.
+
+## Actual production desktop browser checks
+
+Used the production Next.js server on 127.0.0.1:3000, including explicit 1440 × 1000 checks. No development server or production mock endpoint was added. Browser-only interception was restricted to the optional AI XHR routes and cleared afterward.
+
+- Ran unchanged Spring: supported candidate 0.080 m, range 0.075–0.085 m and adjusted improvement approximately 84.02. All four built-ins loaded their own supported demonstrations with correct relationships; Pendulum restored its fixed theoretical equation and parameters.
+- Real no-key Explain returned a non-blocking unavailable message with measurements/evidence retained. Real no-key setup returned manual fallback without configuration loss.
+- Entered three manual rows, fixed C = 3 and scale 0.1 without AI; obtained insufficient transition evidence with a usable fit/residual workspace.
+- Pasted four Time/Response rows. Inspected setup request: description and actual headers only. Mocked a through-origin proposal; review changed no mapping and ran no analysis. Rejection left mappings empty. Explicit confirmation filled normal configuration, left reference scale empty and required a separate Run after entering 0.1.
+- Inspected explanation request: current finding ID/revision and minimal summary/statistics/caveats, with no raw rows, paths, full result, candidate profile or row IDs. Matching mock prose appeared below deterministic evidence with a separate AI label.
+- Edited M01 response to 2.02: old AI disappeared, data was retained and stale export disabled. Reran and mocked provider 503: deterministic results remained usable with retry/dismiss.
+- Started an explanation then reran before its response: request aborted and no old prose appeared. Switching experiments cleared irrelevant AI state.
+- Downloaded evidence while mock prose was visible and independently parsed the saved JSON. Schema 1.2.0/method 1.3.0, four observations and insufficient outcome were preserved. AI prose, request revision, credentials and private paths were absent. The automation download-event wait timed out, but the actual file saved successfully and was independently verified.
+
+## Actual mobile browser checks
+
+At 390 × 844, verified setup text area, proposal review, confirmation by Enter, normal model/scale form, Run, explanation, dismiss/retry and mocked provider error. Proposal/text area were approximately 302 px wide, explanation content 298 px and buttons 44 px high. Document width stayed below viewport width; no horizontal page overflow. Existing tables, plots and evidence remained usable. Pending explanations were invalidated on rerun. After final build changes, repeated proposal confirmation/explanation and checked corrected privacy disclosure.
+
+Full-page desktop/mobile proposal and explanation screenshots were saved under ignored `browser-artifacts` and visually inspected. These demonstrate **mocked AI rendering**, not live Gemini. Browser warning/error logs were empty. All interception and viewport overrides were cleared; displayed mock prose was dismissed. Production remains available with real no-key behavior.
+
+## Privacy and final source review
+
+Reviewed source/dependency diff and placeholder `.env.example`. Scans found no credentials or absolute user paths in authored source/tests/docs/configuration and no Gemini environment names, SDK symbols or provider endpoint in browser static JS. No `.env.local`, raw provider outputs, debug logs or uploaded fixtures were added. Exports remain deterministic and exclude AI prose. Upstream errors are generic and safe; no data/provider outputs are logged. Free-text interpretation/filter limits, process-local throttling, operator billing attestation and pending live availability are documented in `docs/ai.md`. Historical dependency advisories below remain applicable.
+
+---
+
+# Historical Milestone 3 verification
 
 Executed on 2026-10-04 in the existing repository with Node 24.14.1. All checks concern deterministic software behavior and illustrative fixtures, not laboratory validity or calibrated statistical error rates. Milestone 1–2 history and regression fixtures remain intact.
 

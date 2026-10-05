@@ -2,7 +2,7 @@
 
 Equations have limits. Find them.
 
-ModelScope is a deterministic scientific workspace for inspecting where a configured model increasingly disagrees with measurements. Milestone 3 adds user-supplied CSV, pasted tables and manual measurements to the four verified built-in experiments, using the same evidence architecture. No AI, accounts, database, or deployment is involved.
+ModelScope is a deterministic scientific workspace for inspecting where a configured model increasingly disagrees with measurements. Four built-in experiments and user-supplied CSV, pasted tables and manual measurements share the same evidence architecture. Milestone 4 adds optional, bounded Gemini setup proposals and evidence explanations; deterministic mathematics remains authoritative. No accounts, database, or deployment is involved.
 
 | Demonstration | Configured baseline | Input → response |
 | --- | --- | --- |
@@ -19,7 +19,15 @@ Choose **Analyze your data** in the experiment selector. Upload a local comma-se
 
 Unknown units stay unspecified, distinct from a declared unitless quantity. Unit strings are labels only; no conversions are guessed. A positive response reference scale is required and has no silent default: users must justify it from prior knowledge, measurement resolution or an explicit tolerance. If unknown, pause and investigate. Validation reports malformed records, mapped-cell errors, repeated X, unsupported numerical ranges and insufficient coverage. Blank records require explicit exclusion; meaningful rows are never silently dropped. Original source values/order and stable IDs are preserved.
 
-All custom processing stays in browser memory. No measurement contents go to AI, analytics or an upload server. Edits pause evidence and hide stale custom plots until a valid rerun. Custom export schema 1.2.0/method 1.3.0 records user provenance, input method, filename basename, mappings, settings, immutable source records and current analyzed observations alongside the shared evidence. Built-in and legacy exports retain their prior versions. See [custom-data guidance](docs/custom-data.md) for formats, limits, uncertainty handling and interpretation.
+Full datasets, parsing and calculations stay in browser memory. Optional AI setup sends only a description and headers; explanation sends a selected deterministic finding and summary statistics. No raw measurements are uploaded. These explicit actions share limited context with Google Gemini, whose free-tier inputs may be used to improve its products. Edits pause evidence and hide stale custom plots until a valid rerun. Custom export schema 1.2.0/method 1.3.0 records user provenance, input method, filename basename, mappings, settings, immutable source records and current analyzed observations alongside the shared evidence. Built-in and legacy exports retain their prior versions. See [custom-data guidance](docs/custom-data.md) for formats, limits, uncertainty handling and interpretation.
+
+## Responsible AI design
+
+ModelScope uses AI only where natural-language interpretation is useful. The scientific analysis itself is deterministic and reproducible. Gemini may propose a supported configuration or explain existing evidence, but it cannot create or change ModelScope's mathematical findings.
+
+Custom setup offers **Optional AI · describe your experiment**. Review **AI PROPOSED SETUP**, explicitly confirm into the normal form, enter your own response scale, and separately run analysis. Findings offer **Explain evidence** on demand, with **AI EXPLANATION** separated from **DETECTED BY MODELSCOPE** evidence. Editing, rerunning and switching discard old explanations. AI failure never removes scientific evidence or data.
+
+Default server model: `gemini-3.5-flash-lite` via `@google/genai` 2.27.0, verified against current official [model capabilities](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite) and [free-tier pricing](https://ai.google.dev/gemini-api/docs/pricing) on 2026-10-04. Optional setup uses `GEMINI_API_KEY`, `GEMINI_MODEL`, and `GEMINI_FREE_TIER_CONFIRMED`; see placeholder `.env.example`. Never enable billing. The server requires explicit confirmation of an unbilled project and permits only documented free-tier models. All manual and deterministic features work without a key. Live provider smoke tests remain pending because no key is configured. See [AI architecture, privacy and exact local setup](docs/ai.md).
 
 ## Scientific workflow
 
@@ -39,7 +47,7 @@ The UI exports one common JSON schema **1.1.0**, method **1.2.0**, for all four 
 
 ## Development and verification
 
-Next.js App Router, React, strict TypeScript, authored workspace CSS through Tailwind's pipeline, Recharts, Zod, Papa Parse and Vitest. Use Node 24 LTS and npm (verified Node 24.14.1). This milestone adds Papa Parse and its TypeScript definitions for local CSV/TSV parsing.
+Next.js App Router, React, strict TypeScript, authored workspace CSS through Tailwind's pipeline, Recharts, Zod, Papa Parse and Vitest. Use Node 24 LTS and npm (verified Node 24.14.1). The official Google GenAI SDK is server-only. Testing Library and jsdom are development-only DOM test tools.
 
 ```sh
 npm ci
@@ -56,12 +64,12 @@ npm run build
 npm run start -- --hostname 127.0.0.1 --port 3000
 ```
 
-Stop an existing production server before rebuilding and restart it afterward. The suite retains all 90 tests from Milestones 1–2 and adds 83 custom-data tests for parsing, validation, models, provenance, state isolation and exports. Exact pre-generalization Hooke numerical snapshots remain unchanged. Executed results are recorded in [verification notes](docs/verification.md); [file inventory](docs/files.md) lists repository artifacts.
+Stop an existing production server before rebuilding and restart it afterward. The suite preserves all 173 tests from Milestones 1-3 and adds 97 AI contract, provider-boundary and client interaction tests (270 total). Normal tests never call Gemini. Exact pre-generalization Hooke numerical snapshots remain unchanged. Executed results are recorded in [verification notes](docs/verification.md); [file inventory](docs/files.md) lists repository artifacts.
 
 ## Limits
 
 Four built-in families and three explicit custom baselines, one hinge, ordinary least squares, fixed theoretical parameters, assumed response scales, no calibrated false-positive rate, no confidence intervals or physical-mechanism inference. A hinge can lag a smooth departure; an influence diagnostic can withhold real support. Measurement-input uncertainty, heteroscedastic weighting and repeated independent-variable values are not supported. Built-in canonical units are explicit; custom labels never trigger automatic conversion.
 
-Edits are in memory; exports provide a record, and reload resets the workspace. Arbitrary equations, AI, XLSX/PDF import, persistence, authentication, collaboration, and deployment remain deferred.
+Edits are in memory; exports provide a record, and reload resets the workspace. Arbitrary equations, XLSX/PDF import, persistence, authentication, collaboration, and deployment remain deferred.
 
 The production dependency audit is recorded in verification notes. The existing development lint chain retains an unpatched braces advisory; no forced breaking upgrade was applied.
