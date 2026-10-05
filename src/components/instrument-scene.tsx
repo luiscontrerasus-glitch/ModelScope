@@ -155,7 +155,7 @@ class SceneBoundary extends Component<{ children: ReactNode; fallback: ReactNode
 const StudioShadow = memo(function StudioShadow({ dark }: { dark?: boolean }) {
   return <ContactShadows position={[0, -2.15, 0]} opacity={dark ? .3 : .22} scale={14} blur={2.8} far={5} resolution={256} frames={1} />;
 });
-const StudioEnvironment = memo(function StudioEnvironment({ dark }: { dark?: boolean }) {
+export const StudioEnvironment = memo(function StudioEnvironment({ dark }: { dark?: boolean }) {
   return <Environment resolution={128}>
     <Lightformer intensity={4} position={[0, 5, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[10, 3, 1]} />
     <Lightformer intensity={3} position={[-5, 1, 3]} rotation={[0, Math.PI / 3, 0]} scale={[2, 8, 1]} />
@@ -178,6 +178,10 @@ function InstrumentFrames({ instrument }: { instrument: AmbientInstrument }) {
   useEffect(() => { invalidate(); return instrument.subscribeFrame(invalidate); }, [instrument, invalidate]);
   return null;
 }
+/** The same instrument geometry serves Explore and the decorative Home previews. */
+export function InstrumentModel(props: Props) {
+  return props.kind === 'spring' ? <Spring {...props} /> : props.kind === 'pendulum' ? <Pendulum {...props} /> : props.kind === 'beer' ? <Cuvette {...props} /> : <Sensor {...props} />;
+}
 export default function InstrumentScene(props: Props) {
   const [lost, setLost] = useState(false);
   if (lost) return <InstrumentFallback kind={props.kind} failed />;
@@ -189,7 +193,7 @@ export default function InstrumentScene(props: Props) {
       <directionalLight position={[-3, 6, 5]} intensity={props.dark ? 2 : 3} />
       <directionalLight position={[4, 2, -3]} intensity={props.dark ? 3 : 1.5} color={props.dark ? '#4c9bff' : '#eaf1ff'} />
       <StudioEnvironment dark={props.dark} />
-      {props.kind === 'spring' ? <Spring {...props} /> : props.kind === 'pendulum' ? <Pendulum {...props} /> : props.kind === 'beer' ? <Cuvette {...props} /> : <Sensor {...props} />}
+      <InstrumentModel {...props} />
       <StudioShadow key={props.kind} dark={props.dark} />
     </Canvas>
   </SceneBoundary>;
