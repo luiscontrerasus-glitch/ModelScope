@@ -1,6 +1,6 @@
 # ModelScope visual redesign review
 
-**Latest refinement:** [Home simplification and cinematic Explore](EXHIBITION.md), with a minimal Home teaser, four large sections on one Explore route, direct analysis links and a 30-view responsive screenshot matrix. [Home instrument preview gallery](GALLERY.md) is retained as history. [Ambient motion and performance report](MOTION.md) covers the earlier control-free Home correction and measured frame cadence. [Previous structural polish report](POLISH.md) and the original visual-pass report below are also historical.
+**Latest refinement:** [Graph-first workspace and Explore loading review](WORKSPACE.md), with optional data/evidence, responsive screenshots and normal/fast Explore recordings. [Home simplification and cinematic Explore](EXHIBITION.md) covers the preserved four-section architecture and its 30-view screenshot matrix. [Home instrument preview gallery](GALLERY.md) is retained as history. [Ambient motion and performance report](MOTION.md) covers the earlier control-free Home correction and measured frame cadence. [Previous structural polish report](POLISH.md) and the original visual-pass report below are also historical.
 
 Branch: `modelscope-elite-redesign`. Starting verified revision: `dd83b26`. This is a local review build; it has not been pushed, deployed, or merged into main.
 
