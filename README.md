@@ -16,7 +16,7 @@ ModelScope is a local scientific workspace for evaluating model adequacy. Config
 
 ## Demo
 
-[Public source code](https://github.com/luiscontrerasus-glitch/ModelScope) contains the complete development history. Public deployment is **pending Vercel authentication**. The production build is verified locally; no public URL is claimed yet. See the [release record](docs/release-verification.md) and [credential handoff](docs/final-checklist.md#credential-handoff).
+[Open ModelScope](https://modelscope-ten.vercel.app) runs publicly on Vercel's free Hobby tier. Desktop/mobile flows and one live request per Gemini assistance route were verified on October 6, 2026. [Public source code](https://github.com/luiscontrerasus-glitch/ModelScope) preserves the complete development history. See the [production deployment verification](docs/deployment/README.md) and [earlier release record](docs/release-verification.md).
 
 For a fast demonstration, keep Spring's progressive-departure dataset and click **Run analysis**. Compare the main graph with its reference, inspect Residuals, Model comparison and Evidence, and open **View full evidence** for detailed findings. **Open data** reveals the measurements editor and experiment selection; **Import** opens custom data setup. [Recording script and exact shot list](docs/demo-video.md).
 

@@ -1,0 +1,37 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "path": "/explore",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "path": "/workspace?experiment=spring-hooke",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "path": "/workspace?experiment=custom",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "path": "/methodology",
+      "status": 200,
+      "anonymous": true
+    }
+  ],
+  "clientBundleCount": 18,
+  "clientBytesScanned": 2222543,
+  "credentialPatternMatches": 0,
+  "clientGeminiKeyIdentifierMatches": 0,
+  "localFilesystemPathMatches": 0,
+  "trackedCredentialPatternFiles": [],
+  "authenticationRequired": false,
+  "productionAuditVulnerabilities": 0
+}
