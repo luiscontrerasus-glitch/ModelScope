@@ -22,11 +22,11 @@ export function useAmbientVisibility(target: RefObject<HTMLElement | null>) {
   return { visible, reduced, active: visible && tabVisible && !reduced };
 }
 
-export function useInstrumentMotion({ kind, min, max, initial, target }: { kind: MotionKind; min: number; max: number; initial: number; target: RefObject<HTMLElement | null> }) {
+export function useInstrumentMotion({ kind, min, max, initial, target, enabled = true }: { kind: MotionKind; min: number; max: number; initial: number; target: RefObject<HTMLElement | null>; enabled?: boolean }) {
   const [instrument] = useState(() => new AmbientInstrument(kind, min, max, initial));
   const [playing, setPlaying] = useState(true);
   const { visible, reduced, active } = useAmbientVisibility(target);
-  const running = playing && active;
+  const running = playing && active && enabled;
   useEffect(() => {
     if (!running) return;
     let frame = 0; let previous: number | undefined;

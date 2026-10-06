@@ -14,10 +14,10 @@ const Scene = memo(dynamic(() => import('./instrument-scene'), { ssr: false, loa
 export const modelIds = ['spring', 'pendulum', 'beer-lambert', 'sensor'] as const;
 export type ExploreModel = typeof modelIds[number];
 const systems: { id: ExploreModel; kind: Instrument; title: string; subtitle: string; category: string; copy: string; experiment: string; min: number; max: number; initial: number; label: string; unit: string; digits: number }[] = [
-  { id: 'spring', kind: 'spring', title: 'Spring', subtitle: 'Hooke’s Law', category: 'Mechanics', copy: 'Stretch the spring. See where a constant-stiffness model begins to deviate.', experiment: 'spring-hooke', min: .01, max: .14, initial: .072, label: 'Extension', unit: 'm', digits: 3 },
-  { id: 'pendulum', kind: 'pendulum', title: 'Pendulum', subtitle: 'Small-Angle Approximation', category: 'Physics', copy: 'A larger starting angle changes the period. The small-angle model stays constant.', experiment: 'pendulum', min: 0, max: 60, initial: 28, label: 'Starting angle', unit: '°', digits: 1 },
-  { id: 'beer-lambert', kind: 'beer', title: 'Beer–Lambert', subtitle: 'Concentration Response', category: 'Chemistry', copy: 'Increase concentration. Watch transmitted light fade as the response departs from a line.', experiment: 'beer-lambert', min: 0, max: 1, initial: .45, label: 'Concentration', unit: 'mmol/L', digits: 2 },
-  { id: 'sensor', kind: 'sensor', title: 'Sensor', subtitle: 'Linear Range', category: 'Instrumentation', copy: 'Raise the applied input. Compare a linear prediction with a compressing response.', experiment: 'sensor-calibration', min: 0, max: 12, initial: 6.2, label: 'Applied input', unit: 'N', digits: 1 },
+  { id: 'spring', kind: 'spring', title: 'Spring', subtitle: 'Hooke’s Law', category: 'Mechanics', copy: 'A linear model that works — until it doesn’t.', experiment: 'spring-hooke', min: .01, max: .14, initial: .072, label: 'Extension', unit: 'm', digits: 3 },
+  { id: 'pendulum', kind: 'pendulum', title: 'Pendulum', subtitle: 'Small-Angle Approximation', category: 'Physics', copy: 'Small angles are powerful. But “small” has limits.', experiment: 'pendulum', min: 0, max: 60, initial: 28, label: 'Starting angle', unit: '°', digits: 1 },
+  { id: 'beer-lambert', kind: 'beer', title: 'Beer–Lambert', subtitle: 'Concentration Response', category: 'Chemistry', copy: 'Absorbance is approximately linear — within a range.', experiment: 'beer-lambert', min: 0, max: 1, initial: .45, label: 'Concentration', unit: 'mmol/L', digits: 2 },
+  { id: 'sensor', kind: 'sensor', title: 'Sensor Calibration', subtitle: 'Linear Range', category: 'Instrumentation', copy: 'Linear response is a design goal. Not a guarantee.', experiment: 'sensor-calibration', min: 0, max: 12, initial: 6.2, label: 'Applied input', unit: 'N', digits: 1 },
 ];
 
 function MotionReadouts({ system, instrument, poseTarget }: { system: typeof systems[number]; instrument: AmbientInstrument; poseTarget: RefObject<HTMLDivElement | null> }) {
@@ -36,13 +36,13 @@ function MotionReadouts({ system, instrument, poseTarget }: { system: typeof sys
   return <dl>{rows.map(([label, reading]) => <div key={label}><dt>{label}</dt><dd>{reading}</dd></div>)}</dl>;
 }
 
-function Exhibit({ system, index }: { system: typeof systems[number]; index: number }) {
+function Exhibit({ system, index, active }: { system: typeof systems[number]; index: number; active: boolean }) {
   const target = useRef<HTMLDivElement>(null);
   const poseTarget = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; value: number } | null>(null);
   const [controlValue, setControlValue] = useState(system.initial);
   const pendulum = system.kind === 'pendulum';
-  const motion = useInstrumentMotion({ target, kind: system.kind, min: system.min, max: system.max, initial: system.initial });
+  const motion = useInstrumentMotion({ target, kind: system.kind, min: system.min, max: system.max, initial: system.initial, enabled: active });
   const { instrument } = motion;
   useEffect(() => instrument.subscribeControl(setControlValue), [instrument]);
   function changeParameter(next: number) {
@@ -50,9 +50,10 @@ function Exhibit({ system, index }: { system: typeof systems[number]; index: num
     if (pendulum) instrument.amplitude(next, motion.running);
     else instrument.manual(next);
   }
-  return <div className="explore-exhibit" data-model={system.kind} data-motion-running={motion.running}>
-    <div className="explore-copy"><span className="home-kicker">0{index + 1} / 04</span><h1>{system.title}<span>{system.subtitle}</span></h1><p>{system.copy}</p><Link className="home-button light" href={`/workspace?experiment=${system.experiment}`}>Open Analysis <span aria-hidden="true">→</span></Link></div>
-    <div className="explore-instrument" ref={target}><div ref={poseTarget} className={`scene-slot scene-${system.kind}`} aria-label={`Interactive ${system.title} illustration`}>{motion.visible ? <Scene kind={system.kind} instrument={instrument} dark /> : <InstrumentFallback kind={system.kind} />}</div><p className="scene-instruction">{system.kind === 'spring' ? 'Drag the free end to stretch ↔' : pendulum ? 'Undamped educational oscillation · swing between ± starting angle' : system.kind === 'beer' ? 'Incoming light → solution → transmitted light' : 'Input movement illustrates a generic response'}</p></div>
+  return <section className={`explore-system system-${system.kind}`} id={`model-${system.id}`} aria-labelledby={`heading-${system.id}`} tabIndex={-1}>
+    <div className="explore-exhibit" data-model={system.kind} data-motion-running={motion.running}>
+    <div className="explore-copy"><span className="home-kicker">0{index + 1} / 04 <span aria-hidden="true">—</span> {system.category}</span><h2 id={`heading-${system.id}`}>{system.title}<span>{system.subtitle}</span></h2><p>{system.copy}</p></div>
+    <div className="explore-instrument" ref={target}><div ref={poseTarget} className={`scene-slot scene-${system.kind}`} aria-label={`Interactive ${system.title} illustration`}>{active && motion.visible ? <Scene kind={system.kind} instrument={instrument} dark={!pendulum} cinematic /> : <InstrumentFallback kind={system.kind} />}</div><p className="scene-instruction">{system.kind === 'spring' ? 'Drag the free end to stretch ↔' : pendulum ? 'Undamped educational oscillation · swing between ± starting angle' : system.kind === 'beer' ? 'Incoming light → solution → transmitted light' : 'Input movement illustrates a generic response'}</p></div>
     <div className="explore-readout"><MotionReadouts system={system} instrument={instrument} poseTarget={poseTarget} /><label className="instrument-control"><span>{system.label}</span><input aria-label={system.label} type="range" min={system.min} max={system.max} step={pendulum ? .1 : (system.max - system.min) / 1000} value={controlValue} onPointerDown={e => {
       e.preventDefault(); e.currentTarget.focus({ preventScroll: true });
       const start = pendulum ? controlValue : instrument.value;
@@ -67,11 +68,33 @@ function Exhibit({ system, index }: { system: typeof systems[number]; index: num
         e.currentTarget.value = String(instrument.value); setControlValue(instrument.value); instrument.end();
       }
     }} onChange={e => changeParameter(Number(e.target.value))} /></label><InstrumentMotionControl motion={motion} /></div>
+    <Link className="home-button light exhibit-analysis" href={`/workspace?experiment=${system.experiment}`}>Open {system.id === 'beer-lambert' ? 'Beer–Lambert' : system.id === 'sensor' ? 'Sensor' : system.title} Analysis <span aria-hidden="true">→</span></Link>
     <p className="explore-disclosure">{pendulum ? 'Idealized undamped pendulum · L = 1 m · g = 9.80665 m/s². Motion is illustrative; periods use the existing finite-amplitude formula.' : system.kind === 'spring' ? 'Educational response · k = 50 N/m. Departure is illustrative and does not establish yield.' : system.kind === 'beer' ? 'Synthetic fixed-path calibration · absorbance is dimensionless.' : 'Synthetic sensor response · compression does not identify a physical mechanism.'} Open Analysis for measured evidence.</p>
-  </div>;
+  </div></section>;
 }
-export default function Explore({ initialModel = 'spring' }: { initialModel?: ExploreModel }) {
-  const [selected, setSelected] = useState(initialModel);
-  const index = systems.findIndex(s => s.id === selected); const system = systems[index];
-  return <main className="home explore-page"><a className="skip-link" href="#explore-content">Skip to model</a><SiteNav dark page="explore" /><section className="explore-stage" id="explore-content" aria-label="Explore scientific models"><Exhibit key={selected} system={system} index={index} /><div className="unified-selector" role="group" aria-label="Select a scientific model">{systems.map((s, i) => <button key={s.id} type="button" aria-pressed={selected === s.id} onClick={() => setSelected(s.id)}><span className="model-mark" aria-hidden="true">{['〰', '◯', '▯', '⊥'][i]}</span><span>{s.title}<small>{s.category}</small></span><span aria-hidden="true">↗</span></button>)}</div></section><SiteFooter /></main>;
+export default function Explore({ initialModel }: { initialModel?: ExploreModel }) {
+  const [activeModel, setActiveModel] = useState<ExploreModel | null>(null);
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const center = window.innerHeight / 2;
+      const focused = systems.find(system => {
+        const rect = document.getElementById(`model-${system.id}`)?.getBoundingClientRect();
+        return rect && rect.top <= center && rect.bottom > center;
+      });
+      setActiveModel(focused?.id ?? null);
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    // Query links retain their existing model selection, within this single page.
+    if (initialModel && !window.location.hash) document.getElementById(`model-${initialModel}`)?.scrollIntoView({ behavior: 'instant', block: 'start' });
+    schedule();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    return () => { cancelAnimationFrame(frame); window.removeEventListener('scroll', schedule); window.removeEventListener('resize', schedule); };
+  }, [initialModel]);
+  return <main className="home explore-page cinematic-explore"><a className="skip-link" href="#explore-content">Skip to models</a><SiteNav dark page="explore" />
+    <section className="explore-intro" id="explore-content" aria-labelledby="explore-heading"><span className="home-kicker">Explore models</span><h1 id="explore-heading">Four systems.<br />One question.</h1><p>Where does the model stop matching reality?</p><a className="intro-entry" href="#model-spring">Begin with the spring <span aria-hidden="true">↓</span></a></section>
+    <nav className="system-index" aria-label="Scientific systems"><span className="index-label">Explore models</span>{systems.map(system => <a key={system.id} href={`#model-${system.id}`} aria-current={activeModel === system.id ? 'location' : undefined}>{system.id === 'sensor' ? 'Sensor' : system.title}</a>)}</nav>
+    {systems.map((system, index) => <Exhibit key={system.id} system={system} index={index} active={activeModel === system.id} />)}<SiteFooter /></main>;
 }

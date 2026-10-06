@@ -15,10 +15,10 @@ function Reading({ instrument }: { instrument: AmbientInstrument }) {
   useSyncExternalStore(instrument.subscribe, instrument.snapshot, instrument.snapshot);
   return <output aria-label="Parameter">{instrument.value}</output>;
 }
-function Harness() {
+function Harness({ enabled = true }: { enabled?: boolean }) {
   parentRenders++;
   const target = useRef<HTMLDivElement>(null);
-  const motion = useInstrumentMotion({ kind: 'spring', target, min: 10, max: 20, initial: 14 });
+  const motion = useInstrumentMotion({ kind: 'spring', target, min: 10, max: 20, initial: 14, enabled });
   return <div ref={target}><Reading instrument={motion.instrument} /><input aria-label="Manual parameter" type="range" min="10" max="20" defaultValue="14" onChange={e => motion.instrument.manual(Number(e.target.value))} /><InstrumentMotionControl motion={motion} /></div>;
 }
 function visibility(visible: boolean) { act(() => intersect([{ isIntersecting: visible } as IntersectionObserverEntry], {} as IntersectionObserver)); }
@@ -64,4 +64,15 @@ it('does not rerender the scene-owning parent for continuous motion', () => {
   render(<Harness />); visibility(true); const before = parentRenders;
   advance(180); expect(parentRenders).toBe(before);
   expect(Number(screen.getByLabelText('Parameter').textContent)).not.toBe(14);
+});
+it('suspends a visible secondary exhibit without losing its pose or motion preference', () => {
+  const view = render(<Harness />); visibility(true); advance(60);
+  view.rerender(<Harness enabled={false} />);
+  const held = Number(screen.getByLabelText('Parameter').textContent);
+  expect(frames.size).toBe(0);
+  expect(screen.getByRole('button', { name: 'Pause motion' }).getAttribute('aria-pressed')).toBe('true');
+  advance(240); expect(Number(screen.getByLabelText('Parameter').textContent)).toBe(held);
+  view.rerender(<Harness />); advance(1);
+  expect(Math.abs(Number(screen.getByLabelText('Parameter').textContent) - held)).toBeLessThan(.3);
+  expect(frames.size).toBe(1);
 });

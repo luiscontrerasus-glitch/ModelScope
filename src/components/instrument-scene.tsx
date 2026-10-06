@@ -8,7 +8,7 @@ import type { Line2 } from 'three/examples/jsm/lines/Line2.js';
 
 import { InstrumentFallback } from './instrument-fallback';
 export type Instrument = 'spring' | 'pendulum' | 'beer' | 'sensor';
-interface Props { kind: Instrument; instrument: AmbientInstrument; dark?: boolean }
+interface Props { kind: Instrument; instrument: AmbientInstrument; dark?: boolean; cinematic?: boolean }
 const steel = { color: '#b8bcc1', metalness: .9, roughness: .28 };
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
@@ -163,22 +163,31 @@ export const StudioEnvironment = memo(function StudioEnvironment({ dark }: { dar
     <Lightformer intensity={2} position={[0, -3, 4]} scale={[8, 1, 1]} />
   </Environment>;
 });
-function FitCamera({ kind }: { kind: Instrument }) {
+function FitCamera({ kind, cinematic }: { kind: Instrument; cinematic?: boolean }) {
   const { camera, size, invalidate } = useThree();
   useEffect(() => {
     // Reserve the full oscillation/extension envelope within the canvas, away from text.
     const width = kind === 'spring' || kind === 'pendulum' ? 7.4 : 6;
-    camera.position.setZ(Math.max(8.8, width / (2 * Math.tan(19 * Math.PI / 180) * (size.width / size.height))));
+    camera.position.setY(cinematic ? .25 : 1.1);
+    camera.position.setZ(Math.max(cinematic ? 7.8 : 8.8, width / (2 * Math.tan(19 * Math.PI / 180) * (size.width / size.height))));
+    if (cinematic) camera.lookAt(0, .25, 0);
     camera.updateProjectionMatrix(); invalidate();
-  }, [camera, size.width, size.height, kind, invalidate]);
+  }, [camera, size.width, size.height, kind, cinematic, invalidate]);
   return null;
 }
 function InstrumentFrames({ instrument }: { instrument: AmbientInstrument }) {
   const invalidate = useThree(state => state.invalidate);
+  useFrame(({ gl, invalidate }) => {
+    // A canvas can exist before its first scene frame. Expose actual render readiness
+    // for integration review, including stationary/reduced-motion instruments.
+    if (gl.domElement.dataset.sceneReady) return;
+    if (gl.info.render.calls > 0) gl.domElement.dataset.sceneReady = 'true';
+    else invalidate();
+  });
   useEffect(() => { invalidate(); return instrument.subscribeFrame(invalidate); }, [instrument, invalidate]);
   return null;
 }
-/** The same instrument geometry serves Explore and the decorative Home previews. */
+/** Reusable geometry for the focused scientific instrument scenes. */
 export function InstrumentModel(props: Props) {
   return props.kind === 'spring' ? <Spring {...props} /> : props.kind === 'pendulum' ? <Pendulum {...props} /> : props.kind === 'beer' ? <Cuvette {...props} /> : <Sensor {...props} />;
 }
@@ -189,7 +198,7 @@ export default function InstrumentScene(props: Props) {
     <Canvas frameloop="demand" dpr={[1, 1.5]} camera={{ position: [0, 1.1, 8.8], fov: 38 }} gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }} onCreated={({ gl }) => {
       gl.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); setLost(true); }, { once: true });
     }} fallback={<InstrumentFallback kind={props.kind} failed />}>
-      <InstrumentFrames instrument={props.instrument} /><FitCamera kind={props.kind} /><ambientLight intensity={props.dark ? .3 : .65} />
+      <InstrumentFrames instrument={props.instrument} /><FitCamera kind={props.kind} cinematic={props.cinematic} /><ambientLight intensity={props.dark ? .3 : .65} />
       <directionalLight position={[-3, 6, 5]} intensity={props.dark ? 2 : 3} />
       <directionalLight position={[4, 2, -3]} intensity={props.dark ? 3 : 1.5} color={props.dark ? '#4c9bff' : '#eaf1ff'} />
       <StudioEnvironment dark={props.dark} />

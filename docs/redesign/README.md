@@ -1,6 +1,6 @@
 # ModelScope visual redesign review
 
-**Latest refinement:** [Home instrument preview gallery](GALLERY.md), with four reused 3D instruments, hover-only motion and verified model-selection links. [Ambient motion and performance report](MOTION.md) covers the earlier control-free Home correction and measured frame cadence. [Previous structural polish report](POLISH.md) is retained as history. The original visual-pass report below is also historical; its long Home layout has since been consolidated.
+**Latest refinement:** [Home simplification and cinematic Explore](EXHIBITION.md), with a minimal Home teaser, four large sections on one Explore route, direct analysis links and a 30-view responsive screenshot matrix. [Home instrument preview gallery](GALLERY.md) is retained as history. [Ambient motion and performance report](MOTION.md) covers the earlier control-free Home correction and measured frame cadence. [Previous structural polish report](POLISH.md) and the original visual-pass report below are also historical.
 
 Branch: `modelscope-elite-redesign`. Starting verified revision: `dd83b26`. This is a local review build; it has not been pushed, deployed, or merged into main.
 
