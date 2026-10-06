@@ -1,5 +1,7 @@
 # ModelScope visual redesign review
 
+**Integrated release:** [Approved redesign release candidate](RELEASE.md) records the final production browser review, artifact curation, history-preserving merge onto main, and 306 passing post-merge tests. The original visual-pass report below is historical.
+
 Historical capture inventory: redundant or superseded review images are linked to their preserved Git revision. Current release captures and recordings remain in this checkout; see [release verification](RELEASE.md).
 
 **Latest refinement:** [Graph-first workspace and Explore loading review](WORKSPACE.md), with optional data/evidence, responsive screenshots and normal/fast Explore recordings. [Home simplification and cinematic Explore](EXHIBITION.md) covers the preserved four-section architecture and its 30-view screenshot matrix. [Home instrument preview gallery](GALLERY.md) is retained as history. [Ambient motion and performance report](MOTION.md) covers the earlier control-free Home correction and measured frame cadence. [Previous structural polish report](POLISH.md) and the original visual-pass report below are also historical.

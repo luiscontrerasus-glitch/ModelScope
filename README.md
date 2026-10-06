@@ -109,7 +109,7 @@ npm run build
 npm audit --omit=dev
 ```
 
-**306 tests across 10 files** pass, including frozen Hooke numerical snapshots, the four experiments, custom provenance/validation, adversarial analysis inputs, and AI server/client contracts. Normal tests never call Gemini. Final pre-merge typecheck, lint, production build, and production audit pass; zero production vulnerabilities. Five development-only high advisories remain in the lint dependency chain, documented without a forced breaking upgrade. [Redesign release verification](docs/redesign/RELEASE.md), [earlier release verification](docs/release-verification.md), [historical milestone verification](docs/verification.md), [file inventory](docs/files.md).
+**306 tests across 10 files** pass, including frozen Hooke numerical snapshots, the four experiments, custom provenance/validation, adversarial analysis inputs, and AI server/client contracts. Normal tests never call Gemini. Typecheck, lint, and production build pass before and after the redesign merge. The production audit reports zero vulnerabilities. Earlier development-only advisories are documented in the historical release record without a forced breaking upgrade. [Redesign release verification](docs/redesign/RELEASE.md), [earlier release verification](docs/release-verification.md), [historical milestone verification](docs/verification.md), [file inventory](docs/files.md).
 
 ## Limitations
 

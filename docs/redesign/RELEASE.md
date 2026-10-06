@@ -52,4 +52,8 @@ The milestone reports describe their original review dates and layouts. Use this
 
 ## Integration
 
-Post-merge checks and the merge revision are recorded below once the history-preserving integration is complete. No deployment is authorized in this pass.
+Merged onto `main` with two-parent merge commit `54d486ce5b26af51bf850ac4de91d6544f20801f`. Its parents are the verified prior main `dd83b26cfad8e00466ac0257f84098af6904f69d` and the curated redesign `fa8741f3122216a6e8780a6c4a9e580666ddd00b`. No squash, rebase, force push, timestamp rewriting, or deployment was performed.
+
+Post-merge `npm test` passes **306 tests across 10 files**. Typecheck, lint, and production build all pass again on main. The merge tree exactly matches the approved redesign branch; the scientific/API/data/methodology comparison against prior main remains empty. The working tree was clean after those checks. This final documentation update records the checks without changing application code.
+
+Push target: `https://github.com/luiscontrerasus-glitch/ModelScope`, branch `main`, using a normal non-force push. Exact remote revision confirmation is reported with the final pushed commit. The only remaining observed warning is the upstream Three.js `Clock` deprecation noted above. Deployment is deferred.
