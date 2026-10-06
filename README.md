@@ -4,7 +4,7 @@
 
 Compare experimental measurements with a scientific model and inspect where disagreement becomes systematic.
 
-![Spring analysis: linked measurements, response, residuals, and candidate transition](docs/screenshots/02-spring-analysis.jpg)
+![Spring analysis: linked measurements, response, residuals, and candidate transition](docs/redesign/release-spring-analysis.jpg)
 
 ## The problem
 
@@ -18,7 +18,7 @@ ModelScope is a local scientific workspace for evaluating model adequacy. Config
 
 [Public source code](https://github.com/luiscontrerasus-glitch/ModelScope) contains the complete development history. Public deployment is **pending Vercel authentication**. The production build is verified locally; no public URL is claimed yet. See the [release record](docs/release-verification.md) and [credential handoff](docs/final-checklist.md#credential-handoff).
 
-For a fast demonstration, keep Spring's progressive-departure dataset and click **Run analysis**. Compare the response with its dashed reference, inspect residual structure, select Candidate transition, and expand Evidence. Then switch experiments or choose **Analyze your data**. [Recording script and exact shot list](docs/demo-video.md).
+For a fast demonstration, keep Spring's progressive-departure dataset and click **Run analysis**. Compare the main graph with its reference, inspect Residuals, Model comparison and Evidence, and open **View full evidence** for detailed findings. **Open data** reveals the measurements editor and experiment selection; **Import** opens custom data setup. [Recording script and exact shot list](docs/demo-video.md).
 
 ## Key capabilities
 
@@ -79,7 +79,7 @@ Gemini free-tier inputs may be used to improve Google products under its [curren
 
 ## Tech stack
 
-Next.js App Router, React, strict TypeScript, authored CSS through Tailwind's pipeline, Recharts, Zod, Papa Parse, and the official Google GenAI SDK. Vitest, Testing Library, and jsdom are development tools. Verified with Node 24.14.1.
+Next.js App Router, React, strict TypeScript, authored CSS through Tailwind's pipeline, Three.js with React Three Fiber/Drei, Geist, Recharts, Zod, Papa Parse, and the official Google GenAI SDK. Vitest, Testing Library, and jsdom are development tools. Verified with Node 24.14.1.
 
 ## Running locally
 
@@ -109,7 +109,7 @@ npm run build
 npm audit --omit=dev
 ```
 
-**290 tests across six files** pass, including frozen Hooke numerical snapshots, the four experiments, custom provenance/validation, adversarial analysis inputs, and AI server/client contracts. Normal tests never call Gemini. Final typecheck, lint, production build, and production audit pass; zero production vulnerabilities. Five development-only high advisories remain in the lint dependency chain, documented without a forced breaking upgrade. [Release verification](docs/release-verification.md), [historical milestone verification](docs/verification.md), [file inventory](docs/files.md).
+**306 tests across 10 files** pass, including frozen Hooke numerical snapshots, the four experiments, custom provenance/validation, adversarial analysis inputs, and AI server/client contracts. Normal tests never call Gemini. Final pre-merge typecheck, lint, production build, and production audit pass; zero production vulnerabilities. Five development-only high advisories remain in the lint dependency chain, documented without a forced breaking upgrade. [Redesign release verification](docs/redesign/RELEASE.md), [earlier release verification](docs/release-verification.md), [historical milestone verification](docs/verification.md), [file inventory](docs/files.md).
 
 ## Limitations
 

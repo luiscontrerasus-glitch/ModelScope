@@ -1,0 +1,12 @@
+'use client';
+import { useId, useRef } from 'react';
+import { useAmbientVisibility } from './parameter-motion';
+export function ModelReality() {
+  const target = useRef<HTMLDivElement>(null); const id = useId();
+  const ambient = useAmbientVisibility(target); const departure = .9;
+  const points = Array.from({ length: 22 }, (_, i) => {
+    const t = i / 21; const model = 355 - 255 * t;
+    return { x: 58 + t * 580, model, observed: model + 170 * Math.max(0, (t - .5) / .5) ** 1.4 * departure, late: t > .5 };
+  });
+  return <div className="reality-visual" ref={target} data-ambient-active={ambient.active}><svg viewBox="0 0 720 470" role="img" aria-label="Conceptual model versus reality: measurements initially follow a blue reference, then depart; vertical lines show residuals. Not a detector result."><defs><linearGradient id={`${id}-plane`} x2="1" y2="1"><stop stopColor="#7caeef" stopOpacity=".22" /><stop offset="1" stopColor="#c58a53" stopOpacity=".13" /></linearGradient><linearGradient id={`${id}-blue`}><stop stopColor="#76b6f2" /><stop offset="1" stopColor="#1265d1" /></linearGradient></defs><path d="M42 394L652 394M58 394V84" stroke="#ccd3dc" strokeWidth=".8" /><g opacity={departure}><path d="M350 64L431 88V417L350 392Z" fill={`url(#${id}-plane)`} stroke="#bcc9d9" strokeWidth=".6" /><path d="M350 392L431 417L653 394" fill="none" stroke="#cbd5df" strokeWidth=".7" /></g><path d="M58 355L638 100" fill="none" stroke={`url(#${id}-blue)`} strokeWidth="2.3" /><polyline points={points.map(p => `${p.x},${p.observed}`).join(' ')} stroke="#bf864c" strokeOpacity={departure} strokeWidth="1.5" fill="none" />{points.map((p, i) => <g key={i}><line x1={p.x} x2={p.x} y1={p.model} y2={p.observed} stroke="#c38b56" strokeWidth="1" opacity=".55" /><circle cx={p.x} cy={p.model} r="3" fill="#d6e8fc" /><circle cx={p.x} cy={p.observed} r="5" fill={p.late && departure > .08 ? '#bd8148' : '#2378e8'} stroke="#fff" strokeWidth="1.5" /></g>)}<text x="57" y="439" fill="#707c8b" fontSize="12">Model agreement</text><text x="500" y="439" fill="#9b6c3e" fontSize="12">Growing departure</text></svg><div className="reality-legend"><span><i className="blue-rule" />Model prediction</span><span><i className="amber-dot" />Measurements</span><span><i className="residual-rule" />Residuals</span></div><p className="visual-disclosure">Conceptual illustration · shaded region suggests a possible transition.</p></div>;
+}
