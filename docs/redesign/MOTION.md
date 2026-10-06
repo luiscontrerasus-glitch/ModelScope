@@ -1,5 +1,7 @@
 # Ambient scientific motion review
 
+Historical capture inventory: redundant or superseded review images are linked to their preserved Git revision. Current release captures and recordings remain in this checkout; see [release verification](RELEASE.md).
+
 Implementation commit: **`ea08be7`**, on the existing `modelscope-elite-redesign` branch. Starting revision: `f511f74`. No merge, push or deployment. The existing Home → Explore → Analyze → Methodology structure and visual design remain.
 
 The final typed Home correction takes precedence over the earlier requested parameter sequence: Home is mostly static, with no play/pause, slider, reveal loop or moving scientific parameter. Active instrumentation belongs to Explore.
@@ -38,14 +40,14 @@ Explore responses remain labeled educational/illustrative. Pendulum motion is an
 
 | View | Actual production capture |
 |---|---|
-| Spring after grip drag | [01-spring-drag.jpg](motion-screenshots/01-spring-drag.jpg) |
-| Pendulum at 60° while oscillating | [02-pendulum-ambient.jpg](motion-screenshots/02-pendulum-ambient.jpg) |
-| Optical manual maximum | [03-optical-manual.jpg](motion-screenshots/03-optical-manual.jpg) |
-| Sensor manual maximum | [04-sensor-manual.jpg](motion-screenshots/04-sensor-manual.jpg) |
-| Complete mobile Explore | [05-mobile-explore.jpg](motion-screenshots/05-mobile-explore.jpg) |
-| Reduced-motion manual pendulum | [06-reduced-motion.jpg](motion-screenshots/06-reduced-motion.jpg) |
-| Calm Home with no controls | [07-home-calm.jpg](motion-screenshots/07-home-calm.jpg) |
-| Mobile Home | [08-mobile-home.jpg](motion-screenshots/08-mobile-home.jpg) |
+| Spring after grip drag | [01-spring-drag.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/motion-screenshots/01-spring-drag.jpg) |
+| Pendulum at 60° while oscillating | [02-pendulum-ambient.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/motion-screenshots/02-pendulum-ambient.jpg) |
+| Optical manual maximum | [03-optical-manual.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/motion-screenshots/03-optical-manual.jpg) |
+| Sensor manual maximum | [04-sensor-manual.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/motion-screenshots/04-sensor-manual.jpg) |
+| Complete mobile Explore | [05-mobile-explore.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/motion-screenshots/05-mobile-explore.jpg) |
+| Reduced-motion manual pendulum | [06-reduced-motion.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/motion-screenshots/06-reduced-motion.jpg) |
+| Calm Home with no controls | [07-home-calm.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/motion-screenshots/07-home-calm.jpg) |
+| Mobile Home | [08-mobile-home.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/motion-screenshots/08-mobile-home.jpg) |
 
 Browser checks also verified optical/sensor manual values, a live-value slider takeover, motion resuming with its control still stationary, 28° → 60° pendulum amplitude transition, model switching, the full mobile composition, and Home's offscreen pause. CSS reduced-motion and manual 0°/60° controls remain functional. No error-level application console entries were observed in the final review.
 

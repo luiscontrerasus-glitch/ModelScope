@@ -1,5 +1,7 @@
 # Home instrument preview gallery
 
+Historical capture inventory: redundant or superseded review images are linked to their preserved Git revision. Current release captures and recordings remain in this checkout; see [release verification](RELEASE.md).
+
 The Home section headed “Four scientific systems. One question.” now presents Spring / Mechanics, Pendulum / Physics, Beer–Lambert / Chemistry and Sensor / Instrumentation as a quiet visual gallery. The headline is unchanged. Each preview contains the instrument, name, category and a small arrow; there are no descriptions or controls.
 
 The gallery reuses Explore’s actual instrument geometry and studio environment in one shared, demand-rendered WebGL canvas. It loads when the section enters view and releases the canvas when it leaves. Hover or keyboard focus gently extends the spring, sways the pendulum, attenuates the optical beam or compresses the sensor. Leaving returns the instrument smoothly to rest. There is no automatic cycle or idle animation; reduced-motion preferences keep every instrument still. The existing schematic fallback retains the links when WebGL is unavailable.
@@ -17,4 +19,4 @@ All four links were clicked and confirmed by Explore’s selected button:
 
 `npm test` passes all 303 existing tests across nine files. `npm run typecheck`, `npm run lint` and `npm run build` pass. Scientific analysis, APIs, experiment generators, custom-data configuration and AI logic are unchanged. No merge or deployment was performed.
 
-Actual production captures: [desktop](gallery-screenshots/desktop.jpg), [tablet](gallery-screenshots/tablet.jpg), [mobile headline and first previews](gallery-screenshots/mobile-top.jpg), [mobile optical and sensor previews](gallery-screenshots/mobile-bottom.jpg). Mobile was checked in a browser viewport, not on physical hardware. Forced WebGL context loss was not exercised.
+Actual production captures: [desktop](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/gallery-screenshots/desktop.jpg), [tablet](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/gallery-screenshots/tablet.jpg), [mobile headline and first previews](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/gallery-screenshots/mobile-top.jpg), [mobile optical and sensor previews](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/gallery-screenshots/mobile-bottom.jpg). Mobile was checked in a browser viewport, not on physical hardware. Forced WebGL context loss was not exercised.

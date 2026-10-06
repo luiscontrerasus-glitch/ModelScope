@@ -1,5 +1,7 @@
 # ModelScope final refinement review
 
+Historical capture inventory: redundant or superseded review images are linked to their preserved Git revision. Current release captures and recordings remain in this checkout; see [release verification](RELEASE.md).
+
 Branch: `modelscope-elite-redesign`. Verified original revision: `dd83b26cfad8e00466ac0257f84098af6904f69d`. Production preview: http://127.0.0.1:3000/. This refinement is ready for local review. No push, merge or deployment was performed.
 
 The latest supplied concepts guide composition and page roles. Screenshots below show the running application, with its actual calculations; reference-art numbers were not substituted for evidence.
@@ -43,22 +45,22 @@ The latest supplied concepts guide composition and page roles. Screenshots below
 
 | View | Capture |
 |---|---|
-| Home | [01-home.jpg](polish-screenshots/01-home.jpg) |
-| Explore Spring | [02-explore-spring.jpg](polish-screenshots/02-explore-spring.jpg) |
-| Explore Pendulum | [03-explore-pendulum.jpg](polish-screenshots/03-explore-pendulum.jpg) |
-| Explore Beer–Lambert | [04-explore-beer-lambert.jpg](polish-screenshots/04-explore-beer-lambert.jpg) |
-| Explore Sensor | [05-explore-sensor.jpg](polish-screenshots/05-explore-sensor.jpg) |
-| Analyze | [06-analyze.jpg](polish-screenshots/06-analyze.jpg) |
+| Home | [01-home.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/01-home.jpg) |
+| Explore Spring | [02-explore-spring.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/02-explore-spring.jpg) |
+| Explore Pendulum | [03-explore-pendulum.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/03-explore-pendulum.jpg) |
+| Explore Beer–Lambert | [04-explore-beer-lambert.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/04-explore-beer-lambert.jpg) |
+| Explore Sensor | [05-explore-sensor.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/05-explore-sensor.jpg) |
+| Analyze | [06-analyze.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/06-analyze.jpg) |
 | Methodology | [07-methodology.jpg](polish-screenshots/07-methodology.jpg) |
-| Custom workflow | [08-custom-workflow.jpg](polish-screenshots/08-custom-workflow.jpg) |
-| Mobile Home | [09-mobile-home.jpg](polish-screenshots/09-mobile-home.jpg) |
-| Mobile Explore | [10-mobile-explore.jpg](polish-screenshots/10-mobile-explore.jpg) |
-| Mobile Analyze | [11-mobile-analyze.jpg](polish-screenshots/11-mobile-analyze.jpg) |
-| Paused spring | [12-paused-spring.jpg](polish-screenshots/12-paused-spring.jpg) |
+| Custom workflow | [08-custom-workflow.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/08-custom-workflow.jpg) |
+| Mobile Home | [09-mobile-home.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/09-mobile-home.jpg) |
+| Mobile Explore | [10-mobile-explore.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/10-mobile-explore.jpg) |
+| Mobile Analyze | [11-mobile-analyze.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/11-mobile-analyze.jpg) |
+| Paused spring | [12-paused-spring.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/12-paused-spring.jpg) |
 | Actual one-outlier challenge | [13-methodology-challenge.jpg](polish-screenshots/13-methodology-challenge.jpg) |
-| Custom analysis result | [14-custom-results.jpg](polish-screenshots/14-custom-results.jpg) |
-| Reduced-motion static scene | [15-reduced-motion.jpg](polish-screenshots/15-reduced-motion.jpg) |
-| Mobile evidence | [16-mobile-evidence.jpg](polish-screenshots/16-mobile-evidence.jpg) |
+| Custom analysis result | [14-custom-results.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/14-custom-results.jpg) |
+| Reduced-motion static scene | [15-reduced-motion.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/15-reduced-motion.jpg) |
+| Mobile evidence | [16-mobile-evidence.jpg](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/polish-screenshots/16-mobile-evidence.jpg) |
 
 ## Preservation and limits
 

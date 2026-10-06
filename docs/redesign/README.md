@@ -1,5 +1,7 @@
 # ModelScope visual redesign review
 
+Historical capture inventory: redundant or superseded review images are linked to their preserved Git revision. Current release captures and recordings remain in this checkout; see [release verification](RELEASE.md).
+
 **Latest refinement:** [Graph-first workspace and Explore loading review](WORKSPACE.md), with optional data/evidence, responsive screenshots and normal/fast Explore recordings. [Home simplification and cinematic Explore](EXHIBITION.md) covers the preserved four-section architecture and its 30-view screenshot matrix. [Home instrument preview gallery](GALLERY.md) is retained as history. [Ambient motion and performance report](MOTION.md) covers the earlier control-free Home correction and measured frame cadence. [Previous structural polish report](POLISH.md) and the original visual-pass report below are also historical.
 
 Branch: `modelscope-elite-redesign`. Starting verified revision: `dd83b26`. This is a local review build; it has not been pushed, deployed, or merged into main.
@@ -58,14 +60,14 @@ The references informed composition and material treatment. The first production
 
 | Desktop, 1440 x 1000 | Mobile, 390px |
 |---|---|
-| [Hero](screenshots/01-desktop-hero.jpg) | [Hero](screenshots/09-mobile-hero.jpg) |
-| [Model explorer / Spring](screenshots/02-desktop-explorer.jpg) | [Model explorer](screenshots/10-mobile-explorer.jpg) |
-| [Pendulum](screenshots/03-desktop-pendulum.jpg) | [Workspace plots](screenshots/11-mobile-workspace.jpg) |
-| [Beer-Lambert](screenshots/04-desktop-beer-lambert.jpg) | [Evidence](screenshots/12-mobile-evidence.jpg) |
-| [Sensor](screenshots/05-desktop-sensor.jpg) | [Custom data](screenshots/13-mobile-custom-data.jpg) |
-| [Thesis](screenshots/06-desktop-thesis.jpg) | |
-| [Scientific workspace](screenshots/07-desktop-workspace.jpg) | |
-| [Custom data](screenshots/08-desktop-custom-data.jpg) | |
+| [Hero](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/01-desktop-hero.jpg) | [Hero](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/09-mobile-hero.jpg) |
+| [Model explorer / Spring](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/02-desktop-explorer.jpg) | [Model explorer](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/10-mobile-explorer.jpg) |
+| [Pendulum](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/03-desktop-pendulum.jpg) | [Workspace plots](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/11-mobile-workspace.jpg) |
+| [Beer-Lambert](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/04-desktop-beer-lambert.jpg) | [Evidence](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/12-mobile-evidence.jpg) |
+| [Sensor](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/05-desktop-sensor.jpg) | [Custom data](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/13-mobile-custom-data.jpg) |
+| [Thesis](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/06-desktop-thesis.jpg) | |
+| [Scientific workspace](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/07-desktop-workspace.jpg) | |
+| [Custom data](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/08-desktop-custom-data.jpg) | |
 
 Run `npm run build` then `npm start`. Open `/` for the exhibition and `/workspace?experiment=spring-hooke` for an analyzed built-in session. `/workspace?experiment=custom` opens custom data; `/workspace` preserves the original ready-to-run spring state.
 

@@ -1,12 +1,14 @@
 # Graph-first workspace and Explore loading review
 
+Historical capture inventory: redundant or superseded review images are linked to their preserved Git revision. Current release captures and recordings remain in this checkout; see [release verification](RELEASE.md).
+
 Reviewed October 5, 2026 on `modelscope-elite-redesign`, continuing from `9e83625`. Local production preview only; no merge, push or deployment.
 
 ## Requested workspace report
 
 | # | Area | Result |
 |---|---|---|
-| 1 | Old problems addressed | Removed the permanent narrow measurement column, dense evidence sidebar, stacked technical panels, oversized configuration area and repeated micro-labels. Compare the [previous workspace](screenshots/07-desktop-workspace.jpg) with the [new default](workspace-screenshots/1440-default.jpg). |
+| 1 | Old problems addressed | Removed the permanent narrow measurement column, dense evidence sidebar, stacked technical panels, oversized configuration area and repeated micro-labels. Compare the [previous workspace](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/screenshots/07-desktop-workspace.jpg) with the [new default](workspace-screenshots/1440-default.jpg). |
 | 2 | Layout | Thin experiment/action header, compact model/reference-scale/assumptions strip, main graph and result, one secondary analysis view, collapsed measurements. Warm white, graphite, restrained blue and amber; typography and spacing replace nested cards. |
 | 3 | Graph | At 1440px the graph column is 909px and result column 350px, approximately 72%/28% excluding the gutter. Measurements, original reference, original fitted hinge, sensitivity range and linked selection remain. Explicit variable units and light grids remain readable. Decorative line hover dots no longer intercept measurement clicks. |
 | 4 | Result | Compact status, estimate, sensitivity range, improvement, persistence and influence checks. The unchanged spring analysis reports supported transition near 0.080m, 0.075–0.085m sensitivity and 84.02 improvement. Detailed caveats remain in Evidence and Assumptions. No new detection criterion is introduced. |
@@ -36,9 +38,9 @@ All are actual localhost production browser captures. Desktop/tablet viewport he
 | Width | Default | Measurements expanded | Full evidence |
 |---|---|---|---|
 | 1440 | [Default](workspace-screenshots/1440-default.jpg) | [Data](workspace-screenshots/1440-measurements.jpg) | [Evidence](workspace-screenshots/1440-full-evidence.jpg) |
-| 1280 | [Default](workspace-screenshots/1280-default.jpg) | [Data](workspace-screenshots/1280-measurements.jpg) | [Evidence](workspace-screenshots/1280-full-evidence.jpg) |
-| 1024 | [Default](workspace-screenshots/1024-default.jpg) | [Data](workspace-screenshots/1024-measurements.jpg) | [Evidence](workspace-screenshots/1024-full-evidence.jpg) |
-| 768 | [Default](workspace-screenshots/768-default.jpg) | [Data](workspace-screenshots/768-measurements.jpg) | [Evidence](workspace-screenshots/768-full-evidence.jpg) |
+| 1280 | [Default](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/workspace-screenshots/1280-default.jpg) | [Data](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/workspace-screenshots/1280-measurements.jpg) | [Evidence](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/workspace-screenshots/1280-full-evidence.jpg) |
+| 1024 | [Default](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/workspace-screenshots/1024-default.jpg) | [Data](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/workspace-screenshots/1024-measurements.jpg) | [Evidence](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/workspace-screenshots/1024-full-evidence.jpg) |
+| 768 | [Default](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/workspace-screenshots/768-default.jpg) | [Data](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/workspace-screenshots/768-measurements.jpg) | [Evidence](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/workspace-screenshots/768-full-evidence.jpg) |
 | 390 | [Default](workspace-screenshots/390-default.jpg) | [Data](workspace-screenshots/390-measurements.jpg) | [Evidence](workspace-screenshots/390-full-evidence.jpg) |
 
 [Desktop residuals](workspace-screenshots/1440-residuals.jpg) · [Desktop comparison](workspace-screenshots/1440-comparison.jpg) · [Explore desktop Spring, reduced motion](workspace-screenshots/explore-1440-spring.jpg) · [Explore mobile Sensor](workspace-screenshots/explore-390-sensor.jpg).
@@ -57,10 +59,10 @@ Actual CDP screencast frames were recorded at normal and fast scroll speeds thro
 
 | View | Recording | Frames | Playback duration | Review contact sheet |
 |---|---|---:|---:|---|
-| 1440px normal | [Recording](workspace-screenshots/recordings/desktop-normal.webp) | 206 | 8.6s | [Frames](workspace-screenshots/recordings/desktop-normal-review.jpg) |
-| 1440px fast | [Recording](workspace-screenshots/recordings/desktop-fast.webp) | 49 | 2.1s | [Frames](workspace-screenshots/recordings/desktop-fast-review.jpg) |
-| 390px normal | [Recording](workspace-screenshots/recordings/mobile-normal.webp) | 204 | 8.2s | [Frames](workspace-screenshots/recordings/mobile-normal-review.jpg) |
-| 390px fast | [Recording](workspace-screenshots/recordings/mobile-fast.webp) | 45 | 2.1s | [Frames](workspace-screenshots/recordings/mobile-fast-review.jpg) |
+| 1440px normal | [Recording](workspace-screenshots/recordings/desktop-normal.webp) | 206 | 8.6s | [Frames](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/workspace-screenshots/recordings/desktop-normal-review.jpg) |
+| 1440px fast | [Recording](workspace-screenshots/recordings/desktop-fast.webp) | 49 | 2.1s | [Frames](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/workspace-screenshots/recordings/desktop-fast-review.jpg) |
+| 390px normal | [Recording](workspace-screenshots/recordings/mobile-normal.webp) | 204 | 8.2s | [Frames](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/workspace-screenshots/recordings/mobile-normal-review.jpg) |
+| 390px fast | [Recording](workspace-screenshots/recordings/mobile-fast.webp) | 45 | 2.1s | [Frames](https://github.com/luiscontrerasus-glitch/ModelScope/blob/667366616ac29beae00190afd00ca5c4eecdb4e0/docs/redesign/workspace-screenshots/recordings/mobile-fast-review.jpg) |
 
 Reviewed contact sheets from all four final recordings, including the model boundaries and pose handoffs. No crude fallback, empty canvas flash, late geometry pop, stale model or scene-box shift observed. Pendulum's naturally light section background is intentional; it is not a loading flash. Console error review was empty.
 
