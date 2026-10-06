@@ -1,16 +1,14 @@
 'use client';
-import { memo, useEffect, useRef, useState, useSyncExternalStore, type RefObject } from 'react';
-import dynamic from 'next/dynamic';
+import { useEffect, useRef, useState, useSyncExternalStore, type RefObject } from 'react';
 import Link from 'next/link';
 import type { Instrument } from './instrument-scene';
-import { InstrumentFallback } from './instrument-fallback';
+import { InstrumentPreview } from './instrument-preview';
 import { SiteNav, SiteFooter } from './site-nav';
 import { InstrumentMotionControl, useInstrumentMotion } from './parameter-motion';
 import type { AmbientInstrument } from './ambient-instrument';
 import { finiteAmplitudePeriod } from '@/lib/experiments/generators';
 import { smallAnglePeriod } from '@/lib/analysis/models';
 
-const Scene = memo(dynamic(() => import('./instrument-scene'), { ssr: false, loading: () => <div className="scene-loading">Preparing the instrument…</div> }));
 export const modelIds = ['spring', 'pendulum', 'beer-lambert', 'sensor'] as const;
 export type ExploreModel = typeof modelIds[number];
 const systems: { id: ExploreModel; kind: Instrument; title: string; subtitle: string; category: string; copy: string; experiment: string; min: number; max: number; initial: number; label: string; unit: string; digits: number }[] = [
@@ -36,13 +34,14 @@ function MotionReadouts({ system, instrument, poseTarget }: { system: typeof sys
   return <dl>{rows.map(([label, reading]) => <div key={label}><dt>{label}</dt><dd>{reading}</dd></div>)}</dl>;
 }
 
-function Exhibit({ system, index, active }: { system: typeof systems[number]; index: number; active: boolean }) {
+function Exhibit({ system, index, active, warm }: { system: typeof systems[number]; index: number; active: boolean; warm: boolean }) {
   const target = useRef<HTMLDivElement>(null);
   const poseTarget = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; value: number } | null>(null);
   const [controlValue, setControlValue] = useState(system.initial);
+  const [sceneRevealed, setSceneRevealed] = useState(false);
   const pendulum = system.kind === 'pendulum';
-  const motion = useInstrumentMotion({ target, kind: system.kind, min: system.min, max: system.max, initial: system.initial, enabled: active });
+  const motion = useInstrumentMotion({ target, kind: system.kind, min: system.min, max: system.max, initial: system.initial, enabled: active && sceneRevealed });
   const { instrument } = motion;
   useEffect(() => instrument.subscribeControl(setControlValue), [instrument]);
   function changeParameter(next: number) {
@@ -53,7 +52,7 @@ function Exhibit({ system, index, active }: { system: typeof systems[number]; in
   return <section className={`explore-system system-${system.kind}`} id={`model-${system.id}`} aria-labelledby={`heading-${system.id}`} tabIndex={-1}>
     <div className="explore-exhibit" data-model={system.kind} data-motion-running={motion.running}>
     <div className="explore-copy"><span className="home-kicker">0{index + 1} / 04 <span aria-hidden="true">—</span> {system.category}</span><h2 id={`heading-${system.id}`}>{system.title}<span>{system.subtitle}</span></h2><p>{system.copy}</p></div>
-    <div className="explore-instrument" ref={target}><div ref={poseTarget} className={`scene-slot scene-${system.kind}`} aria-label={`Interactive ${system.title} illustration`}>{active && motion.visible ? <Scene kind={system.kind} instrument={instrument} dark={!pendulum} cinematic /> : <InstrumentFallback kind={system.kind} />}</div><p className="scene-instruction">{system.kind === 'spring' ? 'Drag the free end to stretch ↔' : pendulum ? 'Undamped educational oscillation · swing between ± starting angle' : system.kind === 'beer' ? 'Incoming light → solution → transmitted light' : 'Input movement illustrates a generic response'}</p></div>
+    <div className="explore-instrument" ref={target}><div ref={poseTarget} className={`scene-slot scene-${system.kind}`} aria-label={`Interactive ${system.title} illustration`}><InstrumentPreview id={system.id} kind={system.kind} instrument={instrument} active={active && motion.visible} warm={warm} onVisibleChange={setSceneRevealed} /></div><p className="scene-instruction">{system.kind === 'spring' ? 'Drag the free end to stretch ↔' : pendulum ? 'Undamped educational oscillation · swing between ± starting angle' : system.kind === 'beer' ? 'Incoming light → solution → transmitted light' : 'Input movement illustrates a generic response'}</p></div>
     <div className="explore-readout"><MotionReadouts system={system} instrument={instrument} poseTarget={poseTarget} /><label className="instrument-control"><span>{system.label}</span><input aria-label={system.label} type="range" min={system.min} max={system.max} step={pendulum ? .1 : (system.max - system.min) / 1000} value={controlValue} onPointerDown={e => {
       e.preventDefault(); e.currentTarget.focus({ preventScroll: true });
       const start = pendulum ? controlValue : instrument.value;
@@ -96,5 +95,5 @@ export default function Explore({ initialModel }: { initialModel?: ExploreModel 
   return <main className="home explore-page cinematic-explore"><a className="skip-link" href="#explore-content">Skip to models</a><SiteNav dark page="explore" />
     <section className="explore-intro" id="explore-content" aria-labelledby="explore-heading"><span className="home-kicker">Explore models</span><h1 id="explore-heading">Four systems.<br />One question.</h1><p>Where does the model stop matching reality?</p><a className="intro-entry" href="#model-spring">Begin with the spring <span aria-hidden="true">↓</span></a></section>
     <nav className="system-index" aria-label="Scientific systems"><span className="index-label">Explore models</span>{systems.map(system => <a key={system.id} href={`#model-${system.id}`} aria-current={activeModel === system.id ? 'location' : undefined}>{system.id === 'sensor' ? 'Sensor' : system.title}</a>)}</nav>
-    {systems.map((system, index) => <Exhibit key={system.id} system={system} index={index} active={activeModel === system.id} />)}<SiteFooter /></main>;
+    {systems.map((system, index) => <Exhibit key={system.id} system={system} index={index} active={activeModel === system.id} warm={index === (activeModel ? systems.findIndex(s => s.id === activeModel) + 1 : 0)} />)}<SiteFooter /></main>;
 }

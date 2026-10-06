@@ -1,5 +1,5 @@
 'use client';
-import { Component, memo, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Component, memo, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { ContactShadows, Environment, Lightformer, RoundedBox, Line } from '@react-three/drei';
 import { CatmullRomCurve3, TubeGeometry, Vector3, type Mesh, type Group, type MeshStandardMaterial, type MeshBasicMaterial, type MeshPhysicalMaterial } from 'three';
@@ -8,7 +8,7 @@ import type { Line2 } from 'three/examples/jsm/lines/Line2.js';
 
 import { InstrumentFallback } from './instrument-fallback';
 export type Instrument = 'spring' | 'pendulum' | 'beer' | 'sensor';
-interface Props { kind: Instrument; instrument: AmbientInstrument; dark?: boolean; cinematic?: boolean }
+interface Props { kind: Instrument; instrument: AmbientInstrument; dark?: boolean; cinematic?: boolean; onReady?: (frame: string) => void; onSnapshot?: (frame: string) => void; onUnavailable?: () => void }
 const steel = { color: '#b8bcc1', metalness: .9, roughness: .28 };
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
@@ -147,9 +147,10 @@ function Sensor({ instrument }: Omit<Props, 'kind'>) {
   </group>;
 }
 
-class SceneBoundary extends Component<{ children: ReactNode; fallback: ReactNode }, { failed: boolean }> {
+class SceneBoundary extends Component<{ children: ReactNode; fallback: ReactNode; onUnavailable?: () => void }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
+  componentDidCatch() { this.props.onUnavailable?.(); }
   render() { return this.state.failed ? this.props.fallback : this.props.children; }
 }
 const StudioShadow = memo(function StudioShadow({ dark }: { dark?: boolean }) {
@@ -175,16 +176,29 @@ function FitCamera({ kind, cinematic }: { kind: Instrument; cinematic?: boolean 
   }, [camera, size.width, size.height, kind, cinematic, invalidate]);
   return null;
 }
-function InstrumentFrames({ instrument }: { instrument: AmbientInstrument }) {
-  const invalidate = useThree(state => state.invalidate);
-  useFrame(({ gl, invalidate }) => {
-    // A canvas can exist before its first scene frame. Expose actual render readiness
-    // for integration review, including stationary/reduced-motion instruments.
+function InstrumentFrames({ instrument, onReady, onSnapshot }: { instrument: AmbientInstrument; onReady?: (frame: string) => void; onSnapshot?: (frame: string) => void }) {
+  const { gl, scene, camera, invalidate } = useThree();
+  const frames = useRef(0);
+  useFrame(({ gl, scene, camera, invalidate }) => {
+    // Positive priority takes over the final render. Readiness is published AFTER
+    // a complete frame with the studio environment, not during scene preparation.
+    gl.render(scene, camera);
     if (gl.domElement.dataset.sceneReady) return;
-    if (gl.info.render.calls > 0) gl.domElement.dataset.sceneReady = 'true';
-    else invalidate();
-  });
+    frames.current++;
+    if (frames.current >= 3 && scene.environment && gl.info.render.calls > 0) {
+      gl.domElement.dataset.sceneReady = 'true';
+      if (onReady) onReady(gl.domElement.toDataURL('image/png'));
+    } else invalidate();
+  }, 1);
   useEffect(() => { invalidate(); return instrument.subscribeFrame(invalidate); }, [instrument, invalidate]);
+  useLayoutEffect(() => () => {
+    // Keep the last pose as the poster when this demand-rendered scene unmounts.
+    // Capture immediately after rendering; no preserveDrawingBuffer overhead.
+    if (onSnapshot && gl.domElement.dataset.sceneReady && !gl.getContext().isContextLost()) {
+      gl.render(scene, camera);
+      if (gl.info.render.calls > 0) onSnapshot(gl.domElement.toDataURL('image/png'));
+    }
+  }, [gl, scene, camera, onSnapshot]);
   return null;
 }
 /** Reusable geometry for the focused scientific instrument scenes. */
@@ -193,12 +207,13 @@ export function InstrumentModel(props: Props) {
 }
 export default function InstrumentScene(props: Props) {
   const [lost, setLost] = useState(false);
-  if (lost) return <InstrumentFallback kind={props.kind} failed />;
-  return <SceneBoundary fallback={<InstrumentFallback kind={props.kind} failed />}>
+  const fallback = props.cinematic ? null : <InstrumentFallback kind={props.kind} failed />;
+  if (lost) return fallback;
+  return <SceneBoundary fallback={fallback} onUnavailable={props.onUnavailable}>
     <Canvas frameloop="demand" dpr={[1, 1.5]} camera={{ position: [0, 1.1, 8.8], fov: 38 }} gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }} onCreated={({ gl }) => {
-      gl.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); setLost(true); }, { once: true });
-    }} fallback={<InstrumentFallback kind={props.kind} failed />}>
-      <InstrumentFrames instrument={props.instrument} /><FitCamera kind={props.kind} cinematic={props.cinematic} /><ambientLight intensity={props.dark ? .3 : .65} />
+      gl.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); setLost(true); props.onUnavailable?.(); }, { once: true });
+    }} fallback={fallback}>
+      <InstrumentFrames instrument={props.instrument} onReady={props.onReady} onSnapshot={props.onSnapshot} /><FitCamera kind={props.kind} cinematic={props.cinematic} /><ambientLight intensity={props.dark ? .3 : .65} />
       <directionalLight position={[-3, 6, 5]} intensity={props.dark ? 2 : 3} />
       <directionalLight position={[4, 2, -3]} intensity={props.dark ? 3 : 1.5} color={props.dark ? '#4c9bff' : '#eaf1ff'} />
       <StudioEnvironment dark={props.dark} />
