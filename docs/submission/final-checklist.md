@@ -31,7 +31,7 @@ Status markers: **DONE**, **PENDING**, **UNRESOLVED**, **NOT SUBMITTED**. Prepar
 - **DONE:** public production flows rechecked on desktop and 390px mobile, exports and both live AI routes exercised. Application behavior frozen at the verified release.
 - **DONE:** prepared README, accurate stack/disclosure, architecture, six screenshots, both event copy packages, 50/100/250-word descriptions, upload metadata and unsent mentor message.
 - **DONE:** new material contains no secret values or private absolute paths; video/raw captures ignored to keep Git lean.
-- **PENDING until confirmed in final report:** documentation commit pushed and public GitHub commit verified.
+- **DONE:** package commit `5757906dad1ca27db5247cd055396b3b8592821e` pushed to main; GitHub's anonymous API confirms that SHA, public source and updated README. Final delivery reports the subsequent verification-record commit.
 - **PENDING / USER HANDOFF:** user chose to upload YouTube personally. Verify logged-out playback and insert the resulting URL in README and both Devpost forms.
 - **PENDING:** organizer answers and personal eligibility attestation; do not treat overlapping build dates as cross-submission permission.
 - **NOT SENT:** mentor/organizer messages. [Mentor template](mentor-message.md) and questions in rule review are ready to copy.
