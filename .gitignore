@@ -7,3 +7,9 @@ coverage/
 browser-artifacts/
 
 .vercel/
+
+# Submission recordings and render intermediates remain local.
+docs/submission/video/capture/
+docs/submission/video/render/
+docs/submission/video/*.mp4
+docs/submission/video/__pycache__/

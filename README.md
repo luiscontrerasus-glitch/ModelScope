@@ -4,7 +4,11 @@
 
 Compare experimental measurements with a scientific model and inspect where disagreement becomes systematic.
 
-![Spring analysis: linked measurements, response, residuals, and candidate transition](docs/redesign/release-spring-analysis.jpg)
+**PUBLIC DEMO:** [modelscope-ten.vercel.app](https://modelscope-ten.vercel.app/)
+
+**DEMO VIDEO:** Public video URL pending upload. The [2:45 production recording and captions](docs/submission/video/README.md) are prepared locally.
+
+![ModelScope production Home: Equations have limits. Find them.](docs/submission/assets/01-home.jpg)
 
 ## The problem
 
@@ -46,7 +50,7 @@ AI cannot determine fits, residuals, transitions, sensitivity ranges, support st
 
 The server uses strict schemas, semantic validation, 16 KB request bounds, a 15-second provider timeout, output limits, process-local throttling, and sanitized failures. Free-text validation reduces errors but cannot guarantee perfect interpretation or prompt-injection immunity.
 
-Default: `gemini-3.5-flash-lite` via `@google/genai` 2.27.0. Its [structured-output capability](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite) and [standard text free tier](https://ai.google.dev/gemini-api/docs/pricing) were checked October 4, 2026. **Live provider smoke tests remain pending a free, unbilled key.** Mocks are test evidence, not live verification. [AI design, exact sharing, and setup](docs/ai.md).
+Default: `gemini-3.5-flash-lite` via `@google/genai` 2.27.0. Its [structured-output capability](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite) and [standard text free tier](https://ai.google.dev/gemini-api/docs/pricing) were checked October 4, 2026. **Both live Gemini routes passed in production on October 6.** The recording pass also verified graceful temporary failure and a successful explanation retry. Mocks remain test evidence only. [Production verification](docs/deployment/README.md) · [AI design, exact sharing, and setup](docs/ai.md).
 
 ## Scientific methodology
 
@@ -88,7 +92,7 @@ npm ci
 npm run dev
 ```
 
-Open http://localhost:3000. AI is optional. To enable it, privately configure ignored `.env.local` using `.env.example`: `GEMINI_API_KEY`, `GEMINI_MODEL=gemini-3.5-flash-lite`, and `GEMINI_FREE_TIER_CONFIRMED=true` only after verifying an unbilled project. Do not enable billing or add a card. [Exact steps](docs/final-checklist.md#free-gemini-key).
+Open http://localhost:3000. AI is optional. To enable it, privately configure ignored `.env.local` using `.env.example`: `GEMINI_API_KEY`, `GEMINI_MODEL=gemini-3.5-flash-lite`, and `GEMINI_FREE_TIER_CONFIRMED=true` only after verifying an unbilled project. Do not enable billing or add a card. [Provider configuration](docs/ai.md#provider-and-free-tier-configuration).
 
 Production preview:
 
@@ -121,4 +125,4 @@ Four built-in families and three custom baselines, one possible hinge, ordinary 
 
 ImpactHack's [official window](https://impacthack26.devpost.com/details/dates) runs October 1 at midnight PDT through October 7 at 11:45 PM PDT. Forge's intended track is **AI + Education**; use its [live Devpost deadline](https://forgehacks-2026.devpost.com/) of October 10 at noon EDT. Team eligibility and organizer permission for cross-hackathon submission remain checks, not claims of approval.
 
-[ImpactHack draft](docs/submission-impacthack.md) · [ForgeHacks draft](docs/submission-forgehacks.md) · [Video script](docs/demo-video.md) · [Final checklist and credential handoff](docs/final-checklist.md) · [Screenshot manifest](docs/screenshots/README.md). Nothing has been submitted automatically.
+[ImpactHack draft](docs/submission-impacthack.md) · [ForgeHacks draft](docs/submission-forgehacks.md) · [Copy-ready Devpost fields](docs/submission/devpost-fields.md) · [Final video script](docs/submission/video/modelscope-demo-script.md) · [Final checklist](docs/submission/final-checklist.md) · [Production screenshot manifest](docs/submission/assets/README.md). Nothing has been final-submitted. [Current rule review](docs/submission/rules-review.md) records unresolved eligibility and cross-submission questions.

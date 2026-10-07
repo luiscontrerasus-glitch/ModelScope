@@ -1,58 +1,70 @@
-# ForgeHacks Online 2026 submission draft
+# ForgeHacks Online 2026 — final written draft
 
 **ModelScope — Equations have limits. Find them.**
 
-**Solo participant:** Luis Contreras
+**Luis Contreras · Solo · AI + Education**
 
-**Track:** AI + Education
-
-**Event:** [ForgeHacks Online 2026](https://forgehacks-2026.devpost.com/)
-
-**Deadline safety:** October 10, 2026, 12:00 PM EDT, using the live Devpost deadline. Draft only; nothing submitted.
+Deadline: **October 10, 2026, 12:00 PM EDT**. Draft only; not final-submitted. [Current rules and unresolved checks](submission/rules-review.md).
 
 ## Problem statement and target users
 
-Students can memorize an equation without understanding its assumptions or applying it critically to measurements. ModelScope is designed for students working with science lab data and teachers demonstrating model adequacy. It asks where a configured relationship starts disagreeing systematically with observations, and makes the evidence inspectable.
+Students often memorize equations without learning their assumptions or valid regimes. A high fit score can hide systematic residual disagreement. ModelScope makes model adequacy an evidence-based learning task: when should we stop trusting this approximation for these measurements?
 
-## Connection to AI + Education
+The intended users are students investigating science lab measurements and educators demonstrating scientific model assumptions.
 
-The [official track](https://www.forgehacks.dev/) emphasizes conceptual understanding, connections, and application beyond memorization. ModelScope connects equations to measurements and residual patterns. Students apply their knowledge by choosing variables, declaring assumptions, comparing evidence, and interpreting the limits of a model. Optional AI helps them express experimental intent and understand an existing finding.
+## Answer to the AI + Education prompt
 
-ModelScope is distinct from a generic AI tutor: the core task is scientific model adequacy, deterministic evidence is authoritative, and students explore limitations rather than receive answers from a chat. **AI interprets and explains. ModelScope's deterministic engine decides.**
+The [official prompt](https://www.forgehacks.dev/) asks learners to move beyond memorization toward conceptual understanding, connections and application. ModelScope turns a memorized equation into a testable assumption. Students compare it with observations, inspect residual structure, see where an approximation becomes inadequate, and apply the same reasoning to their own data. Linking one evidence framework across mechanics, physics, chemistry and instrumentation helps connect concepts across domains. Separating evidence from causal explanation teaches caution as well as calculation.
 
-## Technical approach
+The core experience is model investigation rather than chat tutoring. Gemini supports two specific learning barriers: expressing experimental intent as a supported setup, and understanding an already-calculated finding.
 
-Local TypeScript functions evaluate the baseline, compare continuous segmented alternatives, require sustained disagreement, and check whether support survives diagnostic omission of an influential observation. Linked Recharts plots and tables expose the evidence. Supported, ambiguous, none, and insufficient outcomes prevent every dataset from becoming a positive finding. JSON exports preserve provenance and reproducible numerical results.
+## What it does
 
-![Architecture](assets/architecture.svg)
+ModelScope compares measurements with a configured scientific baseline, searches continuous segmented alternatives, and exposes the supporting evidence. Students explore four 3D scientific systems, inspect linked plots and measurements, or bring CSV, pasted tables, and manual data. Outcomes distinguish supported, ambiguous, no clear transition, and insufficient evidence.
 
-## AI implementation
+## Technical implementation and AI use
 
-The Next.js server uses Google GenAI and `gemini-3.5-flash-lite`. Structured setup output may propose exact columns, source-backed unit labels, and only supported model families. The student confirms into the regular configuration, supplies a reference scale, and runs deterministic analysis. Explanations bind to an existing finding and its analysis revision. Validation rejects unknown authority fields; editing or rerunning clears stale explanations. Requests are bounded, throttled per process, and fail without disrupting manual analysis.
+Pure TypeScript performs baseline fitting or fixed-theory prediction, residual analysis, penalized segmented comparison, sustained same-direction disagreement checks, and an influential-observation safeguard. The same complete observations remain in the reported fits. The transition sensitivity range describes sampling and candidate sensitivity; it is not a confidence interval. Reproducible JSON preserves provenance and numerical evidence.
 
-The model's structured output and free-tier availability were checked on October 4 against official Google documentation. **No live Gemini smoke test has passed yet: a free, unbilled key is still required.** Keep this status in the submission unless actual provider verification changes it. Mock screenshots must not be presented as production AI behavior.
+Gemini proposes only a supported configuration from an experiment description and exact column headers. The student reviews and confirms it, supplies a justified response scale, and separately runs analysis. Gemini can also explain an existing deterministic finding using minimal summary context. It cannot fit the model, select the breakpoint, invent uncertainty, or change support. AI explains. The analysis engine decides.
 
-## Real-world impact and innovation
+Structured outputs, schema/semantic validation, explicit confirmation, response bounds, sanitized failures, and finding/revision binding limit AI authority. Production Setup and Explain are live-verified; the recording also demonstrates that a temporary AI failure cannot change deterministic evidence.
 
-The prototype could support discussions about model assumptions, sampling, influential observations, and causal uncertainty in science labs. Its distinctive combination is numerical model comparison, linked source evidence, and bounded explanatory AI. Educational impact is a hypothesis for future classroom evaluation; I do not claim measured improvements.
+![Browser-local deterministic engine and separate optional Gemini paths](assets/architecture.svg)
 
-## What works
+The React/Next.js interface links Recharts plots to measurements and exposes findings, comparisons and provenance. Three.js via React Three Fiber/Drei creates four instrument scenes. CSV parsing, calculations and JSON export run locally; Next.js server routes alone mediate Gemini requests.
 
-Four labeled synthetic demonstrations cover Spring, pendulum, Beer–Lambert, and sensor calibration. Custom CSV, pasted tables, and manual entry use the same engine after explicit configuration. Response and residual plots link to findings and measurements. Users can edit, rerun, inspect diagnostics and candidate profiles, and export evidence. Manual analysis works without provider credentials. The release regression suite contains 290 passing tests.
+## Real-world relevance and innovation
 
-## Known limitations and privacy
+The intended benefit is scientific model literacy: making assumptions visible, reasoning from residuals, checking influential observations, and refusing to equate a mathematical transition with its physical cause. The distinctive combination is a general deterministic adequacy pipeline, a polished instrument experience, and constrained AI interpretation. No measured educational improvement or classroom adoption is claimed.
 
-One possible transition, restricted baselines, ordinary least squares, assumed response scales, no confidence intervals, and no inferred physical mechanism. Repeated X values, measurement-input uncertainty, arbitrary equations, persistence, and XLSX/PDF are unsupported. The rule has no calibrated false-positive rate. AI semantic checks reduce errors but cannot guarantee perfect interpretation. Public server throttling is process-local, not distributed.
+## Execution and completeness
 
-Raw measurements stay local. Optional setup sends description and headers; explanation sends a selected deterministic finding and minimal model/evidence context including summary statistics and caveats. Gemini free-tier inputs may improve Google products; avoid sensitive context.
+The public application includes Home, cinematic Explore with all four instruments, the graph-first workspace, source editing, Residuals/Model comparison/Evidence, Full Evidence, custom CSV/paste/manual input, JSON export, and live optional Gemini. Desktop and 390px mobile paths were verified. The frozen release has **306 passing tests**, passing typecheck/lint/build and a clean production dependency audit. Actual production footage forms the full 2:45 video; source and a clear README are public.
 
-## Technologies and provenance
+## Limitations and privacy
 
-Next.js, React, strict TypeScript, Recharts, Zod, Papa Parse, Vitest, Testing Library, Google GenAI SDK. Codex assisted engineering and documentation. Luis Contreras started ModelScope from scratch during the overlapping event period; the full Git history begins October 4. The supplied Forge build window is October 3 at noon ET through October 10 at noon ET. Live Devpost says EDT; rules use EST, so use the earlier EDT cutoff. Student/age eligibility and cross-hackathon permission remain team checks.
+Built-in datasets are explicitly synthetic educational demonstrations, not laboratory validation. The prototype supports restricted baselines and one possible hinge with ordinary least squares and assumed response scales. It has no calibrated false-positive rate, confidence interval, causal mechanism inference, arbitrary equation support, or classroom outcome study. Repeated X values and measurement-input uncertainty are unsupported. Optional AI can fail or misinterpret; manual analysis remains usable.
 
-## Links and recording
+Normal analysis and raw measurements stay in browser memory. Optional Setup sends description and headers; Explain sends one selected finding and limited evidence context, including summary statistics and caveats. Free-tier Gemini context may improve Google products; avoid sensitive context. The provider key remains a production server secret.
 
-- Source: [ModelScope on GitHub](https://github.com/luiscontrerasus-glitch/ModelScope) — public source with the complete verified release history.
-- Live demo: pending Vercel authentication/deployment.
-- Video: **TODO — public 2–4 minute recording** using [the exact shot list](demo-video.md).
-- Images: use the six recommended actual product screenshots in [the manifest](screenshots/README.md).
+## Learning and next steps
+
+Scientific trust comes from inspectable assumptions and reproducible evidence. Future work would evaluate classroom use with teachers and students and validate assumptions against independently collected datasets. These are research directions rather than current features.
+
+## Technologies and development disclosure
+
+Next.js, React, TypeScript, Three.js, React Three Fiber, Drei, Recharts, Zod, Papa Parse, Google Gemini API, Google GenAI SDK, Tailwind CSS, Geist, Vercel. Development/verification: Vitest, Testing Library, jsdom, ESLint, Codex. Submission production: Chrome DevTools Protocol browser frame capture, Python, Pillow, FFmpeg, and installed Windows speech synthesis.
+
+Luis Contreras built ModelScope from scratch during the overlapping eligible event period. Retained Git history begins October 4, 2026 and has not been squashed, backdated or rewritten. Codex assisted engineering, debugging, research, documentation and verification. Runtime Gemini is separate from coding assistance. Open-source dependencies and pre-trained Gemini are disclosed. Personal eligibility and cross-submission permission remain unresolved pending confirmation.
+
+## Links and supporting assets
+
+- Live demo: https://modelscope-ten.vercel.app/
+- Public source: https://github.com/luiscontrerasus-glitch/ModelScope
+- Video: **PUBLIC VIDEO URL PENDING UPLOAD** — local 2:45 MP4 is complete; do not paste a local path into Devpost.
+- Final production images: [selected assets](submission/assets/README.md).
+- Architecture: [SVG](assets/architecture.svg).
+- Copy-ready fields: [Devpost package](submission/devpost-fields.md).
+
+The copy emphasizes relevance, thoughtful AI integration, originality, delivered functionality and clear communication, corresponding to the verified official judging criteria without claiming scores or awards.

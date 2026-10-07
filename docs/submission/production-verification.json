@@ -1,0 +1,79 @@
+{
+  "checkedOn": "2026-10-06",
+  "publicSource": "https://modelscope-ten.vercel.app/",
+  "frozenApplicationCommit": "e7e2f5e65b55fae55d967bbe27268b265fa32782",
+  "anonymousHTTP": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/explore",
+      "status": 200
+    },
+    {
+      "path": "/workspace?experiment=spring-hooke",
+      "status": 200
+    },
+    {
+      "path": "/workspace?experiment=custom",
+      "status": 200
+    },
+    {
+      "path": "/methodology",
+      "status": 200
+    }
+  ],
+  "desktop": [
+    "Home hero/teaser/thesis/architecture",
+    "Explore four rendered systems and index/deep links",
+    "Spring model fit/result/measurements/linked selection/residuals/comparison/evidence/full evidence",
+    "Pendulum/Beer–Lambert/Sensor model-specific analysis",
+    "Custom paste/mapping/units/reference scale/run",
+    "JSON export",
+    "Methodology all sections and three interactive challenges"
+  ],
+  "mobile": {
+    "cssWidth": 390,
+    "views": [
+      "Home",
+      "Explore Spring",
+      "Spring Analyze",
+      "Full Evidence",
+      "Methodology"
+    ],
+    "horizontalOverflow": false,
+    "visualReview": "No text overlap observed in reviewed views; readable stacked layout"
+  },
+  "consoleErrorsObserved": [],
+  "export": {
+    "schemaVersion": "1.1.0",
+    "observations": 24,
+    "experiment": "spring-hooke"
+  },
+  "AI": {
+    "setup": "live HTTP 200; constrained proposal explicitly confirmed",
+    "explanation": "temporary HTTP 503 gracefully sanitized; one retry HTTP 200, real prose recorded",
+    "calls": 3,
+    "resultChangedByAI": false,
+    "mocked": false
+  },
+  "verifiedReleaseChecks": {
+    "tests": 306,
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "productionAuditVulnerabilities": 0,
+    "note": "Existing verified application release; this pass changes only documentation and submission assets. Full app tests were not rerun for docs-only changes."
+  },
+  "newChecks": [
+    "JSON export parsed",
+    "description word counts exact",
+    "complete MP4 decode",
+    "165 one-second film frames reviewed",
+    "full film played continuously through ended state",
+    "SVG parsed",
+    "new Markdown local targets checked",
+    "changed material inspected for secrets and private absolute paths"
+  ]
+}

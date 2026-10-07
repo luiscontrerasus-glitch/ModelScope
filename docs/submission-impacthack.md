@@ -1,84 +1,68 @@
-# ImpactHack 2026 submission draft
+# ImpactHack 2026 — final written draft
 
-**Project:** ModelScope
+**ModelScope — Equations have limits. Find them.**
 
-**Tagline:** Equations have limits. Find them.
+**Luis Contreras · Solo**
 
-**Solo participant:** Luis Contreras
+Deadline: **October 7, 2026, 11:45 PM PDT**. Draft only; not final-submitted. [Current rule/eligibility review](submission/rules-review.md).
 
-**Event:** [ImpactHack 2026](https://impacthack26.devpost.com/)
+## Inspiration and problem
 
-**Deadline:** October 7, 2026, 11:45 PM PDT. Draft only; nothing submitted.
+Students often memorize equations without learning their assumptions or valid regimes. A high fit score can hide systematic residual disagreement. ModelScope makes model adequacy an evidence-based learning task: when should we stop trusting this approximation for these measurements?
 
-## Problem
+## What it does
 
-Students often learn equations without learning when their assumptions stop matching observations. A good-looking fit can hide a structured residual pattern. I wanted students to ask a more useful question: over what range does this model adequately describe these measurements?
+ModelScope compares measurements with a configured scientific baseline, searches continuous segmented alternatives, and exposes the supporting evidence. Students explore four 3D scientific systems, inspect linked plots and measurements, or bring CSV, pasted tables, and manual data. Outcomes distinguish supported, ambiguous, no clear transition, and insufficient evidence.
 
-## Solution
+Spring tests Hooke's law, pendulum tests the fixed small-angle period approximation, Beer–Lambert tests concentration calibration, and Sensor Calibration tests linear response. Each makes a different scientific assumption inspectable. Custom data connects the same reasoning to the student's own lab measurements.
 
-ModelScope compares measurements against a configured scientific model, visualizes the disagreement, and presents traceable evidence for a candidate transition. Students can inspect every finding, select its supporting measurements, and connect the evidence across the table, response plot, and residual plot.
+## How we built it
 
-## How it works
+Pure TypeScript performs baseline fitting or fixed-theory prediction, residual analysis, penalized segmented comparison, sustained same-direction disagreement checks, and an influential-observation safeguard. The same complete observations remain in the reported fits. The transition sensitivity range describes sampling and candidate sensitivity; it is not a confidence interval. Reproducible JSON preserves provenance and numerical evidence.
 
-The browser fits or evaluates the configured baseline, compares it with continuous segmented alternatives, and requires both sustained residual disagreement and an influential-observation safeguard. Results distinguish supported, ambiguous, no clear transition, and insufficient evidence. A supported transition includes a sensitivity range reflecting candidate location and sampling, not a confidence interval. Model inadequacy does not establish physical failure or its cause.
+The graph-first workspace keeps the main model fit and compact result together. Residuals, Model comparison and Evidence offer successive checks; Full Evidence opens deeper findings and diagnostics. The collapsible editor links source rows to plotted points. Explore uses cinematic 3D scenes with system-specific motion and pauses offscreen work.
 
-## Technical implementation
+## Responsible AI and technology
 
-Pure TypeScript analysis functions are separated from experiment definitions and React display components. The Next.js workspace uses Recharts for linked plots, Papa Parse for local CSV interpretation, and Zod for bounded input/output contracts. JSON exports preserve configuration, provenance, original observations, numerical evidence, and methodological caveats. The release regression suite contains 290 tests, including frozen Spring numerical results and adversarial inputs.
+Gemini proposes only a supported configuration from an experiment description and exact column headers. The student reviews and confirms it, supplies a justified response scale, and separately runs analysis. Gemini can also explain an existing deterministic finding using minimal summary context. It cannot fit the model, select the breakpoint, invent uncertainty, or change support. AI explains. The analysis engine decides.
 
-![Architecture](assets/architecture.svg)
+Both runtime AI routes have been verified against real Gemini on the public deployment. Recording captured a successful Setup and a successful Explain retry after a sanitized temporary failure; the numerical result remained unchanged. No mock response is presented as production.
 
-## Responsible AI
+## Impact
 
-**AI interprets and explains. ModelScope's deterministic engine decides.** Optional Gemini setup proposals interpret a description and actual column headers within three supported custom model families. A proposal requires explicit confirmation into the normal form; the student supplies the response reference scale and separately runs analysis. Optional explanations describe an existing finding and are bound to its ID and current analysis revision. AI cannot change fits, residuals, transition positions, support states, or exports.
+ModelScope is intended for science students and educators developing model literacy: assumptions, residual reasoning, approximation limits, cautious uncertainty language, and the distinction between mathematical evidence and physical explanation. It provides a working basis for classroom investigation; improvements in learning outcomes have not been measured.
 
-The server uses `@google/genai` 2.27.0 with `gemini-3.5-flash-lite`, strict structured responses, validation, request limits, timeouts, and sanitized errors. The model's structured-output capability and free-tier availability were checked against official Google documentation on October 4. **Live provider verification is pending a free, unbilled key.** Automated mocks establish interface behavior, not live inference. Before publication, retain this qualification unless real smoke tests pass.
+## Challenges, accomplishments and learning
 
-## Built-in experiments
+The hardest design problem was avoiding confident-looking but unsupported transitions. Penalized comparisons, persistence and influence checks keep a better fit from automatically becoming a strong finding. Another challenge was making polished 3D interaction coexist with inspectable scientific evidence while avoiding stale AI output. The finished public product combines all four scientific demonstrations, custom input, evidence export, and bounded live Gemini. The verified release has **306 passing tests**, typecheck/lint/build pass, and zero production dependency vulnerabilities.
 
-Four synthetic educational demonstrations explore Spring/Hooke's law, the pendulum small-angle approximation, Beer–Lambert concentration response, and a sensor's linear calibration range. They span mechanics, physics approximation, chemistry, and engineering instrumentation. Each includes its question, assumptions, model, units, and a control dataset. They demonstrate the method; they are not laboratory validation.
+The main lesson is that model inadequacy is a claim about observations and assumptions, not proof of a hidden physical cause. A useful educational tool must show its evidence and its limitations together.
 
-## Custom datasets
+## Limitations and privacy
 
-Students upload CSV locally, paste CSV/TSV, or enter measurements manually. They review source records, explicitly map X/Y, name quantities and units, choose a line with offset, line through the origin, or user-supplied constant, and justify a positive response scale. Unknown units remain unspecified; labels never trigger guessed conversions. Edits invalidate the displayed analysis until rerun.
+Built-in datasets are explicitly synthetic educational demonstrations, not laboratory validation. The prototype supports restricted baselines and one possible hinge with ordinary least squares and assumed response scales. It has no calibrated false-positive rate, confidence interval, causal mechanism inference, arbitrary equation support, or classroom outcome study. Repeated X values and measurement-input uncertainty are unsupported. Optional AI can fail or misinterpret; manual analysis remains usable.
 
-## Educational impact
-
-ModelScope gives lab groups and teachers a concrete way to discuss assumptions, residual structure, sampling, and the difference between a statistical pattern and a causal explanation. Its potential benefit is better scientific reasoning, rather than faster answer delivery. Learning outcomes have not yet been measured in classrooms.
-
-## Challenges
-
-I had to prevent one unusual observation from becoming a persuasive but unsupported transition, preserve scientific meaning across four different experiments, and keep AI assistance subordinate to reproducible evidence. Custom input needed explicit mappings and uncertainty assumptions rather than convenient hidden defaults.
-
-## Accomplishments
-
-I built four connected demonstrations and a complete custom-data workflow, linked evidence to the source measurements, preserved deterministic results through generalization, and made manual analysis work without an AI key. The release candidate supports desktop and mobile use and includes a reproducible evidence export.
-
-## What I learned
-
-Clear scientific interfaces need careful language as much as mathematical correctness. A sensitivity range, a high R², and a causal explanation are different things. Bounded AI assistance is most useful when its authority and failure behavior are explicit.
+Normal analysis and raw measurements stay in browser memory. Optional Setup sends description and headers; Explain sends one selected finding and limited evidence context, including summary statistics and caveats. Free-tier Gemini context may improve Google products; avoid sensitive context. The provider key remains a production server secret.
 
 ## What's next
 
-After the hackathon, I would evaluate the learning experience with students and teachers, assess detection behavior against independently designed datasets, and review whether the existing assumptions suit classroom measurements. These are research directions, not shipped capabilities.
-
-## Privacy
-
-Raw measurements remain in the browser. Optional setup sends only the description and headers; explanation sends a selected finding and minimal model/evidence context, including summary statistics and caveats. Google Gemini free-tier inputs may be used to improve Google products. Avoid sensitive descriptions, labels, and evidence context.
+Evaluate the learning experience with teachers and students, test independently collected classroom datasets, and review whether existing assumptions fit those measurements. These are proposed future work, not shipped capabilities.
 
 ## Technologies and development disclosure
 
-Next.js, React, TypeScript, Recharts, Zod, Papa Parse, Vitest, Testing Library, and the Google GenAI SDK. Codex assisted development, debugging, documentation, and verification. No generated product screenshot substitutes for actual application footage.
+Next.js, React, TypeScript, Three.js, React Three Fiber, Drei, Recharts, Zod, Papa Parse, Google Gemini API, Google GenAI SDK, Tailwind CSS, Geist, Vercel. Development/verification: Vitest, Testing Library, jsdom, ESLint, Codex. Submission production: Chrome DevTools Protocol browser frame capture, Python, Pillow, FFmpeg, and installed Windows speech synthesis.
 
-ModelScope was started from scratch during the overlapping eligible build period. The retained Git history begins October 4, 2026. Event window: October 1 at 12:00 AM PDT through October 7 at 11:45 PM PDT. Team eligibility and permission to submit the same project to both events must be checked before submission.
+Luis Contreras built ModelScope from scratch during the overlapping eligible event period. Retained Git history begins October 4, 2026 and has not been squashed, backdated or rewritten. Codex assisted engineering, debugging, research, documentation and verification. Runtime Gemini is separate from coding assistance. Open-source dependencies and pre-trained Gemini are disclosed. Personal eligibility and cross-submission permission remain unresolved pending confirmation.
 
-## Submission links and images
+## Submission assets
 
-- Source: [ModelScope on GitHub](https://github.com/luiscontrerasus-glitch/ModelScope) — public source with the complete verified release history.
-- Live demo: pending Vercel authentication and deployment; replace with verified URL.
-- Video: **TODO — public 2–4 minute recording**, following [the script](demo-video.md).
-- Use the six recommended real product images in [the screenshot manifest](screenshots/README.md). Do not include internal AI mocks.
+- Live demo: https://modelscope-ten.vercel.app/
+- Public source: https://github.com/luiscontrerasus-glitch/ModelScope
+- Video: **PUBLIC VIDEO URL PENDING UPLOAD** — local 2:45 MP4 is complete; do not paste a local path into Devpost.
+- Final production images: [selected assets](submission/assets/README.md).
+- Architecture: [SVG](assets/architecture.svg).
+- Copy-ready fields: [Devpost package](submission/devpost-fields.md).
 
-## Suggested award positioning
+## Award positioning for review only
 
-Best Education Project: learning model limits through evidence. Best Data & Analytics: residuals, model comparisons, and traceability. Best Technical Project: deterministic analysis and bounded AI contracts. Best Use of AI: reviewed configuration and evidence explanation, conditional on live verification. Best Design & UX: coherent scientific workspace. Most Innovative: exploring equation adequacy rather than supplying answers. Overall placement: integrated impact, correctness, and demonstration quality. These are positioning suggestions, not award claims.
+Education: evidence-based model literacy. Technical: deterministic analysis with robust gates. AI: reviewed setup and bounded explanation. Design/UX: cinematic exploration and precise analysis. Data/Analytics: linked residual evidence and reproducible exports. Innovation: evaluating equation adequacy across scientific domains. Demo/Presentation: actual production footage and an explicit AI/science boundary. These are relevant award areas, not awards won or guaranteed eligibility.

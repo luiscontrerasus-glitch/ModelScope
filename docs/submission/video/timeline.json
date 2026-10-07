@@ -1,0 +1,134 @@
+[
+  {
+    "clip": "01-home",
+    "start": 0,
+    "duration": 10,
+    "narration": "Students learn equations as if they work everywhere. Scientific models are approximations. Understanding where they stop matching reality is part of understanding the science."
+  },
+  {
+    "clip": "02-explore-spring",
+    "start": 10,
+    "duration": 4,
+    "narration": "ModelScope makes those limits visible across mechanics,"
+  },
+  {
+    "clip": "03-explore-pendulum",
+    "start": 14,
+    "duration": 4,
+    "narration": "physics approximations,"
+  },
+  {
+    "clip": "04-explore-beer",
+    "start": 18,
+    "duration": 4,
+    "narration": "chemistry,"
+  },
+  {
+    "clip": "05-explore-sensor",
+    "start": 22,
+    "duration": 3,
+    "narration": "and instrumentation."
+  },
+  {
+    "clip": "06-spring-run",
+    "start": 25,
+    "duration": 12,
+    "narration": "Here, ModelScope tests Hooke’s law against synthetic spring measurements. It fits the configured baseline, then compares continuous segmented alternatives on the same observations."
+  },
+  {
+    "clip": "07-measurements",
+    "start": 37,
+    "duration": 8,
+    "narration": "Each finding links back to its measurements. Students can inspect and edit the source values, then rerun the analysis."
+  },
+  {
+    "clip": "08-comparison",
+    "start": 45,
+    "duration": 9,
+    "narration": "A better segmented fit alone is not enough. ModelScope penalizes additional complexity and the search across candidate transitions."
+  },
+  {
+    "clip": "09-residuals",
+    "start": 54,
+    "duration": 9,
+    "narration": "It requires sustained, same-direction residual disagreement. An influence safeguard checks that one unusual point does not automatically create support."
+  },
+  {
+    "clip": "10-evidence",
+    "start": 63,
+    "duration": 9,
+    "narration": "Here, the supported transition is near zero point zero eight meters. Its sensitivity range is not a confidence interval or proof of a physical mechanism."
+  },
+  {
+    "clip": "11-pendulum-analysis",
+    "start": 72,
+    "duration": 5,
+    "narration": "The same framework tests the small-angle pendulum approximation,"
+  },
+  {
+    "clip": "12-beer-analysis",
+    "start": 77,
+    "duration": 5,
+    "narration": "Beer–Lambert calibration,"
+  },
+  {
+    "clip": "13-sensor-analysis",
+    "start": 82,
+    "duration": 6,
+    "narration": "and sensor linearity, with model-specific assumptions and units."
+  },
+  {
+    "clip": "14-custom-input",
+    "start": 88,
+    "duration": 6,
+    "narration": "Students can bring CSV, pasted tables, or manual measurements."
+  },
+  {
+    "clip": "15-custom-config",
+    "start": 94,
+    "duration": 12,
+    "narration": "They map variables, choose a supported model, declare units, and provide a justified measurement response scale. No uncertainty is silently invented."
+  },
+  {
+    "clip": "16-custom-result",
+    "start": 106,
+    "duration": 6,
+    "narration": "Their data runs through the same deterministic evidence pipeline."
+  },
+  {
+    "clip": "17-ai-setup-request",
+    "start": 112,
+    "duration": 7,
+    "narration": "Gemini translates the experiment description into a constrained setup proposal."
+  },
+  {
+    "clip": "18-ai-confirm",
+    "start": 119,
+    "duration": 6,
+    "narration": "The student reviews and confirms it. The response scale remains their responsibility."
+  },
+  {
+    "clip": "19b-ai-explain-retry",
+    "start": 125,
+    "duration": 7,
+    "narration": "Gemini explains existing evidence without choosing breakpoints or changing support states."
+  },
+  {
+    "clip": "20-ai-reading",
+    "start": 132,
+    "duration": 6,
+    "narration": "AI explains. The analysis engine decides."
+  },
+  {
+    "clip": "21-architecture",
+    "start": 138,
+    "duration": 15,
+    "narration": "Raw measurements stay in the browser for normal analysis. Optional AI receives only description and headers, or a selected finding and summary context. Avoid sensitive context."
+  },
+  {
+    "clip": "22-closing",
+    "start": 153,
+    "duration": 12,
+    "narration": "ModelScope helps students learn not only how equations work, but when those equations deserve to be trusted. Equations have limits. Find them."
+  }
+]

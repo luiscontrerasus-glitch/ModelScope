@@ -1,0 +1,278 @@
+{
+  "capturedOn": "2026-10-06",
+  "source": "https://modelscope-ten.vercel.app/",
+  "outputResolution": [
+    1920,
+    1080
+  ],
+  "outputFPS": 30,
+  "changingSourceFPS": "approximately 17–21 for moving instruments; lower on static pages",
+  "sourceViewports": "1600×900 CSS for main footage; retained earlier real AI footage",
+  "format": "actual CDP JPEG frames with timestamp timing; no generated product frames",
+  "clips": [
+    {
+      "name": "01-home",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 10,
+      "frameCount": 178,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791331609.675857,
+      "lastTimestamp": 1791331619.437874
+    },
+    {
+      "name": "02-explore-spring",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 4,
+      "frameCount": 70,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791331621.456722,
+      "lastTimestamp": 1791331625.418633
+    },
+    {
+      "name": "03-explore-pendulum",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 4,
+      "frameCount": 69,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791331627.03503,
+      "lastTimestamp": 1791331630.93398
+    },
+    {
+      "name": "04-explore-beer",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 4,
+      "frameCount": 85,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791331679.175931,
+      "lastTimestamp": 1791331683.091254
+    },
+    {
+      "name": "05-explore-sensor",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 3,
+      "frameCount": 56,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791331684.495549,
+      "lastTimestamp": 1791331687.300526
+    },
+    {
+      "name": "06-spring-run",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 12,
+      "frameCount": 6,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791331688.226796,
+      "lastTimestamp": 1791331688.428027
+    },
+    {
+      "name": "07-measurements",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 8,
+      "frameCount": 11,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791332098.670559,
+      "lastTimestamp": 1791332099.144393
+    },
+    {
+      "name": "08-comparison",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 9,
+      "frameCount": 3,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791332107.561348,
+      "lastTimestamp": 1791332107.678207
+    },
+    {
+      "name": "09-residuals",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 9,
+      "frameCount": 2,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791332116.664931,
+      "lastTimestamp": 1791332116.83086
+    },
+    {
+      "name": "10-evidence",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 9,
+      "frameCount": 2,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791332277.744871,
+      "lastTimestamp": 1791332277.864755
+    },
+    {
+      "name": "11-pendulum-analysis",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 5,
+      "frameCount": 1,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791332287.71132,
+      "lastTimestamp": 1791332287.71132
+    },
+    {
+      "name": "12-beer-analysis",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 5,
+      "frameCount": 1,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791332293.562222,
+      "lastTimestamp": 1791332293.562222
+    },
+    {
+      "name": "13-sensor-analysis",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 6,
+      "frameCount": 1,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791332299.436008,
+      "lastTimestamp": 1791332299.436008
+    },
+    {
+      "name": "14-custom-input",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 6,
+      "frameCount": 3,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791332324.263228,
+      "lastTimestamp": 1791332324.457257
+    },
+    {
+      "name": "15-custom-config",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 12,
+      "frameCount": 28,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791332330.56749,
+      "lastTimestamp": 1791332342.448552
+    },
+    {
+      "name": "16-custom-result",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 6,
+      "frameCount": 5,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791332342.899863,
+      "lastTimestamp": 1791332343.114105
+    },
+    {
+      "name": "17-ai-setup-request",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 7,
+      "frameCount": 10,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791330543.135076,
+      "lastTimestamp": 1791330545.672031
+    },
+    {
+      "name": "18-ai-confirm",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 6,
+      "frameCount": 5,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791330562.327738,
+      "lastTimestamp": 1791330562.493039
+    },
+    {
+      "name": "19b-ai-explain-retry",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 7,
+      "frameCount": 48,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791330630.665822,
+      "lastTimestamp": 1791330642.855078
+    },
+    {
+      "name": "20-ai-reading",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 6,
+      "frameCount": 21,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791330673.118983,
+      "lastTimestamp": 1791330678.765151
+    },
+    {
+      "name": "21-architecture",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 15,
+      "frameCount": 1,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791332587.973027,
+      "lastTimestamp": 1791332587.973027
+    },
+    {
+      "name": "22-closing",
+      "source": "https://modelscope-ten.vercel.app",
+      "exportDuration": 12,
+      "frameCount": 215,
+      "physicalFrameSize": [
+        1757,
+        1080
+      ],
+      "firstTimestamp": 1791332612.04935,
+      "lastTimestamp": 1791332623.916485
+    }
+  ]
+}

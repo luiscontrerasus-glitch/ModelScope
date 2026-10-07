@@ -1,0 +1,34 @@
+{
+  "reviewedOn": "2026-10-06",
+  "durationSeconds": 165.033008,
+  "timelineSeconds": 165,
+  "sizeBytes": 5039491,
+  "sha256": "84b5e179709c431c5a49ce55515c062b0c6f314496f264c146610209f92e2d4f",
+  "output": [
+    1920,
+    1080
+  ],
+  "fps": 30,
+  "video": "H.264",
+  "audio": "AAC, local installed Microsoft Zira Desktop narration, no music",
+  "captionCues": 36,
+  "decode": "All audio/video streams decoded successfully",
+  "visualReview": "165 one-second samples reviewed across all 22 shots; full exported player ran from zero to ended at 165.033 seconds; actual product content throughout, no blank transition scenes in reviewed samples, captions in separate bottom band",
+  "motion": "Original browser timing retained; moving instruments approximately 17–21 changing source frames/second; static frames held",
+  "checks": [
+    "No localhost product footage",
+    "No mocked Gemini",
+    "No developer console or key visible",
+    "All four systems visible",
+    "Spring evidence and sensitivity caveat",
+    "Custom mapping and response scale",
+    "Actual AI proposal/confirmation and real explanation",
+    "Architecture/privacy and clean Home closing"
+  ],
+  "limitations": [
+    "Sentence cue timing estimated proportionally from measured spoken audio duration, not forced-aligned phonemes",
+    "Continuous playback checked with visual samples; environment cannot independently judge narration sound quality. Final human listen recommended.",
+    "30 FPS export does not claim native 30 or 60 unique-frame capture."
+  ],
+  "publicUpload": "Not performed. User elected to upload personally."
+}
