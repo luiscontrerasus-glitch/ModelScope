@@ -22,7 +22,7 @@ ModelScope is a local scientific workspace for evaluating model adequacy. Config
 
 [Open ModelScope](https://modelscope-ten.vercel.app) runs publicly on Vercel's free Hobby tier. Desktop/mobile flows and one live request per Gemini assistance route were verified on October 6, 2026. [Public source code](https://github.com/luiscontrerasus-glitch/ModelScope) preserves the complete development history. See the [production deployment verification](docs/deployment/README.md) and [earlier release record](docs/release-verification.md).
 
-For a fast demonstration, keep Spring's progressive-departure dataset and click **Run analysis**. Compare the main graph with its reference, inspect Residuals, Model comparison and Evidence, and open **View full evidence** for detailed findings. **Open data** reveals the measurements editor and experiment selection; **Import** opens custom data setup. [Recording script and exact shot list](docs/demo-video.md).
+For a first analysis, [open Spring's progressive-departure dataset](https://modelscope-ten.vercel.app/workspace?experiment=spring-hooke). Compare the main graph with its reference, inspect Residuals, Model comparison and Evidence, and open **View full evidence** for detailed findings. **Open data** reveals the measurements editor and experiment selection; **Import** opens custom data setup. Editing data pauses evidence and export until **Run analysis** succeeds. The [methodology](docs/methodology.md) explains each diagnostic and its limits.
 
 ## Key capabilities
 
@@ -113,7 +113,7 @@ npm run build
 npm audit --omit=dev
 ```
 
-**306 tests across 10 files** pass, including frozen Hooke numerical snapshots, the four experiments, custom provenance/validation, adversarial analysis inputs, and AI server/client contracts. Normal tests never call Gemini. Typecheck, lint, and production build pass before and after the redesign merge. The production audit reports zero vulnerabilities. Earlier development-only advisories are documented in the historical release record without a forced breaking upgrade. [Redesign release verification](docs/redesign/RELEASE.md), [earlier release verification](docs/release-verification.md), [historical milestone verification](docs/verification.md), [file inventory](docs/files.md).
+**310 tests across 11 files** pass, including frozen Hooke numerical snapshots, analytical hinge/penalty and irregular-grid checks, all four experiment families, custom provenance/validation, adversarial inputs, and AI server/client contracts. Normal tests never call Gemini. The October 25 release verification passed typecheck, lint, and the production build. Production-only and full dependency audits report zero vulnerabilities after compatible updates to Next.js 16.4.1, Zod 4.6.6, Vite 8.3.5 and undici 7.30.1. Historical records remain in the [redesign release verification](docs/redesign/RELEASE.md), [earlier release verification](docs/release-verification.md), [milestone verification](docs/verification.md), and [file inventory](docs/files.md).
 
 ## Limitations
 
@@ -121,7 +121,7 @@ Four built-in families and three custom baselines, one possible hinge, ordinary 
 
 ## Hackathon development
 
-**Luis Contreras** started ModelScope from scratch during the overlapping ImpactHack 2026 and ForgeHacks Online 2026 build period. Full incremental Git history begins October 4, 2026; it has not been squashed, rewritten, or backdated. Codex assisted development, debugging, research, documentation, and verification. Open-source libraries and pre-trained Gemini are disclosed above.
+**Luis Contreras** directed ModelScope with substantial Codex assistance across implementation, debugging, research, tests, documentation, and verification. Full incremental Git history begins October 4, 2026; it has not been squashed, rewritten, or backdated. Git attribution does not establish independently handwritten code. Open-source libraries and runtime Gemini are disclosed above.
 
 ImpactHack's [official window](https://impacthack26.devpost.com/details/dates) runs October 1 at midnight PDT through October 7 at 11:45 PM PDT. Forge's intended track is **AI + Education**; use its [live Devpost deadline](https://forgehacks-2026.devpost.com/) of October 10 at noon EDT. Team eligibility and organizer permission for cross-hackathon submission remain checks, not claims of approval.
 

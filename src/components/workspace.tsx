@@ -124,7 +124,10 @@ export function Workspace({ initialExperiment }: { initialExperiment?: Experimen
   const currentResult = result && !dirty;
   const comparison = result?.transition.comparison;
   const transition = result?.transition;
-  const checks = result ? <dl className="result-checks"><div><dt>Model improvement</dt><dd>{number(comparison?.improvement ?? null, 2)}</dd></div><div><dt>Persistence</dt><dd>{transition?.sustainedRowIds.length ? 'Passed' : transition?.status === 'insufficient' ? 'Not available' : 'Not established'}</dd></div><div><dt>Influence safeguard</dt><dd>{transition?.influenceCheck?.passed ? 'Passed' : transition?.influenceCheck ? 'Not passed' : 'Not available'}</dd></div></dl> : null;
+  // Influence is evaluated only after persistence passes; ambiguous results
+  // intentionally omit supported row highlights, not the completed gate result.
+  const persistencePassed = !!transition && (transition.sustainedRowIds.length > 0 || transition.influenceCheck !== null);
+  const checks = result ? <dl className="result-checks"><div><dt>Model improvement</dt><dd>{number(comparison?.improvement ?? null, 2)}</dd></div><div><dt>Persistence</dt><dd>{persistencePassed ? 'Passed' : transition?.status === 'insufficient' ? 'Not available' : 'Not established'}</dd></div><div><dt>Influence safeguard</dt><dd>{transition?.influenceCheck?.passed ? 'Passed' : transition?.influenceCheck ? 'Not passed' : 'Not available'}</dd></div></dl> : null;
   return <main className="scientific-workspace graph-workspace">
     <a className="skip-link" href="#analysis-content">Skip to analysis</a>
     <header className="workspace-header"><Link href="/" className="brand" aria-label="ModelScope home">ModelScope</Link><span className="header-slash">/</span><h1>{isCustom ? 'Custom data analysis' : experiment.title}</h1><div className="intro-actions"><button className="secondary" onClick={startCustom}>Import</button><button className="secondary" disabled={!result || dirty} onClick={exportEvidence}>Export</button>{(!isCustom || customSession) && <button className="primary" onClick={run}>Run analysis <span aria-hidden="true">→</span></button>}</div></header>

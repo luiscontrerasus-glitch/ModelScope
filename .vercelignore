@@ -1,0 +1,12 @@
+# Deploy application source only; keep local/private review material out.
+.git
+node_modules
+.next
+coverage
+*.tsbuildinfo
+.env*
+.vercel
+cac-2026-submission
+browser-artifacts
+docs
+tests
